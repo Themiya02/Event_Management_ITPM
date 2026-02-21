@@ -19,8 +19,8 @@ app.get('/', (req, res) => {
   res.json({ message: 'Event Management API is running' });
 });
 
-// API Routes will be added here
-// app.use('/api/events', require('./routes/eventRoutes'));
+// API Routes
+app.use('/api/auth', require('./routes/authRoutes'));
 
 const PORT = process.env.PORT || 5000;
 
