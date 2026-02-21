@@ -1,5 +1,5 @@
 const dns = require('dns');
-dns.setServers(['8.8.8.8', '8.8.4.4']);
+dns.setServers(['8.8.8.8', '8.8.4.4']); // 
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -14,12 +14,12 @@ app.use(express.json());
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB Connected Successfully'))
-  .catch((err) => console.error('MongoDB Connection Error:', err));
+    .then(() => console.log('✅ MongoDB Connected Successfully'))
+    .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Event Management API is running' });
+    res.json({ message: 'Event Management API is running' });
 });
 
 // API Routes
@@ -28,5 +28,5 @@ app.use('/api/auth', require('./routes/authRoutes'));
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`🚀 Server is running on port ${PORT}`);
 });
