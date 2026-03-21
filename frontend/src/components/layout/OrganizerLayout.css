@@ -1,0 +1,85 @@
+.organizer-layout {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-color: var(--bg-color);
+    position: relative;
+    z-index: 0;
+}
+
+/* Subtle background glowing orb effect */
+.organizer-layout::before {
+    content: '';
+    position: absolute;
+    top: -20vh;
+    left: -10vw;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.organizer-layout::after {
+    content: '';
+    position: absolute;
+    bottom: -20vh;
+    right: -10vw;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    /* Prevents flex children from pushing out of bounds */
+    height: 100vh;
+}
+
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    padding-bottom: 4rem;
+    scroll-behavior: smooth;
+    position: relative;
+    z-index: 1;
+}
+
+.content-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+    background: var(--surface-color-hover);
+    border-radius: 10px;
+    border: 2px solid var(--bg-color);
+}
+
+.content-area::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+@media (max-width: 1024px) {
+    .content-area {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-area {
+        padding: 1rem;
+    }
+}

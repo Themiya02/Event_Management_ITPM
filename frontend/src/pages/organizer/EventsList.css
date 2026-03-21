@@ -1,0 +1,142 @@
+.events-list-page {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.events-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.create-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+}
+
+.create-btn .icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Table Container */
+.table-container {
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.events-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.8rem;
+    text-align: left;
+}
+
+.events-table td {
+    padding: 1.25rem 1.75rem;
+    border: none;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+}
+
+.events-table th {
+    background: transparent;
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0 1.75rem 0.5rem 1.75rem;
+    border: none;
+}
+
+.events-table tbody tr {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.events-table tbody tr:hover {
+    transform: translateY(-3px) scale(1.005);
+    box-shadow: 0 15px 35px rgba(147, 51, 234, 0.15);
+}
+
+.events-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.events-table tbody tr td:first-child {
+    border-radius: 16px 0 0 16px;
+    border-left: 4px solid transparent;
+}
+
+.events-table tbody tr:hover td:first-child {
+    border-left-color: var(--primary-color);
+}
+
+.events-table tbody tr td:last-child {
+    border-radius: 0 16px 16px 0;
+}
+
+/* Cells styling */
+.font-semibold {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.event-name-col {
+    font-size: 1.05rem;
+}
+
+.text-muted {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.type-badge {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.action-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: background var(--transition-fast);
+}
+
+.action-link:hover {
+    background: rgba(147, 51, 234, 0.1);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem !important;
+    color: var(--text-muted);
+    font-weight: 500;
+}

@@ -1,0 +1,10 @@
+/* Admin-specific additions on top of the shared sidebar CSS */
+.admin-role-badge {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-top: 2px;
+}

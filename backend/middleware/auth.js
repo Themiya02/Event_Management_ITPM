@@ -11,7 +11,7 @@ exports.protect = async (req, res, next) => {
       req.user = await User.findById(decoded.id).select('-password');
       next();
     } catch (error) {
-      return res.status(401).json({ message: 'Not authorized, token failed' });
+      return res.status(401).json({ message: 'Not 11 authorized, token failed' });
     }
   }
 
@@ -25,5 +25,21 @@ exports.admin = (req, res, next) => {
     next();
   } else {
     return res.status(403).json({ message: 'Not authorized as admin' });
+  }
+};
+
+exports.organizer = (req, res, next) => {
+  if (req.user && req.user.role === 'organizer') {
+    next();
+  } else {
+    return res.status(403).json({ message: 'Not authorized as organizer' });
+  }
+};
+
+exports.manager = (req, res, next) => {
+  if (req.user && req.user.role === 'manager') {
+    next();
+  } else {
+    return res.status(403).json({ message: 'Not authorized as manager' });
   }
 };

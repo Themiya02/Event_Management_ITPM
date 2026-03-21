@@ -1,0 +1,205 @@
+/* Admin Dashboard - uses organizer theme variables */
+.admin-dashboard {
+    padding-bottom: 2rem;
+}
+
+.page-header-block {
+    margin-bottom: 2rem;
+}
+
+.page-main-title {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+
+.page-main-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.loading-msg {
+    color: var(--text-muted);
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Stat Cards */
+.admin-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+}
+
+.admin-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-emoji {
+    font-size: 2rem;
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--surface-color-hover);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+.stat-name {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Workflow */
+.admin-workflow-card {
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.4rem;
+}
+
+.section-subtitle {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+}
+
+.workflow-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.workflow-step {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.workflow-icon {
+    font-size: 1.5rem;
+}
+
+.workflow-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.workflow-text strong {
+    font-size: 0.82rem;
+    color: var(--text-main);
+}
+
+.workflow-text span {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.workflow-arrow {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+/* Recent pending */
+.admin-recent-card {
+    padding: 1.75rem;
+}
+
+.card-row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.link-action {
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link-action:hover {
+    opacity: 0.75;
+}
+
+.empty-note {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.recent-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    background: var(--surface-color-hover);
+    border: 1px solid var(--border-color);
+}
+
+.recent-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 0.15rem;
+}
+
+.recent-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.btn-sm-primary {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.btn-sm-primary:hover {
+    background: var(--primary-color);
+    color: white;
+}
