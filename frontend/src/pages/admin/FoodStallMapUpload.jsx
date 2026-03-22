@@ -16,12 +16,12 @@ const FoodStallMapUpload = () => {
     const fetchEvents = async () => {
         try {
             const { token, apiUrl } = getAuth();
-            // Fetch all events, similar to what we do in AdminDashboard.jsx
+            // Fetch all events, including pending (upcoming) ones
             const res = await axios.get(`${apiUrl}/api/events/admin/all`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            // Let's filter out Rejected ones
-            setAllEvents(res.data.filter(e => e.status !== 'Rejected'));
+            // Show approved and pending events
+            setAllEvents(res.data.filter(e => e.status === 'Approved' || e.status === 'Pending'));
         } catch (err) {
             console.error('Error fetching events:', err);
         } finally {

@@ -10,6 +10,10 @@ const FoodDashboard = () => {
 
     const [stallName, setStallName] = useState('');
     const [description, setDescription] = useState('');
+    const [foodType, setFoodType] = useState('Fast Food');
+    const [needsElectricity, setNeedsElectricity] = useState(false);
+    const [needsWater, setNeedsWater] = useState(false);
+    const [paymentReceipt, setPaymentReceipt] = useState(null);
     const [marker, setMarker] = useState(null);
     const imgRef = useRef(null);
 
@@ -18,11 +22,10 @@ const FoodDashboard = () => {
             try {
                 const token = JSON.parse(localStorage.getItem('user'))?.token;
                 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                const res = await axios.get(`${apiUrl}/api/events/approved`, {
+                const res = await axios.get(`${apiUrl}/api/events/mapped`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const mappedEvents = res.data.filter(e => e.stallMapUrl);
-                setEvents(mappedEvents);
+                setEvents(res.data);
             } catch (error) {
                 console.error('Failed to fetch events', error);
             } finally {
@@ -44,6 +47,7 @@ const FoodDashboard = () => {
         e.preventDefault();
         if (!marker) return alert('Please select a location on the map first.');
         if (!stallName.trim()) return alert('Stall Name is required.');
+        if (!paymentReceipt) return alert('Payment receipt is required to secure your booking.');
 
         try {
             const token = JSON.parse(localStorage.getItem('user'))?.token;
@@ -51,6 +55,10 @@ const FoodDashboard = () => {
             const res = await axios.post(`${apiUrl}/api/events/${selectedEvent._id}/book-stall`, {
                 stallName,
                 description,
+                foodType,
+                needsElectricity,
+                needsWater,
+                paymentReceipt,
                 x: marker.x,
                 y: marker.y
             }, {
@@ -66,6 +74,10 @@ const FoodDashboard = () => {
             setMarker(null);
             setStallName('');
             setDescription('');
+            setFoodType('Fast Food');
+            setNeedsElectricity(false);
+            setNeedsWater(false);
+            setPaymentReceipt(null);
         } catch (error) {
             console.error('Failed to book stall', error);
             alert(error.response?.data?.message || 'Failed to book stall');
@@ -186,39 +198,123 @@ const FoodDashboard = () => {
                             <p style={{ color: 'var(--text-muted)' }}>Waiting for map selection...</p>
                         ) : (
                             <form onSubmit={handleBookStall}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
-                                    <div className="form-group" style={{ marginBottom: 0 }}>
-                                        <label>Stall Name</label>
-                                        <input 
-                                            type="text" 
-                                            value={stallName} 
-                                            onChange={e => setStallName(e.target.value)} 
-                                            placeholder="e.g. Burger Point" 
-                                            required 
-                                        />
-                                    </div>
-                                    <div className="form-group" style={{ marginBottom: 0 }}>
-                                        <label>Coordinates</label>
-                                        <input 
-                                            type="text" 
-                                            value={`X: ${marker.x.toFixed(1)}%, Y: ${marker.y.toFixed(1)}%`} 
-                                            disabled 
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label>Brief Description (Optional)</label>
-                                    <input 
-                                        type="text" 
-                                        value={description} 
-                                        onChange={e => setDescription(e.target.value)} 
-                                        placeholder="What will you be selling?" 
-                                    />
-                                </div>
-                                <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-                                    Lock Location Position
-                                </button>
+                                {/* Price calculation derived real-time */}
+                                {(() => {
+                                    const calculatedPrice = 10000 + (needsElectricity ? 3000 : 0) + (needsWater ? 2000 : 0);
+                                    return (
+                                        <>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                                    <label>Stall Name</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={stallName} 
+                                                        onChange={e => setStallName(e.target.value)} 
+                                                        placeholder="e.g. Burger Point" 
+                                                        required 
+                                                    />
+                                                </div>
+                                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                                    <label>Coordinates</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={`X: ${marker.x.toFixed(1)}%, Y: ${marker.y.toFixed(1)}%`} 
+                                                        disabled 
+                                                        style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                                    <label>Food Type</label>
+                                                    <select value={foodType} onChange={e => setFoodType(e.target.value)} required style={{
+                                                        width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)',
+                                                        backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff'
+                                                    }}>
+                                                        <option value="Fast Food">Fast Food</option>
+                                                        <option value="Beverages">Beverages</option>
+                                                        <option value="Desserts">Desserts</option>
+                                                        <option value="Traditional Food">Traditional Food</option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                                    <label>Brief Description (Optional)</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={description} 
+                                                        onChange={e => setDescription(e.target.value)} 
+                                                        placeholder="What will you be selling?" 
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ marginBottom: '1.5rem' }}>
+                                                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Utilities</label>
+                                                <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                                        <input type="checkbox" checked={needsElectricity} onChange={e => setNeedsElectricity(e.target.checked)} />
+                                                        Electricity (+Rs 3,000)
+                                                    </label>
+                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                                        <input type="checkbox" checked={needsWater} onChange={e => setNeedsWater(e.target.checked)} />
+                                                        Water (+Rs 2,000)
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div style={{ marginBottom: '1.5rem', padding: '1.2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: '4px solid var(--primary-color)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
+                                                    <span>Base Price:</span>
+                                                    <span>Rs 10,000</span>
+                                                </div>
+                                                {needsElectricity && (
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
+                                                        <span>Electricity Add-on:</span>
+                                                        <span>Rs 3,000</span>
+                                                    </div>
+                                                )}
+                                                {needsWater && (
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
+                                                        <span>Water Add-on:</span>
+                                                        <span>Rs 2,000</span>
+                                                    </div>
+                                                )}
+                                                <hr style={{ borderTop: '1px solid var(--border-color)', margin: '0.8rem 0' }} />
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <strong style={{ fontSize: '1.1rem' }}>Total Formatted Price:</strong>
+                                                    <strong style={{ fontSize: '1.4rem', color: 'var(--primary-color)' }}>Rs {calculatedPrice.toLocaleString()}</strong>
+                                                </div>
+                                            </div>
+
+                                            <div className="form-group" style={{ marginBottom: '2.5rem' }}>
+                                                <label>Upload Payment Receipt <span style={{color: 'red'}}>*</span></label>
+                                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                                                    Upload a picture of your bank transfer or deposit slip for the amount of <strong>Rs {calculatedPrice.toLocaleString()}</strong>.
+                                                </p>
+                                                <input 
+                                                    type="file" 
+                                                    accept="image/*"
+                                                    required
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.onloadend = () => setPaymentReceipt(reader.result);
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                    style={{ width: '100%', padding: '0.8rem', border: '1px dashed var(--primary-color)' }}
+                                                />
+                                            </div>
+
+                                            <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+                                                Confirm Booking & Lock Location
+                                            </button>
+                                        </>
+                                    );
+                                })()}
                             </form>
                         )}
                     </div>
