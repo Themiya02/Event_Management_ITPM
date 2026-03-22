@@ -6,6 +6,7 @@ import './AdminDashboard.css';
 const AdminDashboard = () => {
     const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
     const [recentEvents, setRecentEvents] = useState([]);
+    const [allEvents, setAllEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeDomain, setActiveDomain] = useState('events');
 
@@ -31,6 +32,7 @@ const AdminDashboard = () => {
                     rejected: rejected.length,
                 });
                 setRecentEvents(pendingRes.data.slice(0, 4));
+                setAllEvents(allRes.data);
             } catch (err) {
                 console.error('Failed to fetch dashboard data', err);
             } finally {
@@ -39,6 +41,32 @@ const AdminDashboard = () => {
         };
         fetchData();
     }, []);
+
+    const handleUploadMap = async (eventId, e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const token = user?.token;
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                await axios.patch(`${apiUrl}/api/events/admin/${eventId}/stall-map`, {
+                    stallMapUrl: reader.result
+                }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                setAllEvents(prev => prev.map(ev => ev._id === eventId ? { ...ev, stallMapUrl: reader.result } : ev));
+                alert('Food stall map uploaded successfully!');
+            } catch (error) {
+                console.error('Failed to upload map', error);
+                alert('Failed to upload map');
+            }
+        };
+        reader.readAsDataURL(file);
+    };
 
     const statCards = [
         { label: 'Pending Events', value: stats.pending, icon: '⏳', link: '/admin/events/upcoming', color: 'orange' },
@@ -145,8 +173,43 @@ const AdminDashboard = () => {
                         </div>
                     )}
 
+                    {/* DOMAIN: FOOD STALL HANDLING */}
+                    {activeDomain === 'food' && (
+                        <div className="animation-fade-in glass-panel admin-recent-card">
+                            <div className="card-row-header">
+                                <h2 className="section-title">🍔 Food Stall Handling (Upcoming Events)</h2>
+                            </div>
+                            {allEvents.filter(e => e.status !== 'Rejected').length === 0 ? (
+                                <p className="empty-note">No requested events currently active. 🎉</p>
+                            ) : (
+                                <div className="recent-list">
+                                    {allEvents.filter(e => e.status !== 'Rejected').map(ev => (
+                                        <div key={ev._id} className="recent-row" style={{ alignItems: 'center' }}>
+                                            <div>
+                                                <p className="recent-name">{ev.name} <span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>({ev.status})</span></p>
+                                                <p className="recent-meta">By {ev.organizer?.name || 'Unknown'} · {new Date(ev.date).toLocaleDateString()}</p>
+                                                {ev.stallMapUrl && <span style={{ color: 'var(--success-color)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem' }}>✓ Map Available</span>}
+                                            </div>
+                                            <div>
+                                                <label className="btn-sm-primary" style={{ cursor: 'pointer', margin: 0 }}>
+                                                    {ev.stallMapUrl ? 'Update Map' : 'Upload Map'}
+                                                    <input 
+                                                        type="file" 
+                                                        accept="image/*" 
+                                                        style={{ display: 'none' }} 
+                                                        onChange={(e) => handleUploadMap(ev._id, e)} 
+                                                    />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* BLANK PLACEHOLDER FOR UPCOMING DOMAINS */}
-                    {activeDomain !== 'events' && (
+                    {activeDomain !== 'events' && activeDomain !== 'food' && (
                         <div className="glass-panel empty-domain-state animation-fade-in">
                             <span className="massive-icon">{domains.find(d => d.id === activeDomain)?.icon}</span>
                             <h2 className="empty-domain-title">{domains.find(d => d.id === activeDomain)?.label} Module</h2>
