@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import './Auth.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('user');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -14,11 +16,36 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    if (!email.includes('@')) {
+      return setError('Email must contain @');
+    }
+    if (/[A-Z]/.test(email)) {
+      return setError('Email cannot contain capital letters');
+    }
+
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const userData = await login(email, password);
+      
+      if (userData.role !== role) {
+        setError(`Please select the correct role. You are a ${userData.role}, not ${role}.`);
+        setLoading(false);
+        return;
+      }
+      
+      if (userData.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (userData.role === 'organizer') {
+        navigate('/organizer/dashboard');
+      } else if (userData.role === 'sponsor') {
+        navigate('/sponsor/dashboard');
+      } else if (userData.role === 'food_stall') {
+        navigate('/food/dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to login');
     } finally {
@@ -29,37 +56,81 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Login</h2>
-        <p className="auth-subtitle">Welcome back! Please login to continue.</p>
+        <div className="auth-header">
+          <div className="auth-logo-icon"></div>
+          <h2>Login</h2>
+          <p className="auth-subtitle">Welcome back! Please login to continue.</p>
+        </div>
         
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="auth-error-box">{error}</div>}
         
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="input-group">
             <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              readOnly={role === 'admin'}
+              style={{ backgroundColor: role === 'admin' ? 'rgba(0,0,0,0.2)' : 'transparent', color: role === 'admin' ? 'var(--primary-color)' : 'white' }}
+              onChange={(e) => {
+                const val = e.target.value;
+                setEmail(val.toLowerCase());
+              }}
               placeholder="Enter your email"
               required
             />
           </div>
           
-          <div className="form-group">
+          <div className="input-group">
             <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
               value={password}
+              readOnly={role === 'admin'}
+              style={{ backgroundColor: role === 'admin' ? 'rgba(0,0,0,0.2)' : 'transparent', color: role === 'admin' ? 'var(--primary-color)' : 'white', letterSpacing: role === 'admin' ? '3px' : 'normal' }}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
             />
           </div>
           
-          <button type="submit" className="btn btn-primary" disabled={loading}>
+          <div className="input-group">
+            <label htmlFor="role">Login As</label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => {
+                const selectedRole = e.target.value;
+                setRole(selectedRole);
+                if (selectedRole === 'admin') {
+                  setEmail('admin@gmail.com');
+                  setPassword('123456');
+                } else {
+                  setEmail('');
+                  setPassword('');
+                }
+              }}
+              className="form-control"
+              required
+            >
+              <option value="user">User</option>
+              <option value="organizer">Organizer</option>
+              <option value="admin">Admin</option>
+              <option value="sponsor">Sponsor</option>
+              <option value="food_stall">Food Stall Member</option>
+            </select>
+          </div>
+          
+          <div className="auth-extras">
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
+              <input type="checkbox" style={{ margin: 0 }} /> Remember me
+            </label>
+            <Link to="#" style={{ textDecoration: 'none' }}>Forgot Password?</Link>
+          </div>
+          
+          <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>

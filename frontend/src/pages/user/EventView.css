@@ -1,0 +1,140 @@
+.event-view-container {
+  padding: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.event-banner {
+  width: 100%;
+  height: 350px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  position: relative;
+  background: var(--surface-bg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.event-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-banner .placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-gradient);
+  color: white;
+  font-size: 5rem;
+}
+
+.open-badge-large {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
+  font-weight: bold;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.open-badge-large.required {
+  background: rgba(244, 63, 94, 0.85);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.open-badge-large.open {
+  background: rgba(167, 139, 250, 0.85);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.event-info-glass {
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.event-info-glass h1 {
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+  background: var(--primary-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.org-block {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-node {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.detail-node .label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.detail-node .val {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.event-description {
+  line-height: 1.7;
+  color: var(--text-color);
+  font-size: 1.05rem;
+}
+
+.registration-glass {
+  padding: 2.5rem;
+}
+
+.registration-glass h2 {
+  margin: 0 0 0.5rem 0;
+}
+
+.registration-glass p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.open-event-notice {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 12px;
+}
+
+.open-event-notice h3 {
+  color: var(--accent-purple);
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+}

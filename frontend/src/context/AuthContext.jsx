@@ -30,11 +30,13 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
-  const register = async (name, email, password) => {
+  const register = async (name, phone, email, password, role) => {
     const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
       name,
+      phone,
       email,
-      password
+      password,
+      role
     });
     const userData = response.data;
     setUser(userData);
@@ -47,11 +49,19 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
   };
 
+  const updateUser = (newUserData) => {
+    const localUser = JSON.parse(localStorage.getItem('user')) || {};
+    const updated = { ...localUser, ...newUserData };
+    setUser(updated);
+    localStorage.setItem('user', JSON.stringify(updated));
+  };
+
   const value = {
     user,
     login,
     register,
     logout,
+    updateUser,
     loading
   };
 

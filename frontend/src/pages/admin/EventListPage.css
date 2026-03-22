@@ -1,0 +1,109 @@
+/* Shared CSS for ApprovedEvents and RejectedEvents */
+.event-list-page {
+    padding-bottom: 2rem;
+}
+
+.page-header-block { margin-bottom: 2rem; }
+
+.page-main-title {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+
+.page-main-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.loading-msg {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 2rem;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 20px;
+}
+.empty-big-icon { font-size: 3rem; margin-bottom: 1rem; }
+.empty-state h3 { color: var(--text-main); margin-bottom: 0.4rem; }
+.empty-state p { color: var(--text-muted); font-size: 0.9rem; }
+
+.simple-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.simple-event-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+}
+
+.sec-info { flex: 1; }
+
+.sec-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.4rem;
+}
+
+.sec-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.sec-desc {
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+
+.ticket-badge { font-weight: 600; }
+.ticket-badge.paid { color: #D97706; }
+.ticket-badge.free { color: #059669; }
+
+.rejection-reason-box {
+    margin-top: 0.75rem;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    background: rgba(239, 68, 68, 0.07);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    font-size: 0.84rem;
+    color: #EF4444;
+}
+
+.status-tag {
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+.status-tag.approved {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.3);
+}
+.status-tag.rejected {
+    background: rgba(239, 68, 68, 0.09);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}

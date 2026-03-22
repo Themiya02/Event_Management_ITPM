@@ -15,6 +15,18 @@ const userSchema = new mongoose.Schema({
     trim: true,
     match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
   },
+  phone: {
+    type: String,
+    required: [true, 'Please provide a phone number']
+  },
+  organization: {
+    type: String,
+    default: ''
+  },
+  bio: {
+    type: String,
+    default: ''
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -23,8 +35,19 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'organizer', 'admin', 'manager', 'sponsor', 'food_stall'],
     default: 'user'
+  },
+  avatar: {
+    type: String,
+    default: ''
+  },
+  managerType: {
+    type: String,
+    enum: ['security', 'medicine'],
+    required: function() {
+      return this.role === 'manager';
+    }
   }
 }, {
   timestamps: true
