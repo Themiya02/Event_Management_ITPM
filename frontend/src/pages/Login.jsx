@@ -39,6 +39,10 @@ const Login = () => {
         navigate('/admin/dashboard');
       } else if (userData.role === 'organizer') {
         navigate('/organizer/dashboard');
+      } else if (userData.role === 'sponsor') {
+        navigate('/sponsor/dashboard');
+      } else if (userData.role === 'food_stall') {
+        navigate('/food/dashboard');
       } else {
         navigate('/dashboard');
       }
@@ -67,6 +71,8 @@ const Login = () => {
               type="email"
               id="email"
               value={email}
+              readOnly={role === 'admin'}
+              style={{ backgroundColor: role === 'admin' ? 'rgba(0,0,0,0.2)' : 'transparent', color: role === 'admin' ? 'var(--primary-color)' : 'white' }}
               onChange={(e) => {
                 const val = e.target.value;
                 setEmail(val.toLowerCase());
@@ -82,6 +88,8 @@ const Login = () => {
               type="password"
               id="password"
               value={password}
+              readOnly={role === 'admin'}
+              style={{ backgroundColor: role === 'admin' ? 'rgba(0,0,0,0.2)' : 'transparent', color: role === 'admin' ? 'var(--primary-color)' : 'white', letterSpacing: role === 'admin' ? '3px' : 'normal' }}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
@@ -93,13 +101,25 @@ const Login = () => {
             <select
               id="role"
               value={role}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={(e) => {
+                const selectedRole = e.target.value;
+                setRole(selectedRole);
+                if (selectedRole === 'admin') {
+                  setEmail('admin@gmail.com');
+                  setPassword('123456');
+                } else {
+                  setEmail('');
+                  setPassword('');
+                }
+              }}
               className="form-control"
               required
             >
               <option value="user">User</option>
               <option value="organizer">Organizer</option>
               <option value="admin">Admin</option>
+              <option value="sponsor">Sponsor</option>
+              <option value="food_stall">Food Stall Member</option>
             </select>
           </div>
           

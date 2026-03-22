@@ -61,14 +61,32 @@ exports.getOrganizerEvents = async (req, res) => {
 exports.registerForEvent = async (req, res) => {
   try {
     const eventId = req.params.id;
+    const { participantName, campusId, campusYear, paymentSlip } = req.body;
+
+    if (!participantName || !campusId || !campusYear) {
+      return res.status(400).json({ message: 'Missing required campus details (Name, ID, Year)' });
+    }
+
     const event = await Event.findById(eventId);
     if (!event) return res.status(404).json({ message: 'Event not found' });
     if (!event.isOpenRegistration) return res.status(400).json({ message: 'Registration closed for this event' });
 
+    if (event.isPaid && !paymentSlip) {
+      return res.status(400).json({ message: 'A payment slip must be uploaded for paid events.' });
+    }
+
     const already = await Registration.findOne({ user: req.user._id, event: eventId });
     if (already) return res.status(400).json({ message: 'Already registered' });
 
-    await Registration.create({ user: req.user._id, event: eventId });
+    await Registration.create({ 
+      user: req.user._id, 
+      event: eventId,
+      participantName,
+      campusId,
+      campusYear,
+      paymentSlip: event.isPaid ? paymentSlip : null
+    });
+
     event.registrationsCount += 1;
     await event.save();
 
@@ -180,7 +198,7 @@ exports.getAdminAllEvents = async (req, res) => {
 // Admin: Update individual approval checkboxes (security, medical, community, dean)
 exports.updateApprovalCheckbox = async (req, res) => {
   try {
-    const { field, value } = req.body; // field = 'security' | 'medical' | 'community' | 'dean', value = true/false
+    const { field, value } = req.body; 
     const validFields = ['security', 'medical', 'community', 'dean'];
     if (!validFields.includes(field)) {
       return res.status(400).json({ message: 'Invalid approval field' });
@@ -210,7 +228,7 @@ exports.updateApprovalCheckbox = async (req, res) => {
 // Admin: Final approve or reject decision
 exports.adminDecideEvent = async (req, res) => {
   try {
-    const { action, reason } = req.body; // action = 'approve' | 'reject'
+    const { action, reason } = req.body; 
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
 

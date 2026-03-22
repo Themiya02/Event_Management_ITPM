@@ -109,7 +109,7 @@ const CreateEvent = () => {
                     seatLimit: formData.venueType === 'Indoor' ? formData.seatLimit : null,
                     isPaid: formData.ticketType === 'Paid',
                     price: formData.ticketType === 'Paid' ? formData.ticketPrice : 0,
-                    isOpenRegistration: formData.isRegistrationRequired === 'No'
+                    isOpenRegistration: formData.isRegistrationRequired === 'Yes'
                 };
 
                 const response = await axios.post(`${apiUrl}/api/events`, payload, {

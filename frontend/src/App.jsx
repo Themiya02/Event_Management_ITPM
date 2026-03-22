@@ -2,8 +2,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
+import UserDashboard from './pages/user/UserDashboard';
+import EventView from './pages/user/EventView';
+import MyTickets from './pages/user/MyTickets';
 import PrivateRoute from './components/PrivateRoute';
+import UserLayout from './components/layout/UserLayout';
 import OrganizerLayout from './components/layout/OrganizerLayout';
 import AdminLayout from './components/layout/AdminLayout';
 import DashboardHome from './pages/organizer/DashboardHome';
@@ -17,6 +20,9 @@ import UpcomingEvents from './pages/admin/UpcomingEvents';
 import ApprovedEvents from './pages/admin/ApprovedEvents';
 import RejectedEvents from './pages/admin/RejectedEvents';
 import AdminProfile from './pages/admin/AdminProfile';
+import AdminEventReview from './pages/admin/AdminEventReview';
+import SponsorDashboard from './pages/sponsor/SponsorDashboard';
+import FoodDashboard from './pages/food/FoodDashboard';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import './App.css';
@@ -35,7 +41,31 @@ function App() {
               path="/dashboard"
               element={
                 <PrivateRoute>
-                  <Dashboard />
+                  <UserLayout>
+                    <UserDashboard />
+                  </UserLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/dashboard/event/:id"
+              element={
+                <PrivateRoute>
+                  <UserLayout>
+                    <EventView />
+                  </UserLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/user/tickets"
+              element={
+                <PrivateRoute>
+                  <UserLayout>
+                    <MyTickets />
+                  </UserLayout>
                 </PrivateRoute>
               }
             />
@@ -154,6 +184,17 @@ function App() {
             />
 
             <Route
+              path="/admin/events/review/:id"
+              element={
+                <PrivateRoute>
+                  <AdminLayout>
+                    <AdminEventReview />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
               path="/admin/events/approved"
               element={
                 <PrivateRoute>
@@ -182,6 +223,25 @@ function App() {
                   <AdminLayout>
                     <AdminProfile />
                   </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* New Domains */}
+            <Route
+              path="/sponsor/dashboard"
+              element={
+                <PrivateRoute>
+                    <SponsorDashboard />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/food/dashboard"
+              element={
+                <PrivateRoute>
+                    <FoodDashboard />
                 </PrivateRoute>
               }
             />

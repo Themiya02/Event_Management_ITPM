@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Topbar.css';
 
 const Topbar = () => {
-    const user = JSON.parse(localStorage.getItem('user')) || {};
+    const { user: authUser } = useAuth();
+    const user = authUser || JSON.parse(localStorage.getItem('user')) || {};
     
     // Format the role to start with a capital letter
     const displayRole = user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Guest';
@@ -24,8 +26,12 @@ const Topbar = () => {
                 </button>
 
                 <Link to={profilePath} className="profile-menu" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <div className="avatar">
-                        <img src="https://i.pravatar.cc/150?img=32" alt="Profile avatar" />
+                    <div className="avatar" style={{ background: 'var(--primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>
+                        {user.avatar ? (
+                            <img src={user.avatar} alt="Profile avatar" />
+                        ) : (
+                            <span style={{ fontSize: '1.2rem' }}>{displayName.charAt(0)}</span>
+                        )}
                     </div>
                     <div className="profile-info">
                         <span className="profile-name">{displayName}</span>

@@ -7,6 +7,7 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
     const [recentEvents, setRecentEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeDomain, setActiveDomain] = useState('events');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,78 +46,114 @@ const AdminDashboard = () => {
         { label: 'Rejected Events', value: stats.rejected, icon: '❌', link: '/admin/events/rejected', color: 'red' },
     ];
 
+    const domains = [
+        { id: 'events', label: 'Event Handling', icon: '📅' },
+        { id: 'artists', label: 'Artist Handling', icon: '🎤' },
+        { id: 'food', label: 'Food Stall Handling', icon: '🍔' },
+        { id: 'sponsors', label: 'Sponsor Handling', icon: '🤝' },
+    ];
+
     return (
         <div className="admin-dashboard animation-fade-in">
             <div className="page-header-block">
                 <h1 className="page-main-title">Admin Dashboard</h1>
-                <p className="page-main-subtitle">Manage event approvals and monitor activity across the campus.</p>
+                <p className="page-main-subtitle">Manage campus nodes via isolated structural domains.</p>
+            </div>
+
+            {/* DOMAIN MACRO TOGGLES */}
+            <div className="domain-toggles glass-panel">
+                {domains.map(d => (
+                    <button 
+                        key={d.id}
+                        className={`domain-tab ${activeDomain === d.id ? 'active' : ''}`}
+                        onClick={() => setActiveDomain(d.id)}
+                    >
+                        <span className="domain-icon">{d.icon}</span>
+                        {d.label}
+                    </button>
+                ))}
             </div>
 
             {loading ? (
-                <div className="loading-msg">Loading dashboard data...</div>
+                <div className="loading-msg">Loading comprehensive server data arrays...</div>
             ) : (
-                <>
-                    {/* Stat Cards */}
-                    <div className="admin-stat-grid">
-                        {statCards.map((card) => (
-                            <Link to={card.link} key={card.label} className={`admin-stat-card glass-panel stat-${card.color}`}>
-                                <div className="stat-emoji">{card.icon}</div>
-                                <div className="stat-text">
-                                    <div className="stat-number">{card.value}</div>
-                                    <div className="stat-name">{card.label}</div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-
-                    {/* Approval Workflow */}
-                    <div className="glass-panel admin-workflow-card">
-                        <h2 className="section-title">📋 Approval Workflow</h2>
-                        <p className="section-subtitle">Every event must pass all 4 stages before it can be published.</p>
-                        <div className="workflow-row">
-                            {[
-                                { icon: '🛡️', title: 'Security Manager', desc: 'Safety & crowd control' },
-                                { icon: '🏥', title: 'Medical / Doctor', desc: 'Health & first aid' },
-                                { icon: '🌍', title: 'Community Officer', desc: 'Societal approval' },
-                                { icon: '🎓', title: 'Campus Dean', desc: 'Final sign-off' },
-                            ].map((s, i, arr) => (
-                                <React.Fragment key={s.title}>
-                                    <div className="workflow-step">
-                                        <div className="workflow-icon">{s.icon}</div>
-                                        <div className="workflow-text">
-                                            <strong>{s.title}</strong>
-                                            <span>{s.desc}</span>
+                <div className="domain-content-wrapper">
+                    
+                    {/* DOMAIN 1: EVENT HANDLING (Legacy Dashboard) */}
+                    {activeDomain === 'events' && (
+                        <div className="animation-fade-in">
+                            {/* Stat Cards */}
+                            <div className="admin-stat-grid">
+                                {statCards.map((card) => (
+                                    <Link to={card.link} key={card.label} className={`admin-stat-card glass-panel stat-${card.color}`}>
+                                        <div className="stat-emoji">{card.icon}</div>
+                                        <div className="stat-text">
+                                            <div className="stat-number">{card.value}</div>
+                                            <div className="stat-name">{card.label}</div>
                                         </div>
-                                    </div>
-                                    {i < arr.length - 1 && <div className="workflow-arrow">→</div>}
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Recent Pending Events */}
-                    <div className="glass-panel admin-recent-card">
-                        <div className="card-row-header">
-                            <h2 className="section-title">🕐 Pending Events</h2>
-                            <Link to="/admin/events/upcoming" className="link-action">View All →</Link>
-                        </div>
-                        {recentEvents.length === 0 ? (
-                            <p className="empty-note">No pending events. 🎉</p>
-                        ) : (
-                            <div className="recent-list">
-                                {recentEvents.map(ev => (
-                                    <div key={ev._id} className="recent-row">
-                                        <div>
-                                            <p className="recent-name">{ev.name}</p>
-                                            <p className="recent-meta">By {ev.organizer?.name || 'Unknown'} · {new Date(ev.date).toLocaleDateString()}</p>
-                                        </div>
-                                        <Link to="/admin/events/upcoming" className="btn-sm-primary">Review</Link>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
-                        )}
-                    </div>
-                </>
+
+                            {/* Approval Workflow */}
+                            <div className="glass-panel admin-workflow-card">
+                                <h2 className="section-title">📋 Event Approval Workflow</h2>
+                                <p className="section-subtitle">Every requested event must securely pass all 4 discrete stages before broad campus publication.</p>
+                                <div className="workflow-row">
+                                    {[
+                                        { icon: '🛡️', title: 'Security Manager', desc: 'Safety & crowd control' },
+                                        { icon: '🏥', title: 'Medical / Doctor', desc: 'Health & first aid' },
+                                        { icon: '🌍', title: 'Community Officer', desc: 'Societal approval' },
+                                        { icon: '🎓', title: 'Campus Dean', desc: 'Final sign-off' },
+                                    ].map((s, i, arr) => (
+                                        <React.Fragment key={s.title}>
+                                            <div className="workflow-step">
+                                                <div className="workflow-icon">{s.icon}</div>
+                                                <div className="workflow-text">
+                                                    <strong>{s.title}</strong>
+                                                    <span>{s.desc}</span>
+                                                </div>
+                                            </div>
+                                            {i < arr.length - 1 && <div className="workflow-arrow">→</div>}
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Recent Pending Events */}
+                            <div className="glass-panel admin-recent-card">
+                                <div className="card-row-header">
+                                    <h2 className="section-title">🕐 Registration Pipeline Highlights</h2>
+                                    <Link to="/admin/events/upcoming" className="link-action">View All In Pipeline →</Link>
+                                </div>
+                                {recentEvents.length === 0 ? (
+                                    <p className="empty-note">No requested events currently active. 🎉</p>
+                                ) : (
+                                    <div className="recent-list">
+                                        {recentEvents.map(ev => (
+                                            <div key={ev._id} className="recent-row">
+                                                <div>
+                                                    <p className="recent-name">{ev.name}</p>
+                                                    <p className="recent-meta">By {ev.organizer?.name || 'Unknown'} · {new Date(ev.date).toLocaleDateString()}</p>
+                                                </div>
+                                                <Link to="/admin/events/upcoming" className="btn-sm-primary">Review Details</Link>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* BLANK PLACEHOLDER FOR UPCOMING DOMAINS */}
+                    {activeDomain !== 'events' && (
+                        <div className="glass-panel empty-domain-state animation-fade-in">
+                            <span className="massive-icon">{domains.find(d => d.id === activeDomain)?.icon}</span>
+                            <h2 className="empty-domain-title">{domains.find(d => d.id === activeDomain)?.label} Module</h2>
+                            <p className="empty-domain-desc">This administrative sub-system infrastructure is currently pending provisioning.</p>
+                        </div>
+                    )}
+                </div>
             )}
         </div>
     );

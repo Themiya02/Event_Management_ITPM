@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 import './AdminProfile.css';
 
 const AdminProfile = () => {
-    const [user, setUser] = useState({ name: '', email: '', phone: '', role: '' });
+    const { updateUser } = useAuth();
+    const [user, setUser] = useState({ name: '', email: '', phone: '', role: '', avatar: '' });
     const [stats, setStats] = useState({ totalEvents: 0, totalAttendees: 0 });
     const [isEditing, setIsEditing] = useState(false);
-    const [editForm, setEditForm] = useState({ name: '', phone: '', password: '' });
+    const [editForm, setEditForm] = useState({ name: '', phone: '', password: '', avatar: '' });
     const [message, setMessage] = useState({ type: '', text: '' });
     const [loading, setLoading] = useState(true);
+    
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         fetchProfileData();
@@ -23,7 +27,7 @@ const AdminProfile = () => {
             // Fetch generic profile info
             const profileRes = await axios.get(`${apiUrl}/api/auth/profile`, header);
             setUser(profileRes.data);
-            setEditForm({ name: profileRes.data.name, phone: profileRes.data.phone || '', password: '' });
+            setEditForm({ name: profileRes.data.name, phone: profileRes.data.phone || '', password: '', avatar: profileRes.data.avatar || '' });
 
             // Fetch events to calculate stats
             const eventsRes = await axios.get(`${apiUrl}/api/events/admin/all`, header);
@@ -40,6 +44,23 @@ const AdminProfile = () => {
         }
     };
 
+    const handlePhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setIsEditing(true);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setEditForm(prev => ({ ...prev, avatar: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemovePhoto = () => {
+        setIsEditing(true);
+        setEditForm(prev => ({ ...prev, avatar: '' }));
+    };
+
     const handleUpdate = async (e) => {
         e.preventDefault();
         setMessage({ type: '', text: '' });
@@ -49,22 +70,22 @@ const AdminProfile = () => {
             const header = { headers: { Authorization: `Bearer ${localUser?.token}` } };
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-            const payload = { name: editForm.name, phone: editForm.phone };
+            const payload = { name: editForm.name, phone: editForm.phone, avatar: editForm.avatar };
             if (editForm.password) payload.password = editForm.password;
 
             const res = await axios.put(`${apiUrl}/api/auth/profile`, payload, header);
             
-            // Update local storage with new info
-            const updatedUser = { ...localUser, name: res.data.name, phone: res.data.phone };
-            localStorage.setItem('user', JSON.stringify(updatedUser));
+            // Instantly sync overarching React state!
+            updateUser({
+                ...res.data,
+                token: localUser.token
+            });
             
             setUser(res.data);
             setIsEditing(false);
             setEditForm({ ...editForm, password: '' }); // clear password
             setMessage({ type: 'success', text: 'Profile updated successfully!' });
 
-            // Reload to update topbar
-            setTimeout(() => window.location.reload(), 1500);
         } catch (error) {
             setMessage({ type: 'error', text: error.response?.data?.message || 'Update failed' });
         }
@@ -73,6 +94,8 @@ const AdminProfile = () => {
     if (loading) return <div className="loading-state">Loading Profile...</div>;
 
     const displayRole = user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Admin';
+
+    const currentAvatar = isEditing ? editForm.avatar : user.avatar;
 
     return (
         <div className="profile-page animation-fade-in">
@@ -88,9 +111,13 @@ const AdminProfile = () => {
             <div className="profile-grid">
                 {/* Left Column: Avatar & Stats */}
                 <div className="profile-left">
-                    <div className="glass-panel profile-card text-center">
-                        <div className="profile-avatar-large">
-                            {user.name.charAt(0)}
+                    <div className="glass-panel profile-card text-center" style={{ marginTop: 0 }}>
+                        <div className="profile-avatar-large" style={{ overflow: 'hidden', padding: currentAvatar ? 0 : '', background: currentAvatar ? 'none' : 'var(--primary-gradient)' }}>
+                            {currentAvatar ? (
+                                <img src={currentAvatar} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                user.name.charAt(0)
+                            )}
                         </div>
                         <h2>{user.name}</h2>
                         <span className="badge-role">{displayRole}</span>
@@ -120,6 +147,33 @@ const AdminProfile = () => {
                     </div>
                     
                     <form onSubmit={handleUpdate} className={`profile-form ${!isEditing ? 'readonly' : ''}`}>
+                        <div className="avatar-section" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem' }}>
+                            <div className="avatar-actions" style={{ display: 'flex', gap: '1rem' }}>
+                                <input 
+                                    type="file" 
+                                    ref={fileInputRef} 
+                                    style={{ display: 'none' }} 
+                                    accept="image/*"
+                                    onChange={handlePhotoUpload}
+                                />
+                                <button 
+                                    type="button" 
+                                    className="btn-sm-primary"
+                                    onClick={() => fileInputRef.current.click()}
+                                    style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, background: 'var(--primary-gradient)', color: '#fff', border: 'none' }}
+                                >
+                                    Upload Photo
+                                </button>
+                                <button 
+                                    type="button" 
+                                    onClick={handleRemovePhoto}
+                                    style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, background: 'transparent', color: '#ef4444', border: '1px solid #ef4444' }}
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="form-group">
                             <label>Full Name</label>
                             <input 

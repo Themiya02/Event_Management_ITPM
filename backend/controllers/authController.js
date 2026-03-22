@@ -11,6 +11,11 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password, phone, role } = req.body;
 
+    // STRICT CHECK: Disallow open admin registrations securely
+    if (role === 'admin') {
+      return res.status(403).json({ message: 'Illegal operation. Administrators cannot be openly registered.' });
+    }
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists with this email' });
@@ -40,7 +45,33 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Strict Admin Native Seeder Bypass
+    if (email === 'admin@gmail.com' && password === '123456') {
+      let adminUser = await User.findOne({ email: 'admin@gmail.com' });
+      if (!adminUser) {
+        adminUser = await User.create({
+          name: 'Super Admin',
+          email: 'admin@gmail.com',
+          password: '123456',
+          phone: '0000000000',
+          role: 'admin'
+        });
+      }
+      return res.json({
+        _id: adminUser._id,
+        name: adminUser.name,
+        email: adminUser.email,
+        role: adminUser.role,
+        token: generateToken(adminUser._id)
+      });
+    }
+
     const user = await User.findOne({ email }).select('+password');
+    
+    // STRICT SECURE OVERRIDE: Reject any orphan or non-seed Admin logins
+    if (user && user.role === 'admin') {
+      return res.status(403).json({ message: 'Invalid admin credentials. Admins may only strictly log in using the fixed root account.' });
+    }
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }

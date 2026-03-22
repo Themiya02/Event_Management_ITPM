@@ -46,9 +46,17 @@ const RejectedEvents = () => {
                         <div key={ev._id} className="simple-event-card glass-panel">
                             <div className="sec-info">
                                 <h3 className="sec-name">{ev.name}</h3>
-                                <div className="sec-meta">
-                                    <span>📅 {new Date(ev.date).toLocaleDateString()}</span>
-                                    <span>📍 {ev.location}</span>
+                                <div className="sec-meta" style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                                    <span style={{background: 'rgba(255,255,255,0.1)', padding:'0.2rem 0.6rem', borderRadius:'20px'}}>📅 {new Date(ev.date).toLocaleDateString()}</span>
+                                    <span style={{background: 'rgba(255,255,255,0.1)', padding:'0.2rem 0.6rem', borderRadius:'20px'}}>📍 {ev.location}</span>
+                                    
+                                    <span className={`ticket-badge ${ev.isOpenRegistration ? 'required' : 'open'}`} style={{ marginLeft: 'auto' }}>
+                                        {ev.isOpenRegistration ? '📝 Registration Required' : '🚪 Open Walk-in'}
+                                    </span>
+
+                                    <span className={`ticket-badge ${ev.isPaid ? 'paid' : 'free'}`}>
+                                        {ev.isPaid ? `💳 Paid: Rs ${ev.price}` : '🎟️ Free Entry'}
+                                    </span>
                                 </div>
                                 {ev.rejectionReason && (
                                     <div className="rejection-reason-box">

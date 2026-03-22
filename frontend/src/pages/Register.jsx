@@ -48,6 +48,10 @@ const Register = () => {
         navigate('/admin/dashboard');
       } else if (userData.role === 'organizer') {
         navigate('/organizer/dashboard');
+      } else if (userData.role === 'sponsor') {
+        navigate('/sponsor/dashboard');
+      } else if (userData.role === 'food_stall') {
+        navigate('/food/dashboard');
       } else {
         navigate('/dashboard');
       }
@@ -148,7 +152,8 @@ const Register = () => {
             >
               <option value="user">User</option>
               <option value="organizer">Organizer</option>
-              <option value="admin">Admin</option>
+              <option value="sponsor">Sponsor</option>
+              <option value="food_stall">Food Stall Member</option>
             </select>
           </div>
           

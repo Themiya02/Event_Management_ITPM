@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './OrganizerProfile.css';
 
 const OrganizerProfile = () => {
+    const { updateUser } = useAuth();
     const [user, setUser] = useState({ name: '', email: '', phone: '', role: '', organization: '', bio: '', avatar: '' });
     const [stats, setStats] = useState({ totalEvents: 0, totalAttendees: 0 });
     const [isEditing, setIsEditing] = useState(false);
@@ -87,15 +89,17 @@ const OrganizerProfile = () => {
 
             const res = await axios.put(`${apiUrl}/api/auth/profile`, payload, header);
             
-            const updatedUser = { ...localUser, name: res.data.name, phone: res.data.phone };
-            localStorage.setItem('user', JSON.stringify(updatedUser));
+            // Instantly sync global state which natively triggers the Topbar to render the new avatar
+            updateUser({
+                ...res.data,
+                token: localUser.token
+            });
             
             setUser(res.data);
             setIsEditing(false);
             setEditForm({ ...editForm, password: '' });
             setMessage({ type: 'success', text: 'Profile updated successfully!' });
 
-            setTimeout(() => window.location.reload(), 1500);
         } catch (error) {
             setMessage({ type: 'error', text: error.response?.data?.message || 'Update failed' });
         }
