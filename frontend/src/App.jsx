@@ -23,6 +23,7 @@ import AdminProfile from './pages/admin/AdminProfile';
 import AdminEventReview from './pages/admin/AdminEventReview';
 import SponsorDashboard from './pages/sponsor/SponsorDashboard';
 import FoodDashboard from './pages/food/FoodDashboard';
+import FoodStallMapUpload from './pages/admin/FoodStallMapUpload';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import './App.css';
@@ -222,6 +223,17 @@ function App() {
                 <PrivateRoute>
                   <AdminLayout>
                     <AdminProfile />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/admin/food/upload-map"
+              element={
+                <PrivateRoute>
+                  <AdminLayout>
+                    <FoodStallMapUpload />
                   </AdminLayout>
                 </PrivateRoute>
               }

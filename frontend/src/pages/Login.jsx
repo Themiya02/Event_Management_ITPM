@@ -72,7 +72,7 @@ const Login = () => {
               id="email"
               value={email}
               readOnly={role === 'admin'}
-              style={{ backgroundColor: role === 'admin' ? 'rgba(0,0,0,0.2)' : 'transparent', color: role === 'admin' ? 'var(--primary-color)' : 'white' }}
+              style={{ backgroundColor: role === 'admin' ? 'rgba(0,0,0,0.2)' : 'transparent', color: role === 'admin' ? 'var(--primary-color)' : 'black' }}
               onChange={(e) => {
                 const val = e.target.value;
                 setEmail(val.toLowerCase());
@@ -89,7 +89,7 @@ const Login = () => {
               id="password"
               value={password}
               readOnly={role === 'admin'}
-              style={{ backgroundColor: role === 'admin' ? 'rgba(0,0,0,0.2)' : 'transparent', color: role === 'admin' ? 'var(--primary-color)' : 'white', letterSpacing: role === 'admin' ? '3px' : 'normal' }}
+              style={{ backgroundColor: role === 'admin' ? 'rgba(0,0,0,0.2)' : 'transparent', color: role === 'admin' ? 'var(--primary-color)' : 'black', letterSpacing: role === 'admin' ? '3px' : 'normal' }}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required

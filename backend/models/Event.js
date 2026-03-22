@@ -32,7 +32,17 @@ const eventSchema = new mongoose.Schema({
     securityManager: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     medicineManager: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
   },
-  registrationsCount: { type: Number, default: 0 }
+  registrationsCount: { type: Number, default: 0 },
+  stallMapUrl: { type: String, default: '' },
+  bookedStalls: [{
+    vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    vendorName: { type: String },
+    stallName: { type: String, required: true },
+    description: { type: String },
+    x: { type: Number, required: true },
+    y: { type: Number, required: true },
+    bookedAt: { type: Date, default: Date.now }
+  }]
 }, {
   timestamps: true
 });

@@ -269,3 +269,53 @@ exports.deleteEvent = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Admin: Upload stall map for an event
+exports.uploadStallMap = async (req, res) => {
+  try {
+    const { stallMapUrl } = req.body;
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+    
+    event.stallMapUrl = stallMapUrl;
+    await event.save();
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Food Stall: Book a stall on the map
+exports.bookFoodStall = async (req, res) => {
+  try {
+    const { stallName, description, x, y } = req.body;
+    
+    if (!stallName || x === undefined || y === undefined) {
+      return res.status(400).json({ message: 'Stall name and coordinates are required.' });
+    }
+
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    // Ensure the event has a map
+    if (!event.stallMapUrl) {
+      return res.status(400).json({ message: 'Event does not have a stall map available.' });
+    }
+
+    // Append the booking
+    event.bookedStalls.push({
+      vendorId: req.user._id,
+      vendorName: req.user.name,
+      stallName,
+      description,
+      x,
+      y
+    });
+
+    await event.save();
+    res.status(201).json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
