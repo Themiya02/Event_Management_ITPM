@@ -1,6 +1,15 @@
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
 
+exports.getEventsWithMaps = async (req, res) => {
+  try {
+    const events = await Event.find({ stallMapUrl: { $exists: true, $ne: null, $ne: '' } }).sort('-createdAt');
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.createEvent = async (req, res) => {
   try {
     const {
@@ -288,10 +297,10 @@ exports.uploadStallMap = async (req, res) => {
 // Food Stall: Book a stall on the map
 exports.bookFoodStall = async (req, res) => {
   try {
-    const { stallName, description, x, y } = req.body;
+    const { stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
     
-    if (!stallName || x === undefined || y === undefined) {
-      return res.status(400).json({ message: 'Stall name and coordinates are required.' });
+    if (!stallName || x === undefined || y === undefined || !paymentReceipt) {
+      return res.status(400).json({ message: 'Stall name, coordinates, and payment receipt are required.' });
     }
 
     const event = await Event.findById(req.params.id);
@@ -302,18 +311,53 @@ exports.bookFoodStall = async (req, res) => {
       return res.status(400).json({ message: 'Event does not have a stall map available.' });
     }
 
+    // Calculate total price server-side for integrity
+    let totalPrice = 10000; // Base stall price
+    if (needsElectricity) totalPrice += 3000;
+    if (needsWater) totalPrice += 2000;
+
     // Append the booking
     event.bookedStalls.push({
       vendorId: req.user._id,
       vendorName: req.user.name,
       stallName,
       description,
+      foodType,
+      needsElectricity: Boolean(needsElectricity),
+      needsWater: Boolean(needsWater),
+      totalPrice,
+      paymentReceipt,
+      status: 'Pending',
       x,
       y
     });
 
     await event.save();
     res.status(201).json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin: Update Food Stall Booking Status
+exports.updateStallBookingStatus = async (req, res) => {
+  try {
+    const { eventId, bookingId } = req.params;
+    const { status } = req.body;
+    
+    if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const booking = event.bookedStalls.id(bookingId);
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
+    booking.status = status;
+    await event.save();
+    res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

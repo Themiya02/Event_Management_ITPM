@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect, organizer } = require('../middleware/auth');
 const {
+  getEventsWithMaps,
   createEvent,
   getApprovedEvents,
   getOrganizerEvents,
@@ -17,10 +18,12 @@ const {
   updateApprovalCheckbox,
   adminDecideEvent,
   uploadStallMap,
-  bookFoodStall
+  bookFoodStall,
+  updateStallBookingStatus
 } = require('../controllers/eventController');
 
 router.post('/', protect, createEvent);
+router.get('/mapped', protect, getEventsWithMaps);
 router.get('/approved', protect, getApprovedEvents);
 router.get('/organizer', protect, getOrganizerEvents);
 router.post('/:id/register', protect, registerForEvent);
@@ -35,6 +38,7 @@ router.get('/admin/all', protect, admin, getAdminAllEvents);
 router.patch('/admin/:id/approval', protect, admin, updateApprovalCheckbox);
 router.patch('/admin/:id/decide', protect, admin, adminDecideEvent);
 router.patch('/admin/:id/stall-map', protect, admin, uploadStallMap);
+router.patch('/admin/stall-booking/:eventId/:bookingId/status', protect, admin, updateStallBookingStatus);
 
 router.get('/:id', protect, getEventById);
 router.put('/:id', protect, updateEvent);

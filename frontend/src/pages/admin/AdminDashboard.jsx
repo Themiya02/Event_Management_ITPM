@@ -7,6 +7,7 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
     const [recentEvents, setRecentEvents] = useState([]);
     const [allEvents, setAllEvents] = useState([]);
+    const [approvedEventsList, setApprovedEventsList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeDomain, setActiveDomain] = useState('events');
 
@@ -33,6 +34,7 @@ const AdminDashboard = () => {
                 });
                 setRecentEvents(pendingRes.data.slice(0, 4));
                 setAllEvents(allRes.data);
+                setApprovedEventsList(approvedRes.data);
             } catch (err) {
                 console.error('Failed to fetch dashboard data', err);
             } finally {
@@ -179,11 +181,11 @@ const AdminDashboard = () => {
                             <div className="card-row-header">
                                 <h2 className="section-title">🍔 Food Stall Handling (Upcoming Events)</h2>
                             </div>
-                            {allEvents.filter(e => e.status !== 'Rejected').length === 0 ? (
-                                <p className="empty-note">No requested events currently active. 🎉</p>
+                            {allEvents.filter(e => e.status === 'Approved' || e.status === 'Pending').length === 0 ? (
+                                <p className="empty-note">No approved or upcoming events available. 🎉</p>
                             ) : (
                                 <div className="recent-list">
-                                    {allEvents.filter(e => e.status !== 'Rejected').map(ev => (
+                                    {allEvents.filter(e => e.status === 'Approved' || e.status === 'Pending').map(ev => (
                                         <div key={ev._id} className="recent-row" style={{ alignItems: 'center' }}>
                                             <div>
                                                 <p className="recent-name">{ev.name} <span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>({ev.status})</span></p>
@@ -197,7 +199,19 @@ const AdminDashboard = () => {
                                                         type="file" 
                                                         accept="image/*" 
                                                         style={{ display: 'none' }} 
-                                                        onChange={(e) => handleUploadMap(ev._id, e)} 
+                                                        onChange={(e) => {
+                                                            // We call handleUploadMap as before
+                                                            handleUploadMap(ev._id, e);
+                                                            // Additionally locally update approvedEventsList just to reflect UI instantly
+                                                            const file = e.target.files[0];
+                                                            if (file) {
+                                                                const r = new FileReader();
+                                                                r.onloadend = () => {
+                                                                    setAllEvents(prev => prev.map(a => a._id === ev._id ? { ...a, stallMapUrl: r.result } : a));
+                                                                }
+                                                                r.readAsDataURL(file);
+                                                            }
+                                                        }} 
                                                     />
                                                 </label>
                                             </div>
