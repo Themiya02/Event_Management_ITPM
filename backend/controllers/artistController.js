@@ -110,3 +110,35 @@ exports.deleteArtist = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.rateArtist = async (req, res) => {
+  try {
+    const { rating } = req.body;
+    const artist = await Artist.findById(req.params.id);
+
+    if (artist) {
+      const alreadyRated = artist.ratings.find(
+        (r) => r.user.toString() === req.user._id.toString()
+      );
+
+      if (alreadyRated) {
+        alreadyRated.val = rating;
+      } else {
+        artist.ratings.push({
+          user: req.user._id,
+          val: rating
+        });
+      }
+
+      artist.averageRating =
+        artist.ratings.reduce((acc, item) => item.val + acc, 0) / artist.ratings.length;
+
+      await artist.save();
+      res.status(201).json(artist);
+    } else {
+      res.status(404).json({ message: 'Artist not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -27,6 +27,7 @@ import FoodStallMapUpload from './pages/admin/FoodStallMapUpload';
 import FoodStallBookings from './pages/admin/FoodStallBookings';
 import AddArtists from './pages/artists/AddArtists';
 import Artists from './pages/artists/Artists';
+import UserView from './pages/user/UserView';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import Home from './pages/Home';
@@ -275,6 +276,14 @@ const AppContent = () => {
 
             {/* Public Domains */}
             <Route path="/artists" element={<Artists />} />
+            <Route
+              path="/user/artists"
+              element={
+                <PrivateRoute>
+                  <UserView />
+                </PrivateRoute>
+              }
+            />
 
             {/* New Domains */}
             <Route
