@@ -18,6 +18,8 @@ const {
   updateApprovalCheckbox,
   adminDecideEvent,
   uploadStallMap,
+  updateBankDetails,
+  deleteBankDetails,
   bookFoodStall,
   updateStallBookingStatus
 } = require('../controllers/eventController');
@@ -38,6 +40,8 @@ router.get('/admin/all', protect, admin, getAdminAllEvents);
 router.patch('/admin/:id/approval', protect, admin, updateApprovalCheckbox);
 router.patch('/admin/:id/decide', protect, admin, adminDecideEvent);
 router.patch('/admin/:id/stall-map', protect, admin, uploadStallMap);
+router.patch('/admin/:id/bank-details', protect, admin, updateBankDetails);
+router.delete('/admin/:id/bank-details', protect, admin, deleteBankDetails);
 router.patch('/admin/stall-booking/:eventId/:bookingId/status', protect, admin, updateStallBookingStatus);
 
 router.get('/:id', protect, getEventById);

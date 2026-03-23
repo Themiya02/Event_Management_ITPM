@@ -8,6 +8,7 @@ const FoodStallBookings = () => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(true);
+    const getBookingStatus = (status) => status || 'Pending';
 
     const fetchEvents = async () => {
         try {
@@ -181,7 +182,7 @@ const FoodStallBookings = () => {
                                                 {stall.stallName}
                                             </p>
                                             <p className="recent-meta" style={{ marginLeft: '2.3rem', marginTop: '0.5rem', lineHeight: '1.5' }}>
-                                                Vendor: <strong style={{color:'#fff'}}>{stall.vendorName}</strong>
+                                                Vendor: <strong style={{color:'#000'}}>{stall.vendorName}</strong>
                                                 <br />
                                                 <span style={{color: 'var(--primary-color)', fontSize: '0.85rem'}}>{stall.foodType || 'Food'}</span>
                                                 <br />
@@ -209,16 +210,20 @@ const FoodStallBookings = () => {
                                             <div style={{ marginBottom: '0.5rem' }}>
                                                 <span style={{ 
                                                     padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
-                                                    background: stall.status === 'Approved' ? 'var(--success-color)' : stall.status === 'Rejected' ? '#e74c3c' : '#f39c12',
+                                                    background: getBookingStatus(stall.status) === 'Approved'
+                                                        ? 'var(--primary-color)'
+                                                        : getBookingStatus(stall.status) === 'Rejected'
+                                                            ? '#e74c3c'
+                                                            : '#f39c12',
                                                     color: '#fff'
                                                 }}>
-                                                    {stall.status || 'Pending'}
+                                                    {getBookingStatus(stall.status)}
                                                 </span>
                                             </div>
                                             <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.3rem' }}>
                                                 Booked: {new Date(stall.bookedAt).toLocaleDateString()}
                                             </p>
-                                            {stall.status === 'Pending' && (
+                                            {getBookingStatus(stall.status) === 'Pending' && (
                                                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', justifyContent: 'flex-end' }}>
                                                     <button onClick={() => updateStatus(selectedEvent._id, stall._id, 'Approved')} className="btn-sm-primary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', margin: 0 }}>Approve</button>
                                                     <button onClick={() => updateStatus(selectedEvent._id, stall._id, 'Rejected')} className="btn-sm-outline" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', borderColor: '#e74c3c', color: '#e74c3c', margin: 0 }}>Reject</button>

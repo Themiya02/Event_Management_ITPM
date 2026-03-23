@@ -294,13 +294,57 @@ exports.uploadStallMap = async (req, res) => {
   }
 };
 
+// Admin: Add or update bank details for food stall payments
+exports.updateBankDetails = async (req, res) => {
+  try {
+    const { accountName, bankName, accountNumber, branch, instructions } = req.body;
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    event.bankDetails = {
+      accountName: accountName || '',
+      bankName: bankName || '',
+      accountNumber: accountNumber || '',
+      branch: branch || '',
+      instructions: instructions || ''
+    };
+
+    await event.save();
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin: Delete bank details
+exports.deleteBankDetails = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    event.bankDetails = {
+      accountName: '',
+      bankName: '',
+      accountNumber: '',
+      branch: '',
+      instructions: ''
+    };
+
+    await event.save();
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Food Stall: Book a stall on the map
 exports.bookFoodStall = async (req, res) => {
   try {
-    const { stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
+    const { stallLocation, stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
+    const normalizedStallLocation = String(stallLocation || '').trim();
     
-    if (!stallName || x === undefined || y === undefined || !paymentReceipt) {
-      return res.status(400).json({ message: 'Stall name, coordinates, and payment receipt are required.' });
+    if (!normalizedStallLocation || !stallName || !paymentReceipt) {
+      return res.status(400).json({ message: 'Stall location, stall name, and payment receipt are required.' });
     }
 
     const event = await Event.findById(req.params.id);
@@ -309,6 +353,14 @@ exports.bookFoodStall = async (req, res) => {
     // Ensure the event has a map
     if (!event.stallMapUrl) {
       return res.status(400).json({ message: 'Event does not have a stall map available.' });
+    }
+
+    // Block duplicate slot codes (case-insensitive), e.g. A-01 and a-01
+    const duplicateSlot = (event.bookedStalls || []).some(
+      (booking) => String(booking.stallLocation || '').trim().toLowerCase() === normalizedStallLocation.toLowerCase()
+    );
+    if (duplicateSlot) {
+      return res.status(400).json({ message: `Stall "${normalizedStallLocation}" is already booked. Please choose a different stall.` });
     }
 
     // Calculate total price server-side for integrity
@@ -320,6 +372,7 @@ exports.bookFoodStall = async (req, res) => {
     event.bookedStalls.push({
       vendorId: req.user._id,
       vendorName: req.user.name,
+      stallLocation: normalizedStallLocation,
       stallName,
       description,
       foodType,
@@ -328,8 +381,8 @@ exports.bookFoodStall = async (req, res) => {
       totalPrice,
       paymentReceipt,
       status: 'Pending',
-      x,
-      y
+      x: x !== undefined ? Number(x) : undefined,
+      y: y !== undefined ? Number(y) : undefined
     });
 
     await event.save();
@@ -344,8 +397,11 @@ exports.updateStallBookingStatus = async (req, res) => {
   try {
     const { eventId, bookingId } = req.params;
     const { status } = req.body;
+    const normalizedStatus = typeof status === 'string'
+      ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+      : '';
     
-    if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
+    if (!['Pending', 'Approved', 'Rejected'].includes(normalizedStatus)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
@@ -355,7 +411,7 @@ exports.updateStallBookingStatus = async (req, res) => {
     const booking = event.bookedStalls.id(bookingId);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
-    booking.status = status;
+    booking.status = normalizedStatus;
     await event.save();
     res.json(event);
   } catch (error) {
