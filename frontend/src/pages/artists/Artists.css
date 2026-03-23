@@ -59,9 +59,10 @@
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
-  align-items: center; /* Center it nicely */
+  align-items: flex-start; /* Start from top to push down explicitly */
   z-index: 10000;
-  padding: 20px;
+  padding-top: 120px; /* Push down more explicitly below navbar */
+  padding-bottom: 20px;
 }
 
 .modal-content {
@@ -70,7 +71,7 @@
   padding: 20px 25px; /* Reduced paddings */
   position: relative;
   background: var(--surface-color);
-  max-height: 85vh; /* Safe max height */
+  max-height: calc(100vh - 140px); /* Restrict scroll inside new padded space */
   overflow-y: auto; /* It will definitely scroll */
   border-radius: 12px;
 }

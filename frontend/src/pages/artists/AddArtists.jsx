@@ -62,6 +62,13 @@ const AddArtists = () => {
     }
   };
 
+  const handlePhoneChange = (e) => {
+    const val = e.target.value.replace(/\D/g, ''); // only strip out non-digits
+    if (val.length <= 10) {
+      setFormData({ ...formData, contactNumber: val });
+    }
+  };
+
   const handleSongChange = (index, value) => {
     const newSongs = [...formData.songs];
     newSongs[index] = value;
@@ -97,6 +104,12 @@ const AddArtists = () => {
 
       if (!filename && !editingArtistId) {
         alert("Please select an image");
+        setLoading(false);
+        return;
+      }
+
+      if (formData.contactNumber.length !== 10) {
+        alert("Contact number must be exactly 10 digits.");
         setLoading(false);
         return;
       }
@@ -183,8 +196,16 @@ const AddArtists = () => {
               </div>
 
               <div className="form-group">
-                <label>Contact Number</label>
-                <input type="text" value={formData.contactNumber} onChange={e => setFormData({...formData, contactNumber: e.target.value})} required />
+                <label>Contact Number (10 Digits)</label>
+                <input 
+                  type="text" 
+                  value={formData.contactNumber} 
+                  onChange={handlePhoneChange} 
+                  pattern="\d{10}" 
+                  title="Mobile number must exactly be 10 digits" 
+                  placeholder="e.g. 0712345678" 
+                  required 
+                />
               </div>
 
               <div className="form-group">
