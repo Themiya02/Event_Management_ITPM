@@ -6,7 +6,9 @@ import '../user/UserDashboard.css';
 
 const FoodStallMapUpload = () => {
     const [allEvents, setAllEvents] = useState([]);
+    const [bankForms, setBankForms] = useState({});
     const [loading, setLoading] = useState(true);
+    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
     const getAuth = () => {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -21,7 +23,19 @@ const FoodStallMapUpload = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // Show approved and pending events
-            setAllEvents(res.data.filter(e => e.status === 'Approved' || e.status === 'Pending'));
+            const filtered = res.data.filter(e => e.status === 'Approved' || e.status === 'Pending');
+            setAllEvents(filtered);
+            const initialForms = {};
+            filtered.forEach((event) => {
+                initialForms[event._id] = {
+                    accountName: event.bankDetails?.accountName || '',
+                    bankName: event.bankDetails?.bankName || '',
+                    accountNumber: event.bankDetails?.accountNumber || '',
+                    branch: event.bankDetails?.branch || '',
+                    instructions: event.bankDetails?.instructions || ''
+                };
+            });
+            setBankForms(initialForms);
         } catch (err) {
             console.error('Error fetching events:', err);
         } finally {
@@ -30,6 +44,28 @@ const FoodStallMapUpload = () => {
     };
 
     useEffect(() => { fetchEvents(); }, []);
+
+    useEffect(() => {
+        if (!toast.show) return;
+        const timer = setTimeout(() => {
+            setToast(prev => ({ ...prev, show: false }));
+        }, 2500);
+        return () => clearTimeout(timer);
+    }, [toast.show]);
+
+    const showToast = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+    };
+
+    const handleBankFieldChange = (eventId, field, value) => {
+        setBankForms(prev => ({
+            ...prev,
+            [eventId]: {
+                ...prev[eventId],
+                [field]: value
+            }
+        }));
+    };
 
     const handleUploadMap = async (eventId, e) => {
         const file = e.target.files[0];
@@ -46,17 +82,72 @@ const FoodStallMapUpload = () => {
                 });
                 
                 setAllEvents(prev => prev.map(ev => ev._id === eventId ? { ...ev, stallMapUrl: reader.result } : ev));
-                alert('Food stall map uploaded successfully!');
+                showToast('Food stall map uploaded successfully.');
             } catch (error) {
                 console.error('Failed to upload map', error);
-                alert('Failed to upload map');
+                showToast('Failed to upload map.', 'error');
             }
         };
         reader.readAsDataURL(file);
     };
 
+    const handleSaveBankDetails = async (eventId) => {
+        try {
+            const { token, apiUrl } = getAuth();
+            const details = bankForms[eventId] || {};
+            const res = await axios.patch(`${apiUrl}/api/events/admin/${eventId}/bank-details`, details, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAllEvents(prev => prev.map(ev => ev._id === eventId ? res.data : ev));
+            setBankForms(prev => ({
+                ...prev,
+                [eventId]: {
+                    accountName: res.data.bankDetails?.accountName || '',
+                    bankName: res.data.bankDetails?.bankName || '',
+                    accountNumber: res.data.bankDetails?.accountNumber || '',
+                    branch: res.data.bankDetails?.branch || '',
+                    instructions: res.data.bankDetails?.instructions || ''
+                }
+            }));
+            showToast('Bank details saved successfully.');
+        } catch (error) {
+            console.error('Failed to save bank details', error);
+            showToast('Failed to save bank details.', 'error');
+        }
+    };
+
+    const handleDeleteBankDetails = async (eventId) => {
+        try {
+            const { token, apiUrl } = getAuth();
+            const res = await axios.delete(`${apiUrl}/api/events/admin/${eventId}/bank-details`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAllEvents(prev => prev.map(ev => ev._id === eventId ? res.data : ev));
+            setBankForms(prev => ({
+                ...prev,
+                [eventId]: {
+                    accountName: '',
+                    bankName: '',
+                    accountNumber: '',
+                    branch: '',
+                    instructions: ''
+                }
+            }));
+            showToast('Bank details deleted.');
+        } catch (error) {
+            console.error('Failed to delete bank details', error);
+            showToast('Failed to delete bank details.', 'error');
+        }
+    };
+
     return (
         <div className="upcoming-page animation-fade-in">
+            {toast.show && (
+                <div className={`modern-toast ${toast.type === 'error' ? 'error' : 'success'}`}>
+                    <span className="modern-toast-icon">{toast.type === 'error' ? '⚠️' : '✅'}</span>
+                    <span>{toast.message}</span>
+                </div>
+            )}
             <div className="page-header-block">
                 <h1 className="page-main-title">Food Stall Map Upload</h1>
                 <p className="page-main-subtitle">Upload spatial blueprints for upcoming events allowing vendors to lock-in containers.</p>
@@ -133,6 +224,63 @@ const FoodStallMapUpload = () => {
                                                 onChange={(e) => handleUploadMap(ev._id, e)} 
                                             />
                                         </label>
+                                    </div>
+
+                                    <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+                                        <h4 style={{ marginBottom: '0.6rem' }}>Bank Details for Vendors</h4>
+                                        <div style={{ display: 'grid', gap: '0.6rem' }}>
+                                            <input
+                                                type="text"
+                                                placeholder="Account Name"
+                                                value={bankForms[ev._id]?.accountName || ''}
+                                                onChange={(e) => handleBankFieldChange(ev._id, 'accountName', e.target.value)}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Bank Name"
+                                                value={bankForms[ev._id]?.bankName || ''}
+                                                onChange={(e) => handleBankFieldChange(ev._id, 'bankName', e.target.value)}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Account Number"
+                                                value={bankForms[ev._id]?.accountNumber || ''}
+                                                onChange={(e) => handleBankFieldChange(ev._id, 'accountNumber', e.target.value)}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Branch"
+                                                value={bankForms[ev._id]?.branch || ''}
+                                                onChange={(e) => handleBankFieldChange(ev._id, 'branch', e.target.value)}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                                            />
+                                            <textarea
+                                                placeholder="Instructions (optional)"
+                                                value={bankForms[ev._id]?.instructions || ''}
+                                                onChange={(e) => handleBankFieldChange(ev._id, 'instructions', e.target.value)}
+                                                rows={2}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)', resize: 'vertical' }}
+                                            />
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.8rem' }}>
+                                            <button
+                                                type="button"
+                                                className="btn-sm-primary"
+                                                onClick={() => handleSaveBankDetails(ev._id)}
+                                            >
+                                                Save
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn-sm-outline"
+                                                onClick={() => handleDeleteBankDetails(ev._id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
