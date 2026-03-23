@@ -44,16 +44,8 @@ const Register = () => {
 
     try {
       const userData = await register(name, phone, email, password, role);
-      if (userData.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else if (userData.role === 'organizer') {
-        navigate('/organizer/dashboard');
-      } else if (userData.role === 'sponsor') {
-        navigate('/sponsor/dashboard');
-      } else if (userData.role === 'food_stall') {
-        navigate('/food/dashboard');
-      } else {
-        navigate('/dashboard');
+      if (userData.role) {
+        navigate('/');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to register');

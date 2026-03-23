@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import UserDashboard from './pages/user/UserDashboard';
@@ -25,18 +25,29 @@ import SponsorDashboard from './pages/sponsor/SponsorDashboard';
 import FoodDashboard from './pages/food/FoodDashboard';
 import FoodStallMapUpload from './pages/admin/FoodStallMapUpload';
 import FoodStallBookings from './pages/admin/FoodStallBookings';
+import AddArtists from './pages/artists/AddArtists';
+import Artists from './pages/artists/Artists';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
+import Home from './pages/Home';
+import GlobalNavbar from './components/layout/GlobalNavbar';
+import GlobalFooter from './components/layout/GlobalFooter';
 import './App.css';
 
-function App() {
+const AppContent = () => {
+  const location = useLocation();
+  const { user } = useAuth();
+  
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const showNavAndFooter = !isAuthPage && user;
+
   return (
-    <AuthProvider>
-      <Router>
-        <div className="app">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+    <div className="app">
+      {showNavAndFooter && <GlobalNavbar />}
+      <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <Routes>
+          <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+          <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
 
 
             <Route
@@ -251,6 +262,20 @@ function App() {
               }
             />
 
+            <Route
+              path="/admin/artists"
+              element={
+                <PrivateRoute>
+                  <AdminLayout>
+                    <AddArtists />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Public Domains */}
+            <Route path="/artists" element={<Artists />} />
+
             {/* New Domains */}
             <Route
               path="/sponsor/dashboard"
@@ -270,9 +295,19 @@ function App() {
               }
             />
 
-            <Route path="/" element={<Navigate to="/login" />} />
-          </Routes>
-        </div>
+            <Route path="/" element={<Home />} />
+        </Routes>
+      </main>
+      {showNavAndFooter && <GlobalFooter />}
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
       </Router>
     </AuthProvider>
   );
