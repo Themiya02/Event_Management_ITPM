@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './Artists.css';
 
 const AddArtists = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(false);
   
@@ -145,7 +147,16 @@ const AddArtists = () => {
     <div className="admin-artists-container">
       <div className="admin-header">
         <h2>Artists Handling</h2>
-        <button className="add-btn" onClick={openAddModal}>+ Add Artist</button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            className="add-btn"
+            onClick={() => navigate('/artists/analyze')}
+            style={{ background: 'var(--accent-teal)' }}
+          >
+            View Rating Analyze
+          </button>
+          <button className="add-btn" onClick={openAddModal}>+ Add Artist</button>
+        </div>
       </div>
 
       <div className="artists-grid">

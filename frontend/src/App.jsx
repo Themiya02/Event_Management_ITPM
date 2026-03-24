@@ -28,6 +28,7 @@ import FoodStallBookings from './pages/admin/FoodStallBookings';
 import AddArtists from './pages/artists/AddArtists';
 import Artists from './pages/artists/Artists';
 import UserView from './pages/user/UserView';
+import RatingAnalyze from './pages/artists/RatingAnalyze';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import Home from './pages/Home';
@@ -270,6 +271,23 @@ const AppContent = () => {
                   <AdminLayout>
                     <AddArtists />
                   </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/artists/analyze"
+              element={
+                <PrivateRoute allowedRoles={['admin', 'organizer']}>
+                  {user?.role === 'admin' ? (
+                    <AdminLayout>
+                      <RatingAnalyze />
+                    </AdminLayout>
+                  ) : (
+                    <OrganizerLayout>
+                      <RatingAnalyze />
+                    </OrganizerLayout>
+                  )}
                 </PrivateRoute>
               }
             />

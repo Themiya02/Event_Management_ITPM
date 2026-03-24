@@ -114,6 +114,11 @@ exports.deleteArtist = async (req, res) => {
 exports.rateArtist = async (req, res) => {
   try {
     const { rating } = req.body;
+    const ratingValue = Number(rating);
+    if (!Number.isFinite(ratingValue) || ratingValue < 1 || ratingValue > 5) {
+      return res.status(400).json({ message: 'Rating must be a number between 1 and 5' });
+    }
+
     const artist = await Artist.findById(req.params.id);
 
     if (artist) {
@@ -122,11 +127,11 @@ exports.rateArtist = async (req, res) => {
       );
 
       if (alreadyRated) {
-        alreadyRated.val = rating;
+        alreadyRated.val = ratingValue;
       } else {
         artist.ratings.push({
           user: req.user._id,
-          val: rating
+          val: ratingValue
         });
       }
 

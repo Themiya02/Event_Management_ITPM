@@ -25,6 +25,11 @@ const UserView = () => {
     }
   };
 
+  const getRatingUserId = (ratingItem) => {
+    if (!ratingItem?.user) return null;
+    return typeof ratingItem.user === 'string' ? ratingItem.user : ratingItem.user._id;
+  };
+
   const handleRate = async (artistId, ratingValue) => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || user?.token;
@@ -34,8 +39,10 @@ const UserView = () => {
       // Update local state without full refetch for better UX
       setArtists(prev => prev.map(a => {
         if (a._id === artistId) {
-            const existingRatingIndex = a.ratings.findIndex(r => r.user === user._id);
-            let updatedRatings = [...a.ratings];
+            const existingRatingIndex = (a.ratings || []).findIndex(
+              (r) => getRatingUserId(r) === user?._id
+            );
+            let updatedRatings = [...(a.ratings || [])];
             if (existingRatingIndex >= 0) {
                 updatedRatings[existingRatingIndex].val = ratingValue;
             } else {
@@ -96,15 +103,17 @@ const UserView = () => {
                    <p className="rating-text">Avg Rating: {artist.averageRating ? artist.averageRating.toFixed(1) : '0.0'} / 5.0</p>
                    <div className="stars-container">
                      {[1, 2, 3, 4, 5].map((star) => {
-                       // Find if the current user already rated this to highlight their rating? 
-                       // For simplicity, just show average as gold stars, or let them click to set.
-                       const isRated = star <= Math.round(artist.averageRating || 0);
+                       const userRatingObj = artist.ratings?.find(
+                        (r) => getRatingUserId(r) === user?._id
+                       );
+                       const userRatingVal = userRatingObj ? userRatingObj.val : 0;
+                       const isRated = star <= userRatingVal;
                        return (
                          <span 
                            key={star} 
                            className={`star ${isRated ? 'gold' : 'gray'}`}
                            onClick={() => handleRate(artist._id, star)}
-                           title={`Rate ${star} stars`}
+                           title={isRated ? `You rated ${userRatingVal} stars` : `Rate ${star} stars`}
                          >
                            ★
                          </span>
