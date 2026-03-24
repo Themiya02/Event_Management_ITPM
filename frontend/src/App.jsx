@@ -15,6 +15,7 @@ import EditEvent from './pages/organizer/EditEvent';
 import TrackEvent from './pages/organizer/TrackEvent';
 import EventsList from './pages/organizer/EventsList';
 import Settings from './pages/organizer/Settings';
+import OrganizerArtists from './pages/organizer/OrganizerArtists';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UpcomingEvents from './pages/admin/UpcomingEvents';
 import ApprovedEvents from './pages/admin/ApprovedEvents';
@@ -29,6 +30,9 @@ import AddArtists from './pages/artists/AddArtists';
 import Artists from './pages/artists/Artists';
 import UserView from './pages/user/UserView';
 import RatingAnalyze from './pages/artists/RatingAnalyze';
+import UserArtists from './pages/user/UserArtists';
+import UserRating from './pages/user/UserRating';
+import AdminArtistsView from './pages/admin/AdminArtistsView';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import Home from './pages/Home';
@@ -174,6 +178,17 @@ const AppContent = () => {
               }
             />
 
+            <Route
+              path="/organizer/artists"
+              element={
+                <PrivateRoute allowedRoles={['organizer']}>
+                  <OrganizerLayout>
+                    <OrganizerArtists />
+                  </OrganizerLayout>
+                </PrivateRoute>
+              }
+            />
+
 
             {/* Admin Routes */}
             <Route
@@ -276,6 +291,17 @@ const AppContent = () => {
             />
 
             <Route
+              path="/admin/artists/view"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <AdminArtistsView />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
               path="/artists/analyze"
               element={
                 <PrivateRoute allowedRoles={['admin', 'organizer']}>
@@ -299,6 +325,15 @@ const AppContent = () => {
               element={
                 <PrivateRoute>
                   <UserView />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/user/rating"
+              element={
+                <PrivateRoute>
+                  <UserRating />
                 </PrivateRoute>
               }
             />

@@ -15,7 +15,17 @@ const GlobalNavbar = () => {
       <div className="navbar-right" style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
         <div className="nav-links" style={{ display: 'flex', gap: '1.5rem', fontSize: '1.15rem' }}>
           <Link to="/" className="nav-link">Home</Link>
-          <Link to={user && user.role === 'user' ? "/user/artists" : "/artists"} className="nav-link">Artists</Link>
+          <Link
+            to={
+              user?.role === 'admin' ? '/admin/artists/view' :
+              user?.role === 'organizer' ? '/organizer/artists' :
+              user?.role === 'user' ? '/user/artists' :
+              '/artists'
+            }
+            className="nav-link"
+          >
+            Artists
+          </Link>
           <Link to="/contact" className="nav-link">Contact</Link>
           <Link to="/about" className="nav-link">About</Link>
           {user && user.role === 'admin' && (
