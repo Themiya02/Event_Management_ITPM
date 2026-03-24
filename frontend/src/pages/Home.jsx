@@ -16,7 +16,7 @@ const Home = () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/events/public/approved`);
         const allEvents = response.data;
-        
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -32,9 +32,7 @@ const Home = () => {
           }
         });
 
-        // Sort upcoming ascending (closest first)
         upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-        // Sort past descending (most recent first)
         past.sort((a, b) => new Date(b.date) - new Date(a.date));
 
         setUpcomingEvents(upcoming);
@@ -48,20 +46,6 @@ const Home = () => {
 
     fetchEvents();
   }, []);
-
-  const getDashboardPath = () => {
-    if (!user) return '/login';
-    if (user.role === 'admin') return '/admin/dashboard';
-    if (user.role === 'organizer') return '/organizer/dashboard';
-    return '/dashboard';
-  };
-
-  const getPrimaryCtaLabel = () => {
-    if (!user) return 'Login to Continue';
-    if (user.role === 'admin') return 'Go to Admin Dashboard';
-    if (user.role === 'organizer') return 'Go to Organizer Dashboard';
-    return 'Go to My Dashboard';
-  };
 
   const formatEventDate = (dateStr) => {
     try {
@@ -125,69 +109,27 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <header className="hero-section">
-        <div className="hero-inner">
-          <div className="hero-copy">
-            <h1 className="hero-title text-gradient">Eventio</h1>
-            <p className="hero-subtitle">
-              Find campus events, check details fast, and keep track of what’s coming next.
-            </p>
-
-            <div className="hero-actions">
-              <Link to={getDashboardPath()} className="view-btn hero-cta">
-                {getPrimaryCtaLabel()}
-              </Link>
-              <Link to="/artists" className="ghost-btn">
-                Explore Artists
-              </Link>
-            </div>
-
-            <div className="hero-stats">
-              <div className="stat-card">
-                <div className="stat-num">{upcomingEvents.length}</div>
-                <div className="stat-label">Upcoming</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-num">{pastEvents.length}</div>
-                <div className="stat-label">Past</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-num">{upcomingEvents.length + pastEvents.length}</div>
-                <div className="stat-label">Total Approved</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="hero-panel glass-panel">
-            <h3 className="hero-panel-title">Quick Search</h3>
-            <p className="hero-panel-sub">Search by event name, location, or keywords.</p>
-            <div className="hero-search">
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Try: music, auditorium, sports..."
-                className="hero-search-input"
-              />
-              {search ? (
-                <button className="hero-search-clear" onClick={() => setSearch('')} type="button">
-                  Clear
-                </button>
-              ) : null}
-            </div>
-            <div className="hero-panel-links">
-              <Link to="/dashboard" className="mini-link">
-                Student events
-              </Link>
-              <Link to="/organizer/dashboard" className="mini-link">
-                Organizer portal
-              </Link>
-              <Link to="/admin/dashboard" className="mini-link">
-                Admin panel
-              </Link>
-            </div>
-          </div>
+      <div className="home-toolbar glass-panel">
+        <div className="home-toolbar-text">
+          <h1 className="home-heading text-gradient">Events</h1>
+          <p className="home-lead">Browse upcoming and past approved events. Use search to filter the list.</p>
         </div>
-      </header>
+        <div className="home-search-field">
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search events by name, place, or keyword…"
+            className="home-search-input"
+            aria-label="Search events"
+          />
+          {search ? (
+            <button type="button" className="home-search-clear" onClick={() => setSearch('')}>
+              Clear
+            </button>
+          ) : null}
+        </div>
+      </div>
 
       {loading ? (
         <div className="loading-spinner">Loading events...</div>

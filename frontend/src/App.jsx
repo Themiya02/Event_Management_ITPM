@@ -45,6 +45,7 @@ const AppContent = () => {
   const { user } = useAuth();
   
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  // Nav/footer only after login (no guest navbar / guest home flow).
   const showNavAndFooter = !isAuthPage && user;
 
   return (
@@ -357,7 +358,7 @@ const AppContent = () => {
               }
             />
 
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
         </Routes>
       </main>
       {showNavAndFooter && <GlobalFooter />}
