@@ -21,7 +21,9 @@ const {
   updateBankDetails,
   deleteBankDetails,
   bookFoodStall,
-  updateStallBookingStatus
+  updateStallBookingStatus,
+  updateStallBooking,
+  deleteStallBooking
 } = require('../controllers/eventController');
 
 router.post('/', protect, createEvent);
@@ -49,6 +51,8 @@ router.put('/:id', protect, updateEvent);
 router.delete('/:id', protect, deleteEvent);
 
 router.post('/:id/book-stall', protect, bookFoodStall);
+router.patch('/:eventId/stall-booking/:bookingId', protect, updateStallBooking);
+router.delete('/:eventId/stall-booking/:bookingId', protect, deleteStallBooking);
 
 
 module.exports = router;

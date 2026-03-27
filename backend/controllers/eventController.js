@@ -346,6 +346,12 @@ exports.bookFoodStall = async (req, res) => {
     if (!normalizedStallLocation || !stallName || !paymentReceipt) {
       return res.status(400).json({ message: 'Stall location, stall name, and payment receipt are required.' });
     }
+    if (!/^[a-zA-Z]$/.test(normalizedStallLocation)) {
+      return res.status(400).json({ message: 'Stall location must be exactly one single letter (e.g., A, B, C).' });
+    }
+    if (stallName.trim().length < 5) {
+      return res.status(400).json({ message: 'Stall name must have at least 5 letters.' });
+    }
 
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
@@ -414,6 +420,93 @@ exports.updateStallBookingStatus = async (req, res) => {
     booking.status = normalizedStatus;
     await event.save();
     res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Food Stall: Update own booking (only if Pending)
+exports.updateStallBooking = async (req, res) => {
+  try {
+    const { eventId, bookingId } = req.params;
+    const { stallLocation, stallName, description, foodType, needsElectricity, needsWater, paymentReceipt } = req.body;
+
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const booking = event.bookedStalls.id(bookingId);
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
+    // Ownership & Status Check
+    if (String(booking.vendorId) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Not authorized to edit this application' });
+    }
+    if (booking.status !== 'Pending') {
+      return res.status(400).json({ message: 'Cannot edit application after admin review.' });
+    }
+
+    // Validation (reuse same rules as create)
+    const normalizedStallLocation = String(stallLocation || '').trim();
+    if (normalizedStallLocation && !/^[a-zA-Z]$/.test(normalizedStallLocation)) {
+      return res.status(400).json({ message: 'Stall location must be exactly one single letter (e.g., A, B, C).' });
+    }
+    if (stallName && stallName.trim().length < 5) {
+      return res.status(400).json({ message: 'Stall name must have at least 5 letters.' });
+    }
+
+    // Check for duplicate stall location (excluding current booking)
+    if (normalizedStallLocation && normalizedStallLocation.toLowerCase() !== String(booking.stallLocation).toLowerCase()) {
+      const duplicate = (event.bookedStalls || []).some(
+        (b) => b._id.toString() !== bookingId && String(b.stallLocation || '').trim().toLowerCase() === normalizedStallLocation.toLowerCase()
+      );
+      if (duplicate) {
+        return res.status(400).json({ message: `Stall "${normalizedStallLocation}" is already booked.` });
+      }
+    }
+
+    // Update fields
+    if (stallLocation !== undefined) booking.stallLocation = normalizedStallLocation;
+    if (stallName !== undefined) booking.stallName = stallName;
+    if (description !== undefined) booking.description = description;
+    if (foodType !== undefined) booking.foodType = foodType;
+    if (needsElectricity !== undefined) booking.needsElectricity = Boolean(needsElectricity);
+    if (needsWater !== undefined) booking.needsWater = Boolean(needsWater);
+    if (paymentReceipt !== undefined) booking.paymentReceipt = paymentReceipt;
+
+    // Recalculate price
+    let totalPrice = 10000;
+    if (booking.needsElectricity) totalPrice += 3000;
+    if (booking.needsWater) totalPrice += 2000;
+    booking.totalPrice = totalPrice;
+
+    await event.save();
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Food Stall: Delete own booking (only if Pending)
+exports.deleteStallBooking = async (req, res) => {
+  try {
+    const { eventId, bookingId } = req.params;
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const booking = event.bookedStalls.id(bookingId);
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
+    // Ownership & Status Check
+    if (String(booking.vendorId) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Not authorized to delete this application' });
+    }
+    if (booking.status !== 'Pending') {
+      return res.status(400).json({ message: 'Cannot delete application after admin review.' });
+    }
+
+    event.bookedStalls.pull(bookingId);
+    await event.save();
+    res.json({ message: 'Application deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
