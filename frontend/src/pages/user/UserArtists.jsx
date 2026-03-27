@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import '../artists/Artists.css';
 import './UserView.css';
 
 const UserArtists = () => {
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('q') || '';
 
   useEffect(() => {
     const fetchArtists = async () => {
@@ -51,16 +52,6 @@ const UserArtists = () => {
           </Link>
         </div>
 
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search by artist name or songs..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="artist-search-bar"
-          />
-          <span className="search-icon">🔍</span>
-        </div>
       </div>
 
       <div className="artists-grid">

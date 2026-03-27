@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import '../artists/Artists.css';
 
 const OrganizerArtists = () => {
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('q') || '';
 
   useEffect(() => {
     const fetchArtists = async () => {
@@ -42,46 +44,6 @@ const OrganizerArtists = () => {
           <b style={{ color: 'var(--text-main)' }}>{artists.length}</b>
         </p>
 
-        <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'center' }}>
-          <div style={{ width: 'min(720px, 100%)', position: 'relative' }}>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, contact number, or songs..."
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: '12px',
-                border: '1px solid var(--border-color)',
-                background: 'rgba(255,255,255,0.06)',
-                color: 'var(--text-main)',
-                outline: 'none'
-              }}
-            />
-            {searchQuery ? (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                style={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  padding: '8px 10px',
-                  borderRadius: '10px',
-                  border: '1px solid var(--border-color)',
-                  background: 'rgba(255,255,255,0.06)',
-                  color: 'var(--text-main)',
-                  cursor: 'pointer',
-                  fontWeight: 600
-                }}
-              >
-                Clear
-              </button>
-            ) : null}
-          </div>
-        </div>
       </header>
 
       <div className="artists-grid" style={{ marginTop: '20px' }}>

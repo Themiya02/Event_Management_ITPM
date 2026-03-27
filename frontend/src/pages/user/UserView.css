@@ -80,6 +80,7 @@
   font-size: 1.5rem;
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
+  
 }
 
 .star:hover {
@@ -92,7 +93,7 @@
 }
 
 .star.gray {
-  color: rgba(255, 255, 255, 0.2);
+  color: #808080; /* Ash/Gray color */
 }
 
 .star.gray:hover {

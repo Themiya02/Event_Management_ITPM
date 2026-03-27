@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './Artists.css';
 
 const AddArtists = () => {
@@ -9,6 +9,8 @@ const AddArtists = () => {
   const navigate = useNavigate();
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('q') || '';
   
   // Shared Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,6 +34,17 @@ const AddArtists = () => {
       console.error('Failed to fetch artists:', error);
     }
   };
+
+  const filteredArtists = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return artists;
+    return artists.filter((artist) => {
+      const name = String(artist?.name ?? '').toLowerCase();
+      const contact = String(artist?.contactNumber ?? '').toLowerCase();
+      const songs = (artist?.songs || []).join(' ').toLowerCase();
+      return name.includes(q) || contact.includes(q) || songs.includes(q);
+    });
+  }, [artists, searchQuery]);
 
   const openAddModal = () => {
     setEditingArtistId(null);
@@ -64,11 +77,16 @@ const AddArtists = () => {
     }
   };
 
+  const handleNameChange = (e) => {
+    // Only allow letters and spaces
+    const val = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+    setFormData({ ...formData, name: val });
+  };
+
   const handlePhoneChange = (e) => {
-    const val = e.target.value.replace(/\D/g, ''); // only strip out non-digits
-    if (val.length <= 10) {
-      setFormData({ ...formData, contactNumber: val });
-    }
+    // Only allow digits, max 10
+    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setFormData({ ...formData, contactNumber: val });
   };
 
   const handleSongChange = (index, value) => {
@@ -160,10 +178,10 @@ const AddArtists = () => {
       </div>
 
       <div className="artists-grid">
-        {artists.length === 0 ? (
-          <p style={{textAlign: 'center', width: '100%'}}>No artists found.</p>
+        {filteredArtists.length === 0 ? (
+          <p style={{textAlign: 'center', width: '100%'}}>{searchQuery ? 'No artists match your search.' : 'No artists found.'}</p>
         ) : (
-          artists.map(artist => (
+          filteredArtists.map(artist => (
             <div key={artist._id} className="artist-card glass-panel">
               <div className="artist-image-container">
                 <img src={`${import.meta.env.VITE_API_URL}/pages/images/${artist.image}`} alt={artist.name} className="artist-photo" />
@@ -202,26 +220,37 @@ const AddArtists = () => {
             <h3>{editingArtistId ? 'Edit Artist' : 'Add New Artist'}</h3>
             <form onSubmit={handleSubmit} className="artist-form">
               <div className="form-group">
-                <label>Artist Name</label>
-                <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                <label>Artist Name <span style={{color: 'red'}}>*</span></label>
+                <input 
+                  type="text" 
+                  value={formData.name} 
+                  onChange={handleNameChange} 
+                  placeholder=" "
+                  required 
+                />
               </div>
 
               <div className="form-group">
-                <label>Contact Number (10 Digits)</label>
+                <label>Contact Number (10 Digits) <span style={{color: 'red'}}>*</span></label>
                 <input 
                   type="text" 
                   value={formData.contactNumber} 
                   onChange={handlePhoneChange} 
                   pattern="\d{10}" 
                   title="Mobile number must exactly be 10 digits" 
-                  placeholder="e.g. 0712345678" 
+                  placeholder=" " 
                   required 
                 />
               </div>
 
               <div className="form-group">
-                <label>{editingArtistId ? 'Update Image (Optional)' : 'Image'}</label>
-                <input type="file" accept="image/*" onChange={e => setImageFile(e.target.files[0])} required={!editingArtistId} />
+                <label>Image <span style={{color: 'red'}}>*</span></label>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={e => setImageFile(e.target.files[0])} 
+                  required={!editingArtistId} 
+                />
                 {editingArtistId && <small style={{color: 'var(--text-muted)'}}>Leave empty to keep current image.</small>}
               </div>
 

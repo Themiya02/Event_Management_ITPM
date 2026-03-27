@@ -183,9 +183,7 @@ const AppContent = () => {
               path="/organizer/artists"
               element={
                 <PrivateRoute allowedRoles={['organizer']}>
-                  <OrganizerLayout>
-                    <OrganizerArtists />
-                  </OrganizerLayout>
+                  <Artists />
                 </PrivateRoute>
               }
             />
@@ -295,9 +293,7 @@ const AppContent = () => {
               path="/admin/artists/view"
               element={
                 <PrivateRoute allowedRoles={['admin']}>
-                  <AdminLayout>
-                    <AdminArtistsView />
-                  </AdminLayout>
+                  <Artists />
                 </PrivateRoute>
               }
             />
@@ -325,7 +321,7 @@ const AppContent = () => {
               path="/user/artists"
               element={
                 <PrivateRoute>
-                  <UserView />
+                  <Artists />
                 </PrivateRoute>
               }
             />

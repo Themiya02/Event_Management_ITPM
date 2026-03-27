@@ -8,15 +8,19 @@ const Home = () => {
   const { user } = useAuth();
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
+  const [popularArtists, setPopularArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/events/public/approved`);
-        const allEvents = response.data;
+        const [eventsRes, artistsRes] = await Promise.all([
+          axios.get(`${import.meta.env.VITE_API_URL}/api/events/public/approved`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/artists`)
+        ]);
 
+        const allEvents = eventsRes.data;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -37,14 +41,21 @@ const Home = () => {
 
         setUpcomingEvents(upcoming);
         setPastEvents(past);
+
+        // Process popular artists
+        const sortedArtists = (artistsRes.data || [])
+          .sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0))
+          .slice(0, 4);
+        setPopularArtists(sortedArtists);
+
       } catch (error) {
-        console.error('Failed to fetch events', error);
+        console.error('Failed to fetch home data', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEvents();
+    fetchData();
   }, []);
 
   const formatEventDate = (dateStr) => {
@@ -135,6 +146,7 @@ const Home = () => {
         <div className="loading-spinner">Loading events...</div>
       ) : (
         <div className="events-content">
+          {/* Upcoming Events Section */}
           <section className="event-section">
             <div className="section-head">
               <h2 className="section-title">Upcoming Events</h2>
@@ -149,6 +161,43 @@ const Home = () => {
             )}
           </section>
 
+          {/* Featured/Popular Artists Section - Shown only when not searching or if relevant */}
+          {!search && popularArtists.length > 0 && (
+            <section className="featured-artists-section">
+              <div className="section-head">
+                <h2 className="section-title">Most Popular Artists</h2>
+                <Link 
+                  to={
+                    user?.role === 'admin' ? '/admin/artists/view' :
+                    user?.role === 'organizer' ? '/organizer/artists' :
+                    user?.role === 'user' ? '/user/artists' :
+                    '/artists'
+                  } 
+                  className="view-more-link"
+                >
+                  View All Artists →
+                </Link>
+              </div>
+              <div className="artists-mini-grid">
+                {popularArtists.map(artist => (
+                  <div key={artist._id} className="artist-mini-card glass-panel">
+                    <div className="artist-mini-image-wrap">
+                      <img src={`${import.meta.env.VITE_API_URL}/pages/images/${artist.image}`} alt={artist.name} />
+                      <div className="artist-rating-badge">
+                        ⭐ {(artist.averageRating || 0).toFixed(1)}
+                      </div>
+                    </div>
+                    <div className="artist-mini-info">
+                      <h4>{artist.name}</h4>
+                      <p>{(artist.songs || []).slice(0, 2).join(', ')}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Past Events Section */}
           <section className="event-section">
             <div className="section-head">
               <h2 className="section-title">Past Events</h2>

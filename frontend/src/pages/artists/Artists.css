@@ -29,7 +29,8 @@
   border-collapse: collapse;
 }
 
-.artists-table th, .artists-table td {
+.artists-table th,
+.artists-table td {
   padding: 15px;
   text-align: left;
   border-bottom: 1px solid var(--border-color);
@@ -50,30 +51,39 @@
 }
 
 /* Modal */
+/* Modal overlay with blur */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Start from top to push down explicitly */
+  align-items: flex-start;
   z-index: 10000;
-  padding-top: 120px; /* Push down more explicitly below navbar */
-  padding-bottom: 20px;
+  padding: 100px 20px 20px;
 }
 
 .modal-content {
   width: 100%;
-  max-width: 500px;
-  padding: 20px 25px; /* Reduced paddings */
+  max-width: 520px;
+  padding: 30px;
   position: relative;
-  background: var(--surface-color);
-  max-height: calc(100vh - 140px); /* Restrict scroll inside new padded space */
-  overflow-y: auto; /* It will definitely scroll */
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  /* Whitish background for better text contrast */
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  border-radius: 20px;
+  color: #1f2937;
+  /* Dark text for contrast against whitish background */
 }
 
 .close-btn {
@@ -85,23 +95,44 @@
 }
 
 .artist-form .form-group {
-  margin-bottom: 12px; /* Smaller bottom margin */
+  margin-bottom: 12px;
+  /* Smaller bottom margin */
 }
 
 .artist-form label {
   display: block;
-  margin-bottom: 4px; /* Smaller label margin */
+  margin-bottom: 4px;
+  /* Smaller label margin */
   font-weight: 500;
   font-size: 0.9rem;
 }
 
-.artist-form input[type="text"], .artist-form input[type="file"] {
+.artist-form input[type="text"],
+.artist-form input[type="file"] {
   width: 100%;
-  padding: 8px; /* Slightly tighter padding */
-  border: 1px solid var(--border-color);
+  padding: 10px;
+  border: 1.5px solid #d1d5db;
+  /* Grayer border for light theme */
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 0.9rem;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.artist-form input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.artist-form input:not(:placeholder-shown):invalid {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+}
+
+.artist-form input:not(:placeholder-shown):valid {
+  border-color: #10B981;
 }
 
 .song-input-row {
@@ -127,12 +158,21 @@
 
 .submit-btn {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background: var(--primary-gradient);
   color: white;
-  border-radius: 8px;
-  font-weight: 600;
-  margin-top: 15px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 /* Public Artists Styles */
@@ -154,11 +194,13 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
 @media (max-width: 768px) {
   .artists-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 @media (max-width: 480px) {
   .artists-grid {
     grid-template-columns: 1fr;
@@ -178,14 +220,20 @@
 .artist-card {
   display: flex;
   flex-direction: column;
-  border-radius: 15px;
+  border-radius: 20px;
   overflow: hidden;
-  transition: transform var(--transition-normal);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid transparent;
+  /* Prepare for hover border */
+  background: var(--glass-bg);
 }
 
 .artist-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(31, 38, 135, 0.15);
+  transform: translateY(-10px);
+  border-color: #d210d8;
+  /* Premium Green Border */
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.18);
+  /* Greenish glow */
 }
 
 .artist-image-container {
@@ -200,17 +248,46 @@
 }
 
 .artist-info {
-  padding: 25px;
+  padding: 20px;
 }
 
 .artist-name {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+  color: var(--text-main);
+  font-weight: 700;
 }
 
-.artist-contact {
+.contact-info {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px dashed var(--border-color);
+}
+
+.contact-label {
+  font-size: 0.75rem;
   color: var(--text-muted);
-  margin-bottom: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.contact-value {
+  font-size: 1rem;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.rating-summary {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.rating-summary span {
+  font-weight: 500;
 }
 
 .artist-songs h4 {
@@ -222,19 +299,55 @@
   padding-bottom: 5px;
 }
 
-.artist-songs ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+/* Page Search Bar (Sidebar-free version) */
+.search-container-page {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  align-items: center;
 }
 
-.artist-songs li {
-  padding: 8px 0;
+.search-icon-svg {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
   color: var(--text-muted);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
-.artist-songs li::before {
-  content: '🎵';
-  margin-right: 8px;
+.search-input-field {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.search-input-field:focus {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.clear-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.clear-btn:hover {
+  color: var(--text-main);
 }
