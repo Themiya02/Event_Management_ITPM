@@ -54,8 +54,16 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--bg-color) url('/dashboard_bg.png') no-repeat center center fixed;
-  background-size: cover;
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 40% 20%, hsla(268, 83%, 91%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsla(189, 78%, 88%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsla(333, 91%, 92%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, hsla(280, 89%, 93%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(39, 87%, 91%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, hsla(210, 84%, 90%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, hsla(343, 100%, 94%, 0.7) 0px, transparent 50%);
+  background-attachment: fixed;
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
