@@ -26,7 +26,6 @@ const {
 
 router.post('/', protect, createEvent);
 router.get('/mapped', protect, getEventsWithMaps);
-router.get('/public/approved', getApprovedEvents);
 router.get('/approved', protect, getApprovedEvents);
 router.get('/organizer', protect, getOrganizerEvents);
 router.post('/:id/register', protect, registerForEvent);
