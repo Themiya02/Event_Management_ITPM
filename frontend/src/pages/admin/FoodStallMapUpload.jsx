@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import './UpcomingEvents.css';
 import '../user/UserDashboard.css';
 
 const FoodStallMapUpload = () => {
     const [allEvents, setAllEvents] = useState([]);
     const [bankForms, setBankForms] = useState({});
+    const [editingEvents, setEditingEvents] = useState({});
     const [loading, setLoading] = useState(true);
-    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
     const getAuth = () => {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -45,18 +46,6 @@ const FoodStallMapUpload = () => {
 
     useEffect(() => { fetchEvents(); }, []);
 
-    useEffect(() => {
-        if (!toast.show) return;
-        const timer = setTimeout(() => {
-            setToast(prev => ({ ...prev, show: false }));
-        }, 2500);
-        return () => clearTimeout(timer);
-    }, [toast.show]);
-
-    const showToast = (message, type = 'success') => {
-        setToast({ show: true, message, type });
-    };
-
     const handleBankFieldChange = (eventId, field, value) => {
         setBankForms(prev => ({
             ...prev,
@@ -64,6 +53,13 @@ const FoodStallMapUpload = () => {
                 ...prev[eventId],
                 [field]: value
             }
+        }));
+    };
+    
+    const toggleEdit = (eventId) => {
+        setEditingEvents(prev => ({
+            ...prev,
+            [eventId]: !prev[eventId]
         }));
     };
 
@@ -82,10 +78,21 @@ const FoodStallMapUpload = () => {
                 });
                 
                 setAllEvents(prev => prev.map(ev => ev._id === eventId ? { ...ev, stallMapUrl: reader.result } : ev));
-                showToast('Food stall map uploaded successfully.');
+                
+                await Swal.fire({
+                    title: "Upload Successful",
+                    text: "The food stall map has been uploaded successfully.",
+                    icon: "success",
+                    confirmButtonColor: "#3b82f6",
+                });
             } catch (error) {
                 console.error('Failed to upload map', error);
-                showToast('Failed to upload map.', 'error');
+                await Swal.fire({
+                    title: "Upload Failed",
+                    text: "There was an error uploading the stall map.",
+                    icon: "error",
+                    confirmButtonColor: "#ef4444",
+                });
             }
         };
         reader.readAsDataURL(file);
@@ -99,6 +106,7 @@ const FoodStallMapUpload = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setAllEvents(prev => prev.map(ev => ev._id === eventId ? res.data : ev));
+            setEditingEvents(prev => ({ ...prev, [eventId]: false }));
             setBankForms(prev => ({
                 ...prev,
                 [eventId]: {
@@ -109,10 +117,21 @@ const FoodStallMapUpload = () => {
                     instructions: res.data.bankDetails?.instructions || ''
                 }
             }));
-            showToast('Bank details saved successfully.');
+
+            await Swal.fire({
+                title: "Update Successful",
+                text: "The vendor bank details have been updated successfully.",
+                icon: "success",
+                confirmButtonColor: "#3b82f6",
+            });
         } catch (error) {
             console.error('Failed to save bank details', error);
-            showToast('Failed to save bank details.', 'error');
+            await Swal.fire({
+                title: "Update Failed",
+                text: "There was an error updating the bank details. Please try again.",
+                icon: "error",
+                confirmButtonColor: "#ef4444",
+            });
         }
     };
 
@@ -133,21 +152,26 @@ const FoodStallMapUpload = () => {
                     instructions: ''
                 }
             }));
-            showToast('Bank details deleted.');
+
+            await Swal.fire({
+                title: "Deleted",
+                text: "Bank details have been removed.",
+                icon: "info",
+                confirmButtonColor: "#ef4444",
+            });
         } catch (error) {
             console.error('Failed to delete bank details', error);
-            showToast('Failed to delete bank details.', 'error');
+            await Swal.fire({
+                title: "Delete Failed",
+                text: "Could not delete bank details.",
+                icon: "error",
+                confirmButtonColor: "#ef4444",
+            });
         }
     };
 
     return (
         <div className="upcoming-page animation-fade-in">
-            {toast.show && (
-                <div className={`modern-toast ${toast.type === 'error' ? 'error' : 'success'}`}>
-                    <span className="modern-toast-icon">{toast.type === 'error' ? '⚠️' : '✅'}</span>
-                    <span>{toast.message}</span>
-                </div>
-            )}
             <div className="page-header-block">
                 <h1 className="page-main-title">Food Stall Map Upload</h1>
                 <p className="page-main-subtitle">Upload spatial blueprints for upcoming events allowing vendors to lock-in containers.</p>
@@ -233,54 +257,124 @@ const FoodStallMapUpload = () => {
                                                 type="text"
                                                 placeholder="Account Name"
                                                 value={bankForms[ev._id]?.accountName || ''}
+                                                readOnly={!editingEvents[ev._id]}
                                                 onChange={(e) => handleBankFieldChange(ev._id, 'accountName', e.target.value)}
-                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: !editingEvents[ev._id] ? 'rgba(255,255,255,0.03)' : 'transparent' }}
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Bank Name"
                                                 value={bankForms[ev._id]?.bankName || ''}
+                                                readOnly={!editingEvents[ev._id]}
                                                 onChange={(e) => handleBankFieldChange(ev._id, 'bankName', e.target.value)}
-                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: !editingEvents[ev._id] ? 'rgba(255,255,255,0.03)' : 'transparent' }}
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Account Number"
                                                 value={bankForms[ev._id]?.accountNumber || ''}
+                                                readOnly={!editingEvents[ev._id]}
                                                 onChange={(e) => handleBankFieldChange(ev._id, 'accountNumber', e.target.value)}
-                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: !editingEvents[ev._id] ? 'rgba(255,255,255,0.03)' : 'transparent' }}
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Branch"
                                                 value={bankForms[ev._id]?.branch || ''}
+                                                readOnly={!editingEvents[ev._id]}
                                                 onChange={(e) => handleBankFieldChange(ev._id, 'branch', e.target.value)}
-                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: !editingEvents[ev._id] ? 'rgba(255,255,255,0.03)' : 'transparent' }}
                                             />
                                             <textarea
                                                 placeholder="Instructions (optional)"
                                                 value={bankForms[ev._id]?.instructions || ''}
+                                                readOnly={!editingEvents[ev._id]}
                                                 onChange={(e) => handleBankFieldChange(ev._id, 'instructions', e.target.value)}
                                                 rows={2}
-                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)', resize: 'vertical' }}
+                                                style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', border: '1px solid var(--border-color)', resize: 'vertical', background: !editingEvents[ev._id] ? 'rgba(255,255,255,0.03)' : 'transparent' }}
                                             />
+                                                                     <div style={{ display: 'flex', gap: '0.8rem', marginTop: '1.2rem', justifyContent: 'flex-start' }}>
+                                            {!editingEvents[ev._id] ? (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-sm-primary"
+                                                        style={{ 
+                                                            background: '#3b82f6', 
+                                                            color: 'white', 
+                                                            border: 'none', 
+                                                            padding: '0.6rem 1.2rem',
+                                                            borderRadius: '8px',
+                                                            fontWeight: '600',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            flex: '1'
+                                                        }}
+                                                        onClick={() => toggleEdit(ev._id)}
+                                                    >
+                                                        Edit Details
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-sm-primary"
+                                                        style={{ 
+                                                            background: '#ef4444', 
+                                                            color: 'white', 
+                                                            border: 'none', 
+                                                            padding: '0.6rem 1.2rem',
+                                                            borderRadius: '8px',
+                                                            fontWeight: '600',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            flex: '1'
+                                                        }}
+                                                        onClick={() => handleDeleteBankDetails(ev._id)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-sm-primary"
+                                                        style={{ 
+                                                            background: '#3b82f6', 
+                                                            color: 'white', 
+                                                            border: 'none', 
+                                                            padding: '0.6rem 1.2rem',
+                                                            borderRadius: '8px',
+                                                            fontWeight: '600',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            flex: '1'
+                                                        }}
+                                                        onClick={() => handleSaveBankDetails(ev._id)}
+                                                    >
+                                                        Save Changes
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-sm-primary"
+                                                        style={{ 
+                                                            background: '#ef4444', 
+                                                            color: 'white', 
+                                                            border: 'none', 
+                                                            padding: '0.6rem 1.2rem',
+                                                            borderRadius: '8px',
+                                                            fontWeight: '600',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            flex: '1'
+                                                        }}
+                                                        onClick={() => toggleEdit(ev._id)}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
-                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.8rem' }}>
-                                            <button
-                                                type="button"
-                                                className="btn-sm-primary"
-                                                onClick={() => handleSaveBankDetails(ev._id)}
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="btn-sm-outline"
-                                                onClick={() => handleDeleteBankDetails(ev._id)}
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
+           </div>
                                     </div>
                                 </div>
                             </div>

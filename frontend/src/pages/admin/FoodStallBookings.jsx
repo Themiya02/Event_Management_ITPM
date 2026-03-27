@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import './UpcomingEvents.css';
 import '../user/UserDashboard.css';
 
 const FoodStallBookings = () => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [viewingImage, setViewingImage] = useState(null);
     const [loading, setLoading] = useState(true);
     const getBookingStatus = (status) => status || 'Pending';
 
@@ -184,7 +186,7 @@ const FoodStallBookings = () => {
                                             <p className="recent-meta" style={{ marginLeft: '2.3rem', marginTop: '0.5rem', lineHeight: '1.5' }}>
                                                 Vendor: <strong style={{color:'#000'}}>{stall.vendorName}</strong>
                                                 <br />
-                                                <span style={{color: 'var(--primary-color)', fontSize: '0.85rem'}}>{stall.foodType || 'Food'}</span>
+                                                <span style={{color: 'var(--primary-color)', fontSize: '0.85rem'}}>{stall.foodType || 'Food'}</span> | <strong>Stall: {stall.stallLocation || 'N/A'}</strong>
                                                 <br />
                                                 Description: {stall.description || 'No description provided.'}
                                                 <br />
@@ -195,7 +197,12 @@ const FoodStallBookings = () => {
                                                 {stall.paymentReceipt && (
                                                     <>
                                                         <br />
-                                                        <a href={stall.paymentReceipt} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '0.4rem', color: '#00d2ff', textDecoration: 'underline', fontSize: '0.85rem' }}>View Payment Receipt</a>
+                                                        <span 
+                                                            onClick={() => setViewingImage(stall.paymentReceipt)} 
+                                                            style={{ display: 'inline-block', marginTop: '0.4rem', color: '#00d2ff', textDecoration: 'underline', fontSize: '0.85rem', cursor: 'pointer' }}
+                                                        >
+                                                            View Payment Receipt
+                                                        </span>
                                                     </>
                                                 )}
                                             </p>
@@ -205,7 +212,7 @@ const FoodStallBookings = () => {
                                                 Rs {stall.totalPrice?.toLocaleString() || '10,000'}
                                             </p>
                                             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
-                                                X: {stall.x.toFixed(1)}% | Y: {stall.y.toFixed(1)}%
+                                                {stall.x != null && stall.y != null ? `X: ${stall.x.toFixed(1)}% | Y: ${stall.y.toFixed(1)}%` : 'Position: Not Assigned'}
                                             </p>
                                             <div style={{ marginBottom: '0.5rem' }}>
                                                 <span style={{ 
@@ -236,6 +243,71 @@ const FoodStallBookings = () => {
                         )}
                     </div>
                 </div>
+            )}
+
+            {/* Image Viewer Modal - Use Portal to escape stacking context */}
+            {viewingImage && createPortal(
+                <div 
+                    className="food-image-modal-overlay" 
+                    onClick={() => setViewingImage(null)}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100vw',
+                        height: '100vh',
+                        backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 9999,
+                        animation: 'fadeIn 0.2s ease-out'
+                    }}
+                >
+                    <div 
+                        className="food-image-modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            position: 'relative',
+                            maxWidth: '90%',
+                            maxHeight: '90%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <button 
+                            onClick={() => setViewingImage(null)}
+                            style={{
+                                position: 'absolute',
+                                top: '-40px',
+                                right: '0',
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'white',
+                                fontSize: '2.5rem',
+                                cursor: 'pointer',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            ×
+                        </button>
+                        <img 
+                            src={viewingImage} 
+                            alt="Payment Receipt" 
+                            style={{ 
+                                width: '100%', 
+                                height: 'auto', 
+                                maxHeight: '85vh', 
+                                objectFit: 'contain', 
+                                borderRadius: '12px',
+                                boxShadow: '0 0 40px rgba(0, 0, 0, 0.5)'
+                            }} 
+                        />
+                        <p style={{ color: 'white', marginTop: '1rem', fontSize: '1rem', fontWeight: 'bold' }}>Payment Receipt Detail</p>
+                    </div>
+                </div>,
+                document.body
             )}
         </div>
     );

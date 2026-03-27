@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { Icon } from '@iconify/react';
+import Swal from 'sweetalert2';
 import './FoodDashboard.css';
 
 const BASE_STALL_PRICE = 10000;
@@ -24,6 +26,7 @@ const FoodDashboard = () => {
   const [needsElectricity, setNeedsElectricity] = useState(false);
   const [needsWater, setNeedsWater] = useState(false);
   const [paymentReceipt, setPaymentReceipt] = useState(null);
+  const [editingBookingId, setEditingBookingId] = useState(null);
 
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -104,6 +107,7 @@ const FoodDashboard = () => {
     setNeedsElectricity(false);
     setNeedsWater(false);
     setPaymentReceipt(null);
+    setEditingBookingId(null);
   };
 
   const openEvent = (event) => {
@@ -123,45 +127,141 @@ const FoodDashboard = () => {
       setErrorMessage('Stall name is required.');
       return;
     }
+    if (stallName.trim().length < 5) {
+      setErrorMessage('Stall name must have at least 5 letters.');
+      return;
+    }
     if (!stallLocation.trim()) {
       setErrorMessage('Stall location is required.');
       return;
     }
-    if (isDuplicateStallLocation) {
+    if (!/^[a-zA-Z]$/.test(stallLocation.trim())) {
+      setErrorMessage('Stall location must be exactly one single letter (e.g., A, B, C).');
+      return;
+    }
+    
+    // Skip duplicate check if we are editing and the location hasn't changed
+    const currentBooking = editingBookingId ? allMyBookings.find(b => b._id === editingBookingId) : null;
+    const locationChanged = currentBooking ? currentBooking.stallLocation.toLowerCase() !== normalizedInputStall : true;
+    
+    if (locationChanged && isDuplicateStallLocation) {
       setErrorMessage(`Stall "${stallLocation.trim()}" is already in use. Please enter a different stall.`);
       return;
     }
-    if (!paymentReceipt) {
+    
+    if (!editingBookingId && !paymentReceipt) {
       setErrorMessage('Payment receipt is required.');
       return;
     }
 
     setSubmitting(true);
     try {
-      const res = await axios.post(
-        `${apiUrl}/api/events/${selectedEvent._id}/book-stall`,
-        {
-          stallLocation,
-          stallName,
-          description,
-          foodType,
-          needsElectricity,
-          needsWater,
-          paymentReceipt
-        },
-        {
-          headers: { Authorization: `Bearer ${getToken()}` }
-        }
-      );
+      let res;
+      if (editingBookingId) {
+        // UPDATE EXISTING
+        res = await axios.patch(
+          `${apiUrl}/api/events/${selectedEvent._id}/stall-booking/${editingBookingId}`,
+          {
+            stallLocation,
+            stallName,
+            description,
+            foodType,
+            needsElectricity,
+            needsWater,
+            paymentReceipt // only send if vendor uploaded a NEW one
+          },
+          {
+            headers: { Authorization: `Bearer ${getToken()}` }
+          }
+        );
+        setSuccessMessage('Application updated successfully.');
+      } else {
+        // CREATE NEW
+        res = await axios.post(
+          `${apiUrl}/api/events/${selectedEvent._id}/book-stall`,
+          {
+            stallLocation,
+            stallName,
+            description,
+            foodType,
+            needsElectricity,
+            needsWater,
+            paymentReceipt
+          },
+          {
+            headers: { Authorization: `Bearer ${getToken()}` }
+          }
+        );
+        setSuccessMessage('Application submitted. Status is Pending until admin approval.');
+      }
 
       setSelectedEvent(res.data);
       setEvents((prev) => prev.map((event) => (event._id === res.data._id ? res.data : event)));
-      setSuccessMessage('Application submitted. Status is Pending until admin approval.');
       resetForm();
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'Failed to submit booking. Please try again.');
+      setErrorMessage(error.response?.data?.message || 'Failed to process booking. Please try again.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleEditClick = (booking) => {
+    // Find the event ID for this booking
+    const event = events.find(e => (e.bookedStalls || []).some(s => s._id === booking._id));
+    if (!event) return;
+
+    setSelectedEvent(event);
+    setStallName(booking.stallName || '');
+    setStallLocation(booking.stallLocation || '');
+    setDescription(booking.description || '');
+    setFoodType(booking.foodType || 'Fast Food');
+    setNeedsElectricity(!!booking.needsElectricity);
+    setNeedsWater(!!booking.needsWater);
+    // Note: we don't pre-fill paymentReceipt (file input can't be set programmatically)
+    // The backend update should ignore it if null
+    
+    setEditingBookingId(booking._id);
+    setActiveTab('application');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteClick = async (booking) => {
+    // Find event ID
+    const event = events.find(e => (e.bookedStalls || []).some(s => s._id === booking._id));
+    if (!event) return;
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You are about to delete this stall application. This cannot be undone.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#3b82f6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await axios.delete(
+          `${apiUrl}/api/events/${event._id}/stall-booking/${booking._id}`,
+          { headers: { Authorization: `Bearer ${getToken()}` } }
+        );
+        
+        // Update local state by removing the booking from the event
+        setEvents(prev => prev.map(e => {
+            if (e._id === event._id) {
+                return {
+                    ...e,
+                    bookedStalls: e.bookedStalls.filter(s => s._id !== booking._id)
+                };
+            }
+            return e;
+        }));
+        
+        Swal.fire('Deleted!', 'Your application has been removed.', 'success');
+      } catch (error) {
+        Swal.fire('Error', error.response?.data?.message || 'Failed to delete.', 'error');
+      }
     }
   };
 
@@ -319,9 +419,30 @@ const FoodDashboard = () => {
                         <h4>{booking.stallName}</h4>
                         <p>{booking.eventName} - {new Date(booking.eventDate).toLocaleDateString()}</p>
                       </div>
-                      <span className={`food-status-pill food-status-${formatStatus(booking.status).toLowerCase()}`}>
-                        {formatStatus(booking.status)}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        {formatStatus(booking.status) === 'Pending' && (
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            {/* Edit button is disabled as per user request */}
+                            {/* <button 
+                              onClick={() => handleEditClick(booking)}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1470F9', display: 'flex' }}
+                              title="Edit Application"
+                            >
+                              <Icon icon="mdi:pencil" width="20" height="20" />
+                            </button> */}
+                            <button 
+                              onClick={() => handleDeleteClick(booking)}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', display: 'flex' }}
+                              title="Delete Application"
+                            >
+                              <Icon icon="mdi:trash-can" width="20" height="20" />
+                            </button>
+                          </div>
+                        )}
+                        <span className={`food-status-pill food-status-${formatStatus(booking.status).toLowerCase()}`}>
+                          {formatStatus(booking.status)}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -428,7 +549,7 @@ const FoodDashboard = () => {
                     type="text"
                     value={stallLocation}
                     onChange={(e) => setStallLocation(e.target.value)}
-                    placeholder="Example: A-01"
+                    placeholder="Example: A"
                     required
                   />
                 </label>
@@ -498,8 +619,8 @@ const FoodDashboard = () => {
                   />
                 </label>
 
-                <button type="submit" className="food-submit-btn" disabled={submitting || isDuplicateStallLocation}>
-                  {submitting ? 'Submitting...' : 'Submit Application'}
+                <button type="submit" className="food-submit-btn" disabled={submitting || (stallLocation.trim() && isDuplicateStallLocation && !editingBookingId)}>
+                  {submitting ? 'Processing...' : (editingBookingId ? 'Update Application' : 'Submit Application')}
                 </button>
 
                 <p className="food-form-note">
