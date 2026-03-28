@@ -91,7 +91,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* DOMAIN MACRO TOGGLES */}
-            <div className="domain-toggles glass-panel">
+            <div className="domain-toggles">
                 {domains.map(d => (
                     <button 
                         key={d.id}
@@ -115,7 +115,7 @@ const AdminDashboard = () => {
                             {/* Stat Cards */}
                             <div className="admin-stat-grid">
                                 {statCards.map((card) => (
-                                    <Link to={card.link} key={card.label} className={`admin-stat-card glass-panel stat-${card.color}`}>
+                                    <Link to={card.link} key={card.label} className={`admin-stat-card stat-${card.color}`}>
                                         <div className="stat-emoji">{card.icon}</div>
                                         <div className="stat-text">
                                             <div className="stat-number">{card.value}</div>
@@ -126,7 +126,7 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Approval Workflow */}
-                            <div className="glass-panel admin-workflow-card">
+                            <div className="admin-workflow-card">
                                 <h2 className="section-title">📋 Event Approval Workflow</h2>
                                 <p className="section-subtitle">Every requested event must securely pass all 4 discrete stages before broad campus publication.</p>
                                 <div className="workflow-row">
@@ -151,7 +151,7 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Recent Pending Events */}
-                            <div className="glass-panel admin-recent-card">
+                            <div className="admin-recent-card">
                                 <div className="card-row-header">
                                     <h2 className="section-title">🕐 Registration Pipeline Highlights</h2>
                                     <Link to="/admin/events/upcoming" className="link-action">View All In Pipeline →</Link>
@@ -177,7 +177,7 @@ const AdminDashboard = () => {
 
                     {/* DOMAIN: FOOD STALL HANDLING */}
                     {activeDomain === 'food' && (
-                        <div className="animation-fade-in glass-panel admin-recent-card">
+                        <div className="animation-fade-in admin-recent-card">
                             <div className="card-row-header">
                                 <h2 className="section-title">🍔 Food Stall Handling (Upcoming Events)</h2>
                             </div>
@@ -190,7 +190,7 @@ const AdminDashboard = () => {
                                             <div>
                                                 <p className="recent-name">{ev.name} <span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>({ev.status})</span></p>
                                                 <p className="recent-meta">By {ev.organizer?.name || 'Unknown'} · {new Date(ev.date).toLocaleDateString()}</p>
-                                                {ev.stallMapUrl && <span style={{ color: 'var(--success-color)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem' }}>✓ Map Available</span>}
+                                                {ev.stallMapUrl && <span className="map-badge">✓ Map Available</span>}
                                             </div>
                                             <div>
                                                 <label className="btn-sm-primary" style={{ cursor: 'pointer', margin: 0 }}>
@@ -200,9 +200,7 @@ const AdminDashboard = () => {
                                                         accept="image/*" 
                                                         style={{ display: 'none' }} 
                                                         onChange={(e) => {
-                                                            // We call handleUploadMap as before
                                                             handleUploadMap(ev._id, e);
-                                                            // Additionally locally update approvedEventsList just to reflect UI instantly
                                                             const file = e.target.files[0];
                                                             if (file) {
                                                                 const r = new FileReader();
@@ -224,7 +222,7 @@ const AdminDashboard = () => {
 
                     {/* BLANK PLACEHOLDER FOR UPCOMING DOMAINS */}
                     {activeDomain !== 'events' && activeDomain !== 'food' && (
-                        <div className="glass-panel empty-domain-state animation-fade-in">
+                        <div className="empty-domain-state animation-fade-in">
                             <span className="massive-icon">{domains.find(d => d.id === activeDomain)?.icon}</span>
                             <h2 className="empty-domain-title">{domains.find(d => d.id === activeDomain)?.label} Module</h2>
                             <p className="empty-domain-desc">This administrative sub-system infrastructure is currently pending provisioning.</p>

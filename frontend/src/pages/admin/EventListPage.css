@@ -3,7 +3,9 @@
     padding-bottom: 2rem;
 }
 
-.page-header-block { margin-bottom: 2rem; }
+.page-header-block {
+    margin-bottom: 2rem;
+}
 
 .page-main-title {
     font-size: 1.9rem;
@@ -31,9 +33,21 @@
     text-align: center;
     border-radius: 20px;
 }
-.empty-big-icon { font-size: 3rem; margin-bottom: 1rem; }
-.empty-state h3 { color: var(--text-main); margin-bottom: 0.4rem; }
-.empty-state p { color: var(--text-muted); font-size: 0.9rem; }
+
+.empty-big-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: var(--text-main);
+    margin-bottom: 0.4rem;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
 
 .simple-card-list {
     display: flex;
@@ -50,7 +64,9 @@
     border-radius: 16px;
 }
 
-.sec-info { flex: 1; }
+.sec-info {
+    flex: 1;
+}
 
 .sec-name {
     font-size: 1.05rem;
@@ -74,9 +90,17 @@
     line-height: 1.5;
 }
 
-.ticket-badge { font-weight: 600; }
-.ticket-badge.paid { color: #D97706; }
-.ticket-badge.free { color: #059669; }
+.ticket-badge {
+    font-weight: 600;
+}
+
+.ticket-badge.paid {
+    color: #D97706;
+}
+
+.ticket-badge.free {
+    color: #059669;
+}
 
 .rejection-reason-box {
     margin-top: 0.75rem;
@@ -97,11 +121,13 @@
     letter-spacing: 0.04em;
     white-space: nowrap;
 }
+
 .status-tag.approved {
     background: rgba(5, 150, 105, 0.1);
     color: #059669;
     border: 1px solid rgba(5, 150, 105, 0.3);
 }
+
 .status-tag.rejected {
     background: rgba(239, 68, 68, 0.09);
     color: #EF4444;

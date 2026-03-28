@@ -7,6 +7,7 @@ const eventSchema = new mongoose.Schema({
     required: true
   },
   name: { type: String, required: true, trim: true },
+  artistName: { type: String, trim: true },
   description: { type: String, trim: true },
   imageUrl: { type: String, default: '' },
   date: { type: Date, required: true },
