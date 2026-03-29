@@ -522,7 +522,8 @@ const FoodDashboard = () => {
 
             <div className="glass-panel food-form-panel">
               <h3>Submit Stall Application</h3>
-              {(selectedEvent.bankDetails?.accountName ||
+              {/* Bank Details (Provided by Admin) */}
+              {/* {(selectedEvent.bankDetails?.accountName ||
                 selectedEvent.bankDetails?.bankName ||
                 selectedEvent.bankDetails?.accountNumber ||
                 selectedEvent.bankDetails?.branch ||
@@ -541,7 +542,7 @@ const FoodDashboard = () => {
                     </p>
                   )}
                 </div>
-              )}
+              )} */}
               <form onSubmit={handleBookStall} className="food-form">
                 <label>
                   Stall Location *
