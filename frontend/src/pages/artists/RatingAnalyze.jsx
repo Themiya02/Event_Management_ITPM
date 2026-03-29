@@ -59,14 +59,29 @@ const RatingAnalyze = () => {
             // Find the original index for ranking if needed, or just use filtered index
             const originalIndex = artists.findIndex(a => a._id === artist._id);
             return (
-              <div key={artist._id} className="artist-card glass-panel" style={{ position: 'relative', border: originalIndex === 0 ? '2px solid gold' : originalIndex === 1 ? '2px solid silver' : originalIndex === 2 ? '2px solid #cd7f32' : '1px solid var(--border-color)' }}>
+              <div key={artist._id} className="artist-card glass-panel" style={{ position: 'relative', overflow: 'visible', border: originalIndex === 0 ? '2px solid gold' : originalIndex === 1 ? '2px solid silver' : originalIndex === 2 ? '2px solid #cd7f32' : '1px solid var(--border-color)' }}>
                 
                 {/* Ranking Badge */}
                 <div style={{
-                    position: 'absolute', top: '-15px', left: '-15px', width: '40px', height: '40px',
-                    background: originalIndex === 0 ? 'gold' : originalIndex === 1 ? 'silver' : originalIndex === 2 ? '#cd7f32' : 'var(--primary-color)',
-                    color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 'bold', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', zIndex: '10'
+                    position: 'absolute', 
+                    top: '-18px', 
+                    left: '-18px', 
+                    width: '48px', 
+                    height: '48px',
+                    background: originalIndex === 0 ? 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)' : 
+                               originalIndex === 1 ? 'linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%)' : 
+                               originalIndex === 2 ? 'linear-gradient(135deg, #CD7F32 0%, #8B4513 100%)' : 
+                               'var(--primary-gradient)',
+                    color: 'white', 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontWeight: '800', 
+                    fontSize: '1.25rem', 
+                    boxShadow: '0 6px 15px rgba(0,0,0,0.3)', 
+                    zIndex: '20',
+                    border: '3px solid white'
                 }}>
                   #{originalIndex + 1}
                 </div>
