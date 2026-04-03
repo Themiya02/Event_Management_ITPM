@@ -144,34 +144,44 @@ const FoodDashboard = () => {
     setErrorMessage('');
     setSuccessMessage('');
 
+    const swalValidation = (text) =>
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cannot submit',
+        text,
+        confirmButtonColor: '#2563eb'
+      });
+
     if (!stallName.trim()) {
-      setErrorMessage('Stall name is required.');
+      await swalValidation('Stall name is required.');
       return;
     }
     if (stallName.trim().length < 5) {
-      setErrorMessage('Stall name must have at least 5 letters.');
+      await swalValidation('Stall name must have at least 5 letters.');
       return;
     }
     if (!hasStallOptions) {
-      setErrorMessage('This event has no stalls configured yet. Please contact the organizer.');
+      await swalValidation('This event has no stalls configured yet. Please contact the organizer.');
       return;
     }
     if (!stallLocation.trim()) {
-      setErrorMessage('Please select a stall location.');
+      await swalValidation('Please select a stall location.');
       return;
     }
     if (!selectedStallRow) {
-      setErrorMessage('Selected stall is not valid for this event.');
+      await swalValidation('Selected stall is not valid for this event.');
       return;
     }
 
     if (isDuplicateStallLocation) {
-      setErrorMessage(`Stall "${stallLocation.trim()}" is already in use. Please choose another stall.`);
+      await swalValidation(
+        `Stall "${stallLocation.trim()}" is already in use. Please choose another stall.`
+      );
       return;
     }
-    
+
     if (!editingBookingId && !paymentReceipt) {
-      setErrorMessage('Payment receipt is required.');
+      await swalValidation('Payment receipt is required.');
       return;
     }
 
@@ -179,7 +189,6 @@ const FoodDashboard = () => {
     try {
       let res;
       if (editingBookingId) {
-        // UPDATE EXISTING
         res = await axios.patch(
           `${apiUrl}/api/events/${selectedEvent._id}/stall-booking/${editingBookingId}`,
           {
@@ -189,15 +198,19 @@ const FoodDashboard = () => {
             foodType,
             needsElectricity,
             needsWater,
-            paymentReceipt // only send if vendor uploaded a NEW one
+            paymentReceipt
           },
           {
             headers: { Authorization: `Bearer ${getToken()}` }
           }
         );
-        setSuccessMessage('Application updated successfully.');
+        await Swal.fire({
+          icon: 'success',
+          title: 'Application updated',
+          text: 'Your stall application was updated successfully.',
+          confirmButtonColor: '#2563eb'
+        });
       } else {
-        // CREATE NEW
         res = await axios.post(
           `${apiUrl}/api/events/${selectedEvent._id}/book-stall`,
           {
@@ -213,14 +226,26 @@ const FoodDashboard = () => {
             headers: { Authorization: `Bearer ${getToken()}` }
           }
         );
-        setSuccessMessage('Application submitted. Status is Pending until admin approval.');
+        await Swal.fire({
+          icon: 'success',
+          title: 'Application submitted',
+          text: 'Your application was received. Status stays Pending until an admin approves it.',
+          confirmButtonColor: '#2563eb'
+        });
       }
 
       setSelectedEvent(res.data);
       setEvents((prev) => prev.map((event) => (event._id === res.data._id ? res.data : event)));
       resetForm();
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'Failed to process booking. Please try again.');
+      const msg =
+        error.response?.data?.message || 'Failed to process booking. Please try again.';
+      await Swal.fire({
+        icon: 'error',
+        title: 'Submission failed',
+        text: msg,
+        confirmButtonColor: '#2563eb'
+      });
     } finally {
       setSubmitting(false);
     }
@@ -341,8 +366,8 @@ const FoodDashboard = () => {
           </button> */}
         </nav>
         <div className="food-sidebar-footer">
-          <p>{user?.name || 'Vendor'}</p>
-          <span>{user?.email || 'Signed in'}</span>
+          {/* <p>{user?.name || 'Vendor'}</p> */}
+          {/* <span>{user?.email || 'Signed in'}</span> */}
           <button type="button" className="food-sidebar-logout" onClick={handleLogout}>
             <svg className="food-sidebar-logout-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path
@@ -430,7 +455,7 @@ const FoodDashboard = () => {
                 <h3>{events.length}</h3>
               </article>
               <article className="glass-panel food-stat-card">
-                <p>My Applications</p>
+                <p>MY APPLICATIONS</p>
                 <h3>{allMyBookings.length}</h3>
               </article>
               <article className="glass-panel food-stat-card">
@@ -495,7 +520,7 @@ const FoodDashboard = () => {
 
             {allMyBookings.length > 0 && (
               <section className="glass-panel food-my-applications">
-                <h2>My Applications</h2>
+                <h2>MY APPLICATIONS</h2>
                 <div className="food-application-list">
                   {allMyBookings.slice(0, 5).map((booking) => (
                     <div key={booking._id} className="food-application-item">
