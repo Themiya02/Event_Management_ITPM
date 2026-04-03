@@ -65,14 +65,6 @@ const FoodStallBookings = () => {
         return 'food-stall-bookings-status food-stall-bookings-status--pending';
     };
 
-    if (loading) {
-        return (
-            <div className="upcoming-page food-stall-bookings-page animation-fade-in">
-                <p className="loading-msg">Loading comprehensive vendor bookings...</p>
-            </div>
-        );
-    }
-
     return (
         <div className="upcoming-page food-stall-bookings-page animation-fade-in">
             <div className="page-header-block">
@@ -82,7 +74,37 @@ const FoodStallBookings = () => {
                 </p>
             </div>
 
-            {!selectedEvent ? (
+            {loading ? (
+                <div
+                    className="events-grid food-stall-map-skeleton-grid"
+                    aria-busy="true"
+                    aria-live="polite"
+                    aria-label="Loading events"
+                >
+                    {[0, 1, 2].map((i) => (
+                        <div key={i} className="food-stall-map-skeleton-card">
+                            <div className="food-stall-map-skeleton food-stall-map-skeleton--hero" />
+                            <div className="food-stall-map-skeleton-card-body">
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--title" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--pill" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--line" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--line food-stall-map-skeleton--line-short" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--line food-stall-map-skeleton--line-mid" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--btn" />
+                                <div className="food-stall-map-skeleton-divider" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--bank-title" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--input" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--input" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--input" />
+                                <div className="food-stall-map-skeleton food-stall-map-skeleton--bank-actions">
+                                    <div className="food-stall-map-skeleton food-stall-map-skeleton--action" />
+                                    <div className="food-stall-map-skeleton food-stall-map-skeleton--action" />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : !selectedEvent ? (
                 <>
                     {events.length === 0 ? (
                         <div className="glass-panel empty-state">
@@ -141,8 +163,12 @@ const FoodStallBookings = () => {
                                                     {ev.location}
                                                 </div>
                                                 <div className="food-stall-bookings-card-stat">
-                                                    <span>{ev.bookedStalls?.length || 0} booked stalls</span>
-                                                    <span>View details →</span>
+                                                    <span className="food-stall-bookings-card-stat-meta">
+                                                        {ev.bookedStalls?.length || 0} booked stalls
+                                                    </span>
+                                                    <span className="food-stall-bookings-view-details-btn">
+                                                        View details →
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
