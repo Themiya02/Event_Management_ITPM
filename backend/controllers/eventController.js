@@ -1,5 +1,7 @@
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
+const User = require('../models/User');
+const { sendStallBookingDecisionEmail } = require('../utils/emailService');
 
 exports.getEventsWithMaps = async (req, res) => {
   try {
@@ -438,6 +440,7 @@ exports.bookFoodStall = async (req, res) => {
     event.bookedStalls.push({
       vendorId: req.user._id,
       vendorName: req.user.name,
+      vendorEmail: req.user.email || '',
       stallLocation: normalizedStallLocation,
       stallName,
       description,
@@ -479,6 +482,35 @@ exports.updateStallBookingStatus = async (req, res) => {
 
     booking.status = normalizedStatus;
     await event.save();
+
+    if (['Approved', 'Rejected'].includes(normalizedStatus)) {
+      void (async () => {
+        try {
+          let to = (booking.vendorEmail && String(booking.vendorEmail).trim()) || '';
+          let vendorName = booking.vendorName;
+          if (!to && booking.vendorId) {
+            const vendor = await User.findById(booking.vendorId).select('email name');
+            to = (vendor?.email && String(vendor.email).trim()) || '';
+            if (vendor?.name) vendorName = vendor.name;
+          }
+          if (!to) {
+            console.warn('[stall booking email] No vendor email on booking or user record', bookingId);
+            return;
+          }
+          await sendStallBookingDecisionEmail({
+            to,
+            vendorName,
+            eventName: event.name,
+            stallName: booking.stallName,
+            stallLocation: booking.stallLocation,
+            status: normalizedStatus
+          });
+        } catch (err) {
+          console.error('[stall booking email]', err.message);
+        }
+      })();
+    }
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -539,6 +571,10 @@ exports.updateStallBooking = async (req, res) => {
     if (booking.needsElectricity) totalPrice += 3000;
     if (booking.needsWater) totalPrice += 2000;
     booking.totalPrice = totalPrice;
+
+    if (req.user?.email) {
+      booking.vendorEmail = String(req.user.email).trim();
+    }
 
     await event.save();
     res.json(event);
