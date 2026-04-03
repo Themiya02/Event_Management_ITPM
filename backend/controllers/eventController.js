@@ -279,14 +279,72 @@ exports.deleteEvent = async (req, res) => {
   }
 };
 
-// Admin: Upload stall map for an event
+function normalizeStallPricingRows(stallPricing) {
+  if (!Array.isArray(stallPricing)) return null;
+  const rows = stallPricing
+    .map((r) => ({
+      stall: String(r.stall || '').trim(),
+      price: Number(r.price)
+    }))
+    .filter((r) => r.stall.length > 0 && !Number.isNaN(r.price) && r.price >= 0);
+
+  if (rows.length === 0) return [];
+
+  const seen = new Set();
+  for (const r of rows) {
+    const key = r.stall.toLowerCase();
+    if (seen.has(key)) {
+      throw new Error(`Duplicate stall: ${r.stall}`);
+    }
+    seen.add(key);
+  }
+  return rows;
+}
+
+function resolveStallBasePrice(event, stallLocation) {
+  const normalized = String(stallLocation || '').trim().toLowerCase();
+  const list = event.stallPricing || [];
+  if (!list.length) {
+    return { base: 10000, valid: true };
+  }
+  const row = list.find((s) => String(s.stall || '').trim().toLowerCase() === normalized);
+  if (!row) return { base: null, valid: false };
+  return { base: Number(row.price), valid: true };
+}
+
+// Admin: Upload stall map + stall/price table for an event
 exports.uploadStallMap = async (req, res) => {
   try {
-    const { stallMapUrl } = req.body;
+    const { stallMapUrl, stallPricing } = req.body;
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
-    
-    event.stallMapUrl = stallMapUrl;
+
+    if (stallMapUrl !== undefined && stallMapUrl !== null && String(stallMapUrl).trim() !== '') {
+      event.stallMapUrl = stallMapUrl;
+    }
+
+    if (Array.isArray(stallPricing)) {
+      let rows;
+      try {
+        rows = normalizeStallPricingRows(stallPricing);
+      } catch (e) {
+        return res.status(400).json({ message: e.message });
+      }
+      if (stallPricing.length > 0 && rows.length === 0) {
+        return res.status(400).json({ message: 'Each row needs a stall name and a valid price (0 or more).' });
+      }
+      if (rows.length > 0) {
+        event.stallPricing = rows;
+      }
+    }
+
+    if (!event.stallMapUrl) {
+      return res.status(400).json({ message: 'Upload a stall map before saving.' });
+    }
+    if (!event.stallPricing || event.stallPricing.length === 0) {
+      return res.status(400).json({ message: 'Add at least one stall with price before saving.' });
+    }
+
     await event.save();
     res.json(event);
   } catch (error) {
@@ -346,9 +404,6 @@ exports.bookFoodStall = async (req, res) => {
     if (!normalizedStallLocation || !stallName || !paymentReceipt) {
       return res.status(400).json({ message: 'Stall location, stall name, and payment receipt are required.' });
     }
-    if (!/^[a-zA-Z]$/.test(normalizedStallLocation)) {
-      return res.status(400).json({ message: 'Stall location must be exactly one single letter (e.g., A, B, C).' });
-    }
     if (stallName.trim().length < 5) {
       return res.status(400).json({ message: 'Stall name must have at least 5 letters.' });
     }
@@ -361,6 +416,11 @@ exports.bookFoodStall = async (req, res) => {
       return res.status(400).json({ message: 'Event does not have a stall map available.' });
     }
 
+    const { base, valid } = resolveStallBasePrice(event, normalizedStallLocation);
+    if (!valid || base == null) {
+      return res.status(400).json({ message: 'Selected stall is not valid for this event.' });
+    }
+
     // Block duplicate slot codes (case-insensitive), e.g. A-01 and a-01
     const duplicateSlot = (event.bookedStalls || []).some(
       (booking) => String(booking.stallLocation || '').trim().toLowerCase() === normalizedStallLocation.toLowerCase()
@@ -370,7 +430,7 @@ exports.bookFoodStall = async (req, res) => {
     }
 
     // Calculate total price server-side for integrity
-    let totalPrice = 10000; // Base stall price
+    let totalPrice = base;
     if (needsElectricity) totalPrice += 3000;
     if (needsWater) totalPrice += 2000;
 
@@ -447,9 +507,6 @@ exports.updateStallBooking = async (req, res) => {
 
     // Validation (reuse same rules as create)
     const normalizedStallLocation = String(stallLocation || '').trim();
-    if (normalizedStallLocation && !/^[a-zA-Z]$/.test(normalizedStallLocation)) {
-      return res.status(400).json({ message: 'Stall location must be exactly one single letter (e.g., A, B, C).' });
-    }
     if (stallName && stallName.trim().length < 5) {
       return res.status(400).json({ message: 'Stall name must have at least 5 letters.' });
     }
@@ -473,8 +530,12 @@ exports.updateStallBooking = async (req, res) => {
     if (needsWater !== undefined) booking.needsWater = Boolean(needsWater);
     if (paymentReceipt !== undefined) booking.paymentReceipt = paymentReceipt;
 
-    // Recalculate price
-    let totalPrice = 10000;
+    const locForPrice = booking.stallLocation;
+    const { base, valid } = resolveStallBasePrice(event, locForPrice);
+    if (!valid || base == null) {
+      return res.status(400).json({ message: 'Selected stall is not valid for this event.' });
+    }
+    let totalPrice = base;
     if (booking.needsElectricity) totalPrice += 3000;
     if (booking.needsWater) totalPrice += 2000;
     booking.totalPrice = totalPrice;

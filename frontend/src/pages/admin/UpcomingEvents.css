@@ -405,3 +405,1121 @@
     0%, 100% { box-shadow: 0 16px 35px rgba(15, 23, 42, 0.25); }
     50% { box-shadow: 0 20px 42px rgba(15, 23, 42, 0.32); }
 }
+
+/* Stall map + pricing modal — light white + blue (portaled to body) */
+.stall-map-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.75rem, 3vw, 1.5rem);
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    animation: stallMapOverlayIn 0.22s ease-out;
+}
+
+@keyframes stallMapOverlayIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.stall-map-modal-shell {
+    position: relative;
+    width: 100%;
+    max-width: min(560px, calc(100vw - 1.5rem));
+    max-height: min(88vh, 820px);
+    overflow: auto;
+    box-sizing: border-box;
+    border-radius: 22px;
+    padding: 1.5rem 1.5rem 1.25rem;
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    box-shadow:
+        0 0 0 1px rgba(59, 130, 246, 0.08) inset,
+        0 24px 48px rgba(37, 99, 235, 0.12),
+        0 8px 24px rgba(15, 23, 42, 0.08);
+    animation: stallMapShellIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes stallMapShellIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.stall-map-modal-glow {
+    position: absolute;
+    top: -45%;
+    right: -25%;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 68%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.stall-map-modal-shell > *:not(.stall-map-modal-glow) {
+    position: relative;
+    z-index: 1;
+}
+
+.stall-map-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.35rem;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.stall-map-modal-header-text {
+    min-width: 0;
+}
+
+.stall-map-modal-kicker {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #2563eb;
+    margin: 0 0 0.35rem;
+}
+
+.stall-map-modal-title {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+.stall-map-modal-event {
+    margin: 0.45rem 0 0;
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.stall-map-modal-close {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+    font-family: inherit;
+}
+
+.stall-map-modal-close:hover:not(:disabled) {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+}
+
+.stall-map-modal-close:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.stall-map-modal-section {
+    margin-bottom: 1.35rem;
+}
+
+.stall-map-modal-section-title {
+    margin: 0 0 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1e40af;
+}
+
+.stall-map-modal-hint {
+    margin: 0 0 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #64748b;
+}
+
+.stall-map-modal-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 0.65rem;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.stall-map-modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.stall-map-modal-table th,
+.stall-map-modal-table td {
+    padding: 0.55rem 0.65rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.stall-map-modal-table th {
+    background: #eff6ff;
+    font-weight: 600;
+    color: #1e40af;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.stall-map-modal-table tbody tr:hover {
+    background: #ffffff;
+}
+
+.stall-map-modal-table tr:last-child td {
+    border-bottom: none;
+}
+
+.stall-map-modal-cell-input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0.55rem 0.65rem;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+    font-family: inherit;
+    font-size: 0.875rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.stall-map-modal-cell-input::placeholder {
+    color: #94a3b8;
+}
+
+.stall-map-modal-cell-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.stall-map-modal-add-row {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.15rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 1px dashed #93c5fd;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.stall-map-modal-add-row:hover {
+    border-color: #3b82f6;
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.stall-map-modal-upload-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.stall-map-modal-file-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.62rem 1.15rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    border: 1px solid #1d4ed8;
+    color: #ffffff;
+    font-size: 0.87rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.stall-map-modal-file-label::before {
+    content: '↑';
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
+
+.stall-map-modal-file-label:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.4);
+}
+
+.stall-map-modal-file-label input {
+    display: none;
+}
+
+.stall-map-modal-file-name {
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.4;
+    max-width: 100%;
+}
+
+.stall-map-modal-preview {
+    margin-top: 0.25rem;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    max-height: 220px;
+    background: #f1f5f9;
+}
+
+.stall-map-modal-preview img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 220px;
+    object-fit: contain;
+}
+
+.stall-map-modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-top: 0.25rem;
+    padding-top: 1.15rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.stall-map-modal-btn {
+    padding: 0.62rem 1.35rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+    border: none;
+}
+
+.stall-map-modal-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.stall-map-modal-btn-ghost {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.stall-map-modal-btn-ghost:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+.stall-map-modal-btn-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+.stall-map-modal-btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 26px rgba(37, 99, 235, 0.42);
+}
+
+/* —— Food stall admin pages: white + blue (Map Upload + Bookings Tracker) —— */
+.food-stall-map-page .food-stall-map-page-title,
+.food-stall-bookings-page .food-stall-bookings-page-title {
+    color: #2563eb;
+    letter-spacing: 0.03em;
+}
+
+.food-stall-map-page .page-main-subtitle,
+.food-stall-bookings-page .page-main-subtitle {
+    color: #64748b;
+}
+
+.food-stall-map-page .loading-msg,
+.food-stall-bookings-page .loading-msg {
+    color: #64748b;
+}
+
+.food-stall-map-page .empty-state,
+.food-stall-bookings-page .empty-state {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    box-shadow: 0 10px 40px rgba(37, 99, 235, 0.08);
+}
+
+.food-stall-map-page .empty-state h3,
+.food-stall-bookings-page .empty-state h3 {
+    color: #0f172a;
+}
+
+.food-stall-map-page .empty-state p,
+.food-stall-bookings-page .empty-state p {
+    color: #64748b;
+}
+
+.food-stall-map-page .food-stall-map-event-card.glass-panel,
+.food-stall-bookings-page .food-stall-map-event-card.glass-panel {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+}
+
+.food-stall-map-page .food-stall-map-event-card:hover,
+.food-stall-bookings-page .food-stall-map-event-card:hover {
+    border-color: #bfdbfe;
+    box-shadow: 0 14px 40px rgba(37, 99, 235, 0.12);
+}
+
+.food-stall-map-page .food-stall-map-event-card .card-content h3,
+.food-stall-bookings-page .food-stall-map-event-card .card-content h3 {
+    color: #0f172a;
+}
+
+.food-stall-map-page .food-stall-map-event-card .detail-item,
+.food-stall-bookings-page .food-stall-map-event-card .detail-item {
+    color: #475569;
+}
+
+.food-stall-map-page .placeholder-img {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+}
+
+/* Map pin (Google-style red marker) for event location on food stall admin cards */
+.food-stall-loc-pin-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.food-stall-loc-pin-icon {
+    color: #ea4335;
+}
+
+/* Food Stall Map Upload — loading skeletons */
+@keyframes food-stall-skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.food-stall-map-skeleton-grid {
+    margin-top: 0;
+}
+
+.food-stall-map-skeleton-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+    height: 100%;
+}
+
+.food-stall-map-skeleton {
+    background: linear-gradient(
+        110deg,
+        #e2e8f0 0%,
+        #e2e8f0 40%,
+        #f1f5f9 50%,
+        #e2e8f0 60%,
+        #e2e8f0 100%
+    );
+    background-size: 200% 100%;
+    animation: food-stall-skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .food-stall-map-skeleton {
+        animation: none;
+        background: #e2e8f0;
+    }
+}
+
+.food-stall-map-skeleton--hero {
+    height: 160px;
+    flex-shrink: 0;
+    border-radius: 0;
+}
+
+.food-stall-map-skeleton-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    flex: 1;
+}
+
+.food-stall-map-skeleton--title {
+    height: 1.35rem;
+    width: 78%;
+    border-radius: 8px;
+}
+
+.food-stall-map-skeleton--pill {
+    height: 1.5rem;
+    width: 5.5rem;
+    border-radius: 999px;
+}
+
+.food-stall-map-skeleton--line {
+    height: 0.85rem;
+    width: 100%;
+    border-radius: 6px;
+}
+
+.food-stall-map-skeleton--line-short {
+    width: 62%;
+}
+
+.food-stall-map-skeleton--line-mid {
+    width: 82%;
+}
+
+.food-stall-map-skeleton--btn {
+    height: 2.75rem;
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 0.35rem;
+}
+
+.food-stall-map-skeleton-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 0.5rem 0 0.15rem;
+}
+
+.food-stall-map-skeleton--bank-title {
+    height: 0.95rem;
+    width: 48%;
+    border-radius: 6px;
+}
+
+.food-stall-map-skeleton--input {
+    height: 2.4rem;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.food-stall-map-skeleton--bank-actions {
+    display: flex;
+    gap: 0.65rem;
+    margin-top: 0.35rem;
+}
+
+.food-stall-map-skeleton--action {
+    flex: 1;
+    height: 2.35rem;
+    border-radius: 10px;
+    min-width: 0;
+}
+
+.food-stall-map-status-pill {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.food-stall-map-map-status {
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+}
+
+.food-stall-map-map-status--ok {
+    color: #1d4ed8;
+}
+
+.food-stall-map-map-status--missing {
+    color: #64748b;
+}
+
+.food-stall-map-pricing-hint {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.food-stall-map-card-actions {
+    margin-top: 1.5rem;
+}
+
+.food-stall-map-upload-btn {
+    display: block;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid #1d4ed8;
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.food-stall-map-upload-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.42);
+    color: #ffffff;
+}
+
+.food-stall-map-upload-btn--outline {
+    background: #ffffff;
+    color: #2563eb;
+    border-color: #3b82f6;
+    box-shadow: none;
+}
+
+.food-stall-map-upload-btn--outline:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #2563eb;
+}
+
+.food-stall-map-bank {
+    margin-top: 1rem;
+    padding-top: 1.15rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.food-stall-map-bank-title {
+    margin: 0 0 0.65rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e40af;
+}
+
+.food-stall-map-bank-grid {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.food-stall-map-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.55rem 0.65rem;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.food-stall-map-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.food-stall-map-input--readonly {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+.food-stall-map-input--textarea {
+    resize: vertical;
+    min-height: 4rem;
+}
+
+.food-stall-map-bank-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+
+.food-stall-map-bank-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.food-stall-map-bank-btn--primary {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: #1d4ed8;
+    box-shadow: 0 3px 12px rgba(37, 99, 235, 0.25);
+}
+
+.food-stall-map-bank-btn--primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.32);
+}
+
+.food-stall-map-bank-btn--danger {
+    background: #ffffff;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.food-stall-map-bank-btn--danger:hover {
+    background: #fef2f2;
+    border-color: #f87171;
+}
+
+.food-stall-map-bank-btn--muted {
+    background: #f8fafc;
+    color: #475569;
+    border-color: #e2e8f0;
+}
+
+.food-stall-map-bank-btn--muted:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+/* —— Food Stall Bookings Tracker: detail view + vendor list —— */
+.food-stall-bookings-detail {
+    animation: stallMapShellIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.food-stall-bookings-back-btn {
+    margin-bottom: 1.5rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #2563eb;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.food-stall-bookings-back-btn:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.12);
+}
+
+.food-stall-bookings-panel {
+    margin-bottom: 1.75rem;
+    padding: 1.5rem 1.5rem 1.75rem;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.food-stall-bookings-panel--vendors {
+    margin-bottom: 0;
+}
+
+.food-stall-bookings-map-heading {
+    margin: 0 0 0.35rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.food-stall-bookings-map-lead {
+    margin: 0 0 1.25rem;
+    color: #64748b;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.food-stall-bookings-map-frame {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+    border-radius: 14px;
+    border: 1px solid #bfdbfe;
+    background: #f1f5f9;
+    line-height: 0;
+}
+
+.food-stall-bookings-map-frame img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    vertical-align: top;
+}
+
+.food-stall-bookings-map-marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.45);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.food-stall-bookings-section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e40af;
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+}
+
+.food-stall-bookings-empty-note {
+    color: #64748b;
+    font-size: 0.92rem;
+    margin: 0;
+}
+
+.food-stall-bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.food-stall-bookings-vendor-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem;
+    background: #f8fafc;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.food-stall-bookings-vendor-row:hover {
+    border-color: #bfdbfe;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.08);
+}
+
+.food-stall-bookings-vendor-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.food-stall-bookings-vendor-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0f172a;
+}
+
+.food-stall-bookings-vendor-index {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.food-stall-bookings-vendor-meta {
+    margin: 0 0 0 2.35rem;
+    margin-top: 0.5rem;
+    line-height: 1.55;
+    font-size: 0.86rem;
+    color: #475569;
+}
+
+.food-stall-bookings-vendor-meta strong {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.food-stall-bookings-food-type {
+    color: #2563eb;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.food-stall-bookings-receipt-link {
+    display: inline-block;
+    margin-top: 0.45rem;
+    color: #2563eb;
+    text-decoration: underline;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.food-stall-bookings-receipt-link:hover {
+    color: #1d4ed8;
+}
+
+.food-stall-bookings-vendor-side {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.food-stall-bookings-price {
+    color: #0f172a;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0 0 0.35rem;
+}
+
+.food-stall-bookings-coords {
+    color: #64748b;
+    font-size: 0.82rem;
+    margin: 0 0 0.45rem;
+}
+
+.food-stall-bookings-status {
+    display: inline-block;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.45rem;
+}
+
+.food-stall-bookings-status--approved {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.food-stall-bookings-status--pending {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fcd34d;
+}
+
+.food-stall-bookings-status--rejected {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.food-stall-bookings-booked-at {
+    color: #64748b;
+    font-size: 0.78rem;
+    margin: 0.35rem 0 0;
+}
+
+.food-stall-bookings-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.food-stall-bookings-btn-approve {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid #1d4ed8;
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.food-stall-bookings-btn-approve:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.38);
+}
+
+.food-stall-bookings-btn-reject {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    background: #ffffff;
+    color: #dc2626;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.food-stall-bookings-btn-reject:hover {
+    background: #fef2f2;
+    border-color: #f87171;
+}
+
+.food-stall-bookings-card-stat {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #2563eb;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.food-stall-bookings-card-stat span:last-child {
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+/* Event list cards: map thumbnail clearly framed */
+.food-stall-bookings-page .food-stall-bookings-card-map {
+    flex-shrink: 0;
+    border: 2px solid #2563eb;
+    border-radius: 12px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: #e2e8f0;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+        0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+.food-stall-bookings-page .food-stall-bookings-card-map img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+}
+
+/* Receipt lightbox — keep dark backdrop for contrast; high z-index */
+.food-stall-bookings-receipt-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    animation: stallMapOverlayIn 0.2s ease-out;
+}
+
+.food-stall-bookings-receipt-inner {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.food-stall-bookings-receipt-close {
+    position: absolute;
+    top: -2.75rem;
+    right: 0;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    color: #ffffff;
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+    font-family: inherit;
+    display: grid;
+    place-items: center;
+    transition: background 0.15s;
+}
+
+.food-stall-bookings-receipt-close:hover {
+    background: rgba(59, 130, 246, 0.35);
+}
+
+.food-stall-bookings-receipt-img {
+    width: 100%;
+    height: auto;
+    max-height: 82vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.food-stall-bookings-receipt-caption {
+    color: #e2e8f0;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
