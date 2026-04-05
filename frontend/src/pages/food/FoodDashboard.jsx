@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { Icon } from '@iconify/react';
@@ -240,30 +240,7 @@ const FoodDashboard = () => {
       confirmButtonText: 'Yes, delete it!'
     });
 
-    if (result.isConfirmed) {
-      try {
-        const res = await axios.delete(
-          `${apiUrl}/api/events/${event._id}/stall-booking/${booking._id}`,
-          { headers: { Authorization: `Bearer ${getToken()}` } }
-        );
-        
-        // Update local state by removing the booking from the event
-        setEvents(prev => prev.map(e => {
-            if (e._id === event._id) {
-                return {
-                    ...e,
-                    bookedStalls: e.bookedStalls.filter(s => s._id !== booking._id)
-                };
-            }
-            return e;
-        }));
-        
-        Swal.fire('Deleted!', 'Your application has been removed.', 'success');
-      } catch (error) {
-        Swal.fire('Error', error.response?.data?.message || 'Failed to delete.', 'error');
-      }
-    }
-  };
+    if (loading) return <div style={{ padding: '3rem', textAlign: 'center' }}>Loading vendor data...</div>;
 
   if (loading) {
     return <div className="food-loading">Loading vendor dashboard...</div>;
@@ -439,14 +416,8 @@ const FoodDashboard = () => {
                             </button>
                           </div>
                         )}
-                        <span className={`food-status-pill food-status-${formatStatus(booking.status).toLowerCase()}`}>
-                          {formatStatus(booking.status)}
-                        </span>
-                      </div>
                     </div>
-                  ))}
                 </div>
-              </section>
             )}
           </>
         ) : (

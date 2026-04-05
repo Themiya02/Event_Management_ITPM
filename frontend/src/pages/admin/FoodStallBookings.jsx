@@ -8,9 +8,7 @@ import '../user/UserDashboard.css';
 const FoodStallBookings = () => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
-    const [viewingImage, setViewingImage] = useState(null);
     const [loading, setLoading] = useState(true);
-    const getBookingStatus = (status) => status || 'Pending';
 
     const fetchEvents = async () => {
         try {
@@ -197,6 +195,7 @@ const FoodStallBookings = () => {
                                                 {stall.paymentReceipt && (
                                                     <>
                                                         <br />
+                                                        <a href={stall.paymentReceipt} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '0.4rem', color: '#00d2ff', textDecoration: 'underline', fontSize: '0.85rem' }}>View Payment Receipt</a>
                                                         <span 
                                                             onClick={() => setViewingImage(stall.paymentReceipt)} 
                                                             style={{ display: 'inline-block', marginTop: '0.4rem', color: '#00d2ff', textDecoration: 'underline', fontSize: '0.85rem', cursor: 'pointer' }}
@@ -212,6 +211,7 @@ const FoodStallBookings = () => {
                                                 Rs {stall.totalPrice?.toLocaleString() || '10,000'}
                                             </p>
                                             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
+                                                X: {stall.x.toFixed(1)}% | Y: {stall.y.toFixed(1)}%
                                                 {stall.x != null && stall.y != null ? `X: ${stall.x.toFixed(1)}% | Y: ${stall.y.toFixed(1)}%` : 'Position: Not Assigned'}
                                             </p>
                                             <div style={{ marginBottom: '0.5rem' }}>

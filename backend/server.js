@@ -4,6 +4,7 @@ dns.setServers(['8.8.8.8', '8.8.4.4']); //
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -26,6 +27,8 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/events', require('./routes/eventRoutes'));
+app.use('/api/artists', require('./routes/artistRoutes'));
+app.use('/pages/images', express.static(path.join(__dirname, '../frontend/src/pages/images')));
 app.use('/api/sponsorship', require('./routes/sponsorshipRoutes'));
 app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 

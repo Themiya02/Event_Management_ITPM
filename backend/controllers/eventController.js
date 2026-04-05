@@ -13,7 +13,7 @@ exports.getEventsWithMaps = async (req, res) => {
 exports.createEvent = async (req, res) => {
   try {
     const {
-      name, artistName, description, date, time, location, campusType,
+      name, description, date, time, location, campusType,
       isPaid, price, isOpenRegistration, seatLimit, imageUrl
     } = req.body;
 
@@ -26,7 +26,6 @@ exports.createEvent = async (req, res) => {
     const event = await Event.create({
       organizer: req.user._id,
       name,
-      artistName,
       description,
       date,
       time,
@@ -142,7 +141,7 @@ exports.getEventById = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const {
-      name, artistName, description, date, time, location, campusType,
+      name, description, date, time, location, campusType,
       isPaid, price, isOpenRegistration, seatLimit, imageUrl
     } = req.body;
 
@@ -150,7 +149,6 @@ exports.updateEvent = async (req, res) => {
     if (!event) return res.status(404).json({ message: 'Event not found' });
 
     event.name = name || event.name;
-    event.artistName = artistName !== undefined ? artistName : event.artistName;
     event.description = description || event.description;
     event.date = date || event.date;
     event.time = time || event.time;
@@ -342,8 +340,7 @@ exports.deleteBankDetails = async (req, res) => {
 // Food Stall: Book a stall on the map
 exports.bookFoodStall = async (req, res) => {
   try {
-    const { stallLocation, stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
-    const normalizedStallLocation = String(stallLocation || '').trim();
+    const { stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
     
     if (!normalizedStallLocation || !stallName || !paymentReceipt) {
       return res.status(400).json({ message: 'Stall location, stall name, and payment receipt are required.' });
@@ -389,8 +386,8 @@ exports.bookFoodStall = async (req, res) => {
       totalPrice,
       paymentReceipt,
       status: 'Pending',
-      x: x !== undefined ? Number(x) : undefined,
-      y: y !== undefined ? Number(y) : undefined
+      x,
+      y
     });
 
     await event.save();
@@ -405,11 +402,8 @@ exports.updateStallBookingStatus = async (req, res) => {
   try {
     const { eventId, bookingId } = req.params;
     const { status } = req.body;
-    const normalizedStatus = typeof status === 'string'
-      ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
-      : '';
     
-    if (!['Pending', 'Approved', 'Rejected'].includes(normalizedStatus)) {
+    if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
@@ -418,6 +412,7 @@ exports.updateStallBookingStatus = async (req, res) => {
 
     const booking = event.bookedStalls.id(bookingId);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
 
     booking.status = normalizedStatus;
     await event.save();
@@ -481,34 +476,9 @@ exports.updateStallBooking = async (req, res) => {
     if (booking.needsWater) totalPrice += 2000;
     booking.totalPrice = totalPrice;
 
+
     await event.save();
     res.json(event);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Food Stall: Delete own booking (only if Pending)
-exports.deleteStallBooking = async (req, res) => {
-  try {
-    const { eventId, bookingId } = req.params;
-    const event = await Event.findById(eventId);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-
-    const booking = event.bookedStalls.id(bookingId);
-    if (!booking) return res.status(404).json({ message: 'Booking not found' });
-
-    // Ownership & Status Check
-    if (String(booking.vendorId) !== String(req.user._id)) {
-      return res.status(403).json({ message: 'Not authorized to delete this application' });
-    }
-    if (booking.status !== 'Pending') {
-      return res.status(400).json({ message: 'Cannot delete application after admin review.' });
-    }
-
-    event.bookedStalls.pull(bookingId);
-    await event.save();
-    res.json({ message: 'Application deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
