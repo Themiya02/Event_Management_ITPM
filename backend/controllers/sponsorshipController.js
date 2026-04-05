@@ -89,15 +89,16 @@ const PACKAGES = {
 
 // Configure nodemailer transporter
 const createTransporter = () => {
-  // Use pool: true to keep connection alive for resends
+  const user = process.env.EMAIL_USER?.trim();
+  const pass = process.env.EMAIL_PASS?.trim();
+  
+  console.log(`📧 SYSTEM SENDER: [${user}]`);
+
   return nodemailer.createTransport({
     service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
     auth: {
-      user: process.env.EMAIL_USER?.trim(),
-      pass: process.env.EMAIL_PASS?.trim()
+      user: user,
+      pass: pass
     }
   });
 };
@@ -110,7 +111,7 @@ const generateOTP = () => {
 // Send OTP email
 const sendOTPEmail = async (email, sponsorName, otp, packageName) => {
   const transporter = createTransporter();
-  
+
   const mailOptions = {
     from: `"EventHub Sponsorship" <${process.env.EMAIL_USER}>`,
     to: email,
@@ -161,7 +162,7 @@ const sendOTPEmail = async (email, sponsorName, otp, packageName) => {
 // Send confirmation email after OTP verified
 const sendConfirmationEmail = async (email, sponsorName, packageName, amount) => {
   const transporter = createTransporter();
-  
+
   const mailOptions = {
     from: `"EventHub Sponsorship" <${process.env.EMAIL_USER}>`,
     to: email,
@@ -270,8 +271,8 @@ exports.applySponsorship = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: emailSent 
-        ? 'Application submitted! OTP sent to your email.' 
+      message: emailSent
+        ? 'Application submitted! OTP sent to your email.'
         : 'Application submitted! (Note: Email service unavailable, use 123456 to verify in demo mode)',
       applicationId: sponsorship._id,
       email: sponsorEmail,
@@ -280,11 +281,11 @@ exports.applySponsorship = async (req, res) => {
 
   } catch (error) {
     console.error('Apply sponsorship error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: error.name === 'ValidationError' 
-        ? Object.values(error.errors).map(val => val.message).join(', ') 
-        : error.message || 'Internal Server Error' 
+    res.status(500).json({
+      success: false,
+      message: error.name === 'ValidationError'
+        ? Object.values(error.errors).map(val => val.message).join(', ')
+        : error.message || 'Internal Server Error'
     });
   }
 };
@@ -330,7 +331,7 @@ exports.verifyOTP = async (req, res) => {
         await sendConfirmationEmail(sponsorship.sponsorEmail, sponsorship.sponsorName, pkg.name, sponsorship.packageAmount);
       }
     } catch (e) {
-       console.warn('Confirmation email failed:', e.message);
+      console.warn('Confirmation email failed:', e.message);
     }
 
     res.json({
@@ -389,10 +390,10 @@ exports.resendOTP = async (req, res) => {
       emailSent = false;
     }
 
-    res.json({ 
-      success: true, 
-      message: emailSent 
-        ? 'New OTP sent to your email' 
+    res.json({
+      success: true,
+      message: emailSent
+        ? 'New OTP sent to your email'
         : 'Resend failed (Email service issue). Use 123456 for testing.',
       demoMode: !emailSent
     });
