@@ -246,7 +246,7 @@ const Register = () => {
               required
             >
               <option value="user">User</option>
-              <option value="organizer">Organizer</option>
+              {/* <option value="organizer">Organizer</option> */}
               <option value="sponsor">Sponsor</option>
               <option value="food_stall">Food Stall Member</option>
             </select>

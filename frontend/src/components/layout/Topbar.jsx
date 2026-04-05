@@ -10,7 +10,12 @@ const Topbar = () => {
     // Format the role to start with a capital letter
     const displayRole = user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Guest';
     const displayName = user.name || 'Jane Doe';
-    const profilePath = user.role === 'admin' ? '/admin/profile' : '/organizer/profile';
+    const profilePath =
+        user.role === 'admin'
+            ? '/admin/profile'
+            : user.role === 'food_stall'
+              ? '/dashboard'
+              : '/organizer/profile';
 
     return (
         <header className="topbar">
@@ -26,11 +31,11 @@ const Topbar = () => {
                 </button>
 
                 <Link to={profilePath} className="profile-menu" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <div className="avatar" style={{ background: 'var(--primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>
+                    <div className={`avatar${user.avatar ? '' : ' avatar-placeholder'}`}>
                         {user.avatar ? (
                             <img src={user.avatar} alt="Profile avatar" />
                         ) : (
-                            <span style={{ fontSize: '1.2rem' }}>{displayName.charAt(0)}</span>
+                            <span className="avatar-initial">{displayName.charAt(0)}</span>
                         )}
                     </div>
                     <div className="profile-info">
