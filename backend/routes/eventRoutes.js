@@ -19,7 +19,9 @@ const {
   adminDecideEvent,
   uploadStallMap,
   bookFoodStall,
-  updateStallBookingStatus
+  updateStallBookingStatus,
+  getOrganizerRegistrations,
+  updateRegistrationStatus
 } = require('../controllers/eventController');
 
 router.post('/', protect, createEvent);
@@ -29,6 +31,10 @@ router.get('/organizer', protect, getOrganizerEvents);
 router.post('/:id/register', protect, registerForEvent);
 router.get('/my-registrations', protect, getMyRegistrations);
 router.patch('/:id/status', protect, updateEventStatus);
+
+// Organizer specific routes for registrations
+router.get('/organizer/registrations', protect, organizer, getOrganizerRegistrations);
+router.patch('/registrations/:registrationId/status', protect, organizer, updateRegistrationStatus);
 
 // Admin routes
 const { admin } = require('../middleware/auth');
