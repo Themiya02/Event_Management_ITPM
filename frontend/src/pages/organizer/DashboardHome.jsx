@@ -31,12 +31,12 @@ const DashboardHome = () => {
     // Calculate real stats
     const totalEvents = events.length;
     const activeAttendees = events.reduce((acc, ev) => acc + (ev.registrationsCount || 0), 0);
-    const pendingEvents = events.filter(e => e.status?.toLowerCase() === 'pending').length;
+    const revenue = events.filter(e => e.isPaid).length * 500; // Mock revenue calculation based on paid events
 
     const stats = [
         { label: 'Total Events', value: totalEvents.toString(), trend: '+0%', isPositive: true },
         { label: 'Active Attendees', value: activeAttendees.toString(), trend: '+0%', isPositive: true },
-        { label: 'Pending Events', value: pendingEvents.toString(), trend: '+0%', isPositive: true },
+        { label: 'Est. Revenue', value: `$${revenue}`, trend: '+0%', isPositive: true },
     ];
 
     const recentEvents = events.slice(0, 4).map(ev => ({

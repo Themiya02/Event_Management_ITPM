@@ -1,104 +1,104 @@
 /* Admin-specific additions on top of the shared sidebar CSS */
 .admin-role-badge {
-  display: block;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--primary-color);
-  margin-top: 2px;
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-top: 2px;
 }
 
 .nav-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  margin: 1.5rem 0;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 1.5rem 0;
 }
 
 /* Accordion Specific Targeting */
 .nav-accordion-group {
-  margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .nav-accordion-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.85rem 1rem;
-  border-radius: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .nav-accordion-header:hover {
-  background: var(--surface-color-hover);
-  color: var(--text-main);
+    background: var(--surface-color-hover);
+    color: var(--text-main);
 }
 
 .nav-accordion-header.child-active {
-  background: rgba(167, 139, 250, 0.08);
-  color: var(--primary-color);
+    background: rgba(167, 139, 250, 0.08);
+    color: var(--primary-color);
 }
 
 .accordion-title-flex {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
 }
 
 .chevron.rotated {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 .nav-accordion-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease-in-out, opacity 0.3s;
-  opacity: 0;
-  margin-left: 2.8rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out, opacity 0.3s;
+    opacity: 0;
+    margin-left: 2.8rem;
 }
 
 .nav-accordion-content.expanded {
-  max-height: 200px;
-  opacity: 1;
-  margin-top: 0.2rem;
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 0.2rem;
 }
 
 .sub-nav-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    border-left: 1px solid rgba(255,255,255,0.1);
 }
 
 .sub-nav-link {
-  display: block;
-  padding: 0.6rem 1rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  border-radius: 0 8px 8px 0;
-  transition: all 0.2s;
-  position: relative;
-  border-left: 2px solid transparent;
-  margin-left: -1px;
+    display: block;
+    padding: 0.6rem 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    border-radius: 0 8px 8px 0;
+    transition: all 0.2s;
+    position: relative;
+    border-left: 2px solid transparent;
+    margin-left: -1px;
 }
 
 .sub-nav-link:hover {
-  color: var(--text-main);
-  background: var(--surface-color-hover);
+    color: var(--text-main);
+    background: var(--surface-color-hover);
 }
 
 .sub-nav-link.active {
-  color: var(--primary-color);
-  font-weight: 600;
-  border-left-color: var(--primary-color);
-  background: rgba(167, 139, 250, 0.05);
+    color: var(--primary-color);
+    font-weight: 600;
+    border-left-color: var(--primary-color);
+    background: rgba(167, 139, 250, 0.05);
 }
 
 .empty-domain-notice {
@@ -109,138 +109,4 @@
     padding: 0.5rem 1rem;
     font-weight: 600;
     border-left: 1px dashed rgba(255,255,255,0.1);
-}
-
-/* —— Admin sidebar only: blue & white (does not affect user sidebar) —— */
-.admin-sidebar.glass-panel {
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08), 0 2px 8px rgba(15, 23, 42, 0.04);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-}
-
-.admin-sidebar.glass-panel:hover {
-    box-shadow: 0 12px 40px rgba(37, 99, 235, 0.1), 0 4px 12px rgba(15, 23, 42, 0.06);
-}
-
-.admin-sidebar .logo-icon {
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-}
-
-.admin-sidebar .text-gradient {
-    background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.admin-sidebar .admin-role-badge {
-    color: #2563eb;
-}
-
-.admin-sidebar .nav-link {
-    color: #64748b;
-}
-
-.admin-sidebar .nav-link:hover {
-    color: #2563eb;
-}
-
-.admin-sidebar .nav-link:hover::before {
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0) 100%);
-}
-
-.admin-sidebar .nav-link.active {
-    color: #1d4ed8;
-    background: #eff6ff;
-    border-left: 4px solid #2563eb;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
-}
-
-.admin-sidebar .nav-link.active .nav-icon {
-    color: #2563eb;
-    filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.35));
-}
-
-.admin-sidebar .sidebar-footer {
-    border-top-color: #e2e8f0;
-}
-
-.admin-sidebar .nav-divider {
-    background: #e2e8f0;
-}
-
-.admin-sidebar .nav-accordion-header:hover {
-    background: #f1f5f9;
-    color: #0f172a;
-}
-
-.admin-sidebar .nav-accordion-header.child-active {
-    background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
-}
-
-.admin-sidebar .sub-nav-list {
-    border-left-color: #e2e8f0;
-}
-
-.admin-sidebar .sub-nav-link:hover {
-    background: #f8fafc;
-    color: #0f172a;
-}
-
-.admin-sidebar .sub-nav-link.active {
-    color: #1d4ed8;
-    border-left-color: #2563eb;
-    background: rgba(59, 130, 246, 0.08);
-}
-
-.admin-sidebar .empty-domain-notice {
-    color: #94a3b8;
-    border-left-color: #cbd5e1;
-}
-
-.admin-sidebar .nav-accordion-header .chevron,
-.admin-sidebar .nav-accordion-header .nav-icon {
-    color: inherit;
-}
-
-/* Admin layout only: topbar notification + profile (blue & white, matches sidebar) */
-.admin-app-shell .icon-btn {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    color: #64748b;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-}
-
-.admin-app-shell .icon-btn:hover {
-    color: #2563eb;
-    background: #eff6ff;
-    border-color: #bfdbfe;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.14);
-}
-
-.admin-app-shell .notification-btn .badge {
-    background: #2563eb;
-    border: 2px solid #ffffff;
-    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25), 0 0 10px rgba(37, 99, 235, 0.35);
-}
-
-.admin-app-shell .profile-menu:hover {
-    background: #eff6ff;
-}
-
-.admin-app-shell .avatar {
-    border-color: #3b82f6;
-    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.18);
-}
-
-.admin-app-shell .avatar-placeholder {
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-}
-
-.admin-app-shell .profile-role {
-    color: #2563eb;
 }

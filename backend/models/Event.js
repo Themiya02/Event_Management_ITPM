@@ -7,7 +7,6 @@ const eventSchema = new mongoose.Schema({
     required: true
   },
   name: { type: String, required: true, trim: true },
-  artistName: { type: String, trim: true },
   description: { type: String, trim: true },
   imageUrl: { type: String, default: '' },
   date: { type: Date, required: true },
@@ -35,35 +34,15 @@ const eventSchema = new mongoose.Schema({
   },
   registrationsCount: { type: Number, default: 0 },
   stallMapUrl: { type: String, default: '' },
-  stallPricing: [{
-    stall: { type: String, trim: true, required: true },
-    price: { type: Number, required: true, min: 0 }
-  }],
-  bankDetails: {
-    accountName: { type: String, default: '' },
-    bankName: { type: String, default: '' },
-    accountNumber: { type: String, default: '' },
-    branch: { type: String, default: '' },
-    instructions: { type: String, default: '' }
-  },
   bookedStalls: [{
     vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     vendorName: { type: String },
-    /** Same email the vendor used when they registered (captured at application submit). */
-    vendorEmail: { type: String, trim: true, default: '' },
-    stallLocation: { type: String, default: '' },
     stallName: { type: String },
     description: { type: String },
     foodType: { type: String },
     needsElectricity: { type: Boolean, default: false },
     needsWater: { type: Boolean, default: false },
     totalPrice: { type: Number },
-    paymentReceipt: { type: String, default: '' },
-    status: {
-      type: String,
-      enum: ['Pending', 'Approved', 'Rejected'],
-      default: 'Pending'
-    },
     x: { type: Number },
     y: { type: Number },
     bookedAt: { type: Date, default: Date.now }
