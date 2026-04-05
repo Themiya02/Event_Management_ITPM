@@ -1,0 +1,138 @@
+.global-footer {
+  margin-top: 40px;
+  padding: 40px 0 0 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  width: 100%;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px 40px 40px;
+  gap: 40px;
+}
+
+.footer-left {
+  max-width: 350px;
+}
+
+.footer-brand {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+}
+
+.footer-tagline {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+}
+
+.social-icon:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-neon);
+  border-color: var(--primary-color);
+}
+
+.footer-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-heading {
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 8px;
+}
+
+.footer-heading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 40px;
+  background: var(--primary-gradient);
+  border-radius: 2px;
+}
+
+.faculty-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faculty-list li {
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color var(--transition-normal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.faculty-list li::before {
+  content: '→';
+  color: var(--primary-color);
+  margin-right: 8px;
+  font-weight: bold;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all var(--transition-normal);
+}
+
+.faculty-list li:hover {
+  color: var(--primary-color);
+}
+
+.faculty-list li:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.footer-bottom {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    padding: 0 20px 30px 20px;
+  }
+}

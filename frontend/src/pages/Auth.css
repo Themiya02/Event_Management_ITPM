@@ -167,6 +167,18 @@ body {
     text-decoration: underline;
 }
 
+.auth-home-link {
+    color: #0f172a;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.auth-home-link:hover {
+    text-decoration: underline;
+    color: #1e40af;
+}
+
 /* Forgot password and remember me optional styles area */
 .auth-extras {
     display: flex;

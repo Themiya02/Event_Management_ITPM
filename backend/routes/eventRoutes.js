@@ -18,16 +18,13 @@ const {
   updateApprovalCheckbox,
   adminDecideEvent,
   uploadStallMap,
-  updateBankDetails,
-  deleteBankDetails,
   bookFoodStall,
-  updateStallBookingStatus,
-  updateStallBooking,
-  deleteStallBooking
+  updateStallBookingStatus
 } = require('../controllers/eventController');
 
 router.post('/', protect, createEvent);
 router.get('/mapped', protect, getEventsWithMaps);
+router.get('/public/approved', getApprovedEvents);
 router.get('/approved', protect, getApprovedEvents);
 router.get('/organizer', protect, getOrganizerEvents);
 router.post('/:id/register', protect, registerForEvent);
@@ -42,8 +39,6 @@ router.get('/admin/all', protect, admin, getAdminAllEvents);
 router.patch('/admin/:id/approval', protect, admin, updateApprovalCheckbox);
 router.patch('/admin/:id/decide', protect, admin, adminDecideEvent);
 router.patch('/admin/:id/stall-map', protect, admin, uploadStallMap);
-router.patch('/admin/:id/bank-details', protect, admin, updateBankDetails);
-router.delete('/admin/:id/bank-details', protect, admin, deleteBankDetails);
 router.patch('/admin/stall-booking/:eventId/:bookingId/status', protect, admin, updateStallBookingStatus);
 
 router.get('/:id', protect, getEventById);
@@ -51,8 +46,6 @@ router.put('/:id', protect, updateEvent);
 router.delete('/:id', protect, deleteEvent);
 
 router.post('/:id/book-stall', protect, bookFoodStall);
-router.patch('/:eventId/stall-booking/:bookingId', protect, updateStallBooking);
-router.delete('/:eventId/stall-booking/:bookingId', protect, deleteStallBooking);
 
 
 module.exports = router;

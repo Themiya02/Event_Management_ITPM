@@ -51,12 +51,6 @@ const eventSchema = new mongoose.Schema({
     needsElectricity: { type: Boolean, default: false },
     needsWater: { type: Boolean, default: false },
     totalPrice: { type: Number },
-    paymentReceipt: { type: String, default: '' },
-    status: {
-      type: String,
-      enum: ['Pending', 'Approved', 'Rejected'],
-      default: 'Pending'
-    },
     x: { type: Number },
     y: { type: Number },
     bookedAt: { type: Date, default: Date.now }

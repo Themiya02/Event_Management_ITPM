@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import UserDashboard from './pages/user/UserDashboard';
@@ -15,6 +15,7 @@ import EditEvent from './pages/organizer/EditEvent';
 import TrackEvent from './pages/organizer/TrackEvent';
 import EventsList from './pages/organizer/EventsList';
 import Settings from './pages/organizer/Settings';
+import OrganizerArtists from './pages/organizer/OrganizerArtists';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UpcomingEvents from './pages/admin/UpcomingEvents';
 import ApprovedEvents from './pages/admin/ApprovedEvents';
@@ -25,22 +26,48 @@ import SponsorDashboard from './pages/sponsor/SponsorDashboard';
 import FoodDashboard from './pages/food/FoodDashboard';
 import FoodStallMapUpload from './pages/admin/FoodStallMapUpload';
 import FoodStallBookings from './pages/admin/FoodStallBookings';
+import AddArtists from './pages/artists/AddArtists';
+import Artists from './pages/artists/Artists';
+import UserView from './pages/user/UserView';
+import RatingAnalyze from './pages/artists/RatingAnalyze';
+import UserArtists from './pages/user/UserArtists';
+import UserRating from './pages/user/UserRating';
+import AdminArtistsView from './pages/admin/AdminArtistsView';
 import SponsorshipPackages from './pages/Sponsorship/SponsorshipPackages';
 import SponsorshipApply from './pages/Sponsorship/SponsorshipApply';
 import OTPVerification from './pages/Sponsorship/OTPVerification';
 import RoleRoute from './components/RoleRoute';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
+import Home from './pages/Home';
+import GlobalNavbar from './components/layout/GlobalNavbar';
+import GlobalFooter from './components/layout/GlobalFooter';
 import './App.css';
 
-function App() {
+const AppContent = () => {
+  const location = useLocation();
+  const { user } = useAuth();
+  
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  
+  // Identify dashboard-style pages that already have their own sidebars/topbars
+  const isDashboardPage = location.pathname.startsWith('/dashboard') || 
+                          location.pathname.startsWith('/organizer') || 
+                          location.pathname.startsWith('/admin') ||
+                          location.pathname.startsWith('/sponsor') ||
+                          location.pathname.startsWith('/food');
+                          
+  // Only show global navbar on public-style pages (Home, Artists, etc.) 
+  // and NOT on dashboard pages to avoid double headers.
+  const showNavAndFooter = !isAuthPage && user && !isDashboardPage;
+
   return (
-    <AuthProvider>
-      <Router>
-        <div className="app">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+    <div className="app">
+      {showNavAndFooter && <GlobalNavbar />}
+      <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <Routes>
+          <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+          <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
 
 
             <Route
@@ -165,6 +192,17 @@ function App() {
               }
             />
 
+            <Route
+              path="/organizer/artists"
+              element={
+                <PrivateRoute allowedRoles={['organizer']}>
+                  <OrganizerLayout>
+                    <Artists />
+                  </OrganizerLayout>
+                </PrivateRoute>
+              }
+            />
+
 
             {/* Admin Routes */}
             <Route
@@ -255,6 +293,69 @@ function App() {
               }
             />
 
+            <Route
+              path="/admin/artists"
+              element={
+                <PrivateRoute>
+                  <AdminLayout>
+                    <AddArtists />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/admin/artists/view"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Artists />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/artists/analyze"
+              element={
+                <PrivateRoute allowedRoles={['admin', 'organizer']}>
+                  {user?.role === 'admin' ? (
+                    <AdminLayout>
+                      <RatingAnalyze />
+                    </AdminLayout>
+                  ) : (
+                    <OrganizerLayout>
+                      <RatingAnalyze />
+                    </OrganizerLayout>
+                  )}
+                </PrivateRoute>
+              }
+            />
+
+            {/* Public Domains */}
+            <Route path="/artists" element={<Artists />} />
+            <Route
+              path="/user/artists"
+              element={
+                <PrivateRoute>
+                  <UserLayout>
+                    <Artists />
+                  </UserLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/user/rating"
+              element={
+                <PrivateRoute>
+                  <UserLayout>
+                    <UserRating />
+                  </UserLayout>
+                </PrivateRoute>
+              }
+            />
+
             {/* New Domains */}
             <Route
               path="/sponsor/dashboard"
@@ -301,9 +402,19 @@ function App() {
               }
             />
 
-            <Route path="/" element={<Navigate to="/login" />} />
-          </Routes>
-        </div>
+            <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
+        </Routes>
+      </main>
+      {showNavAndFooter && <GlobalFooter />}
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
       </Router>
     </AuthProvider>
   );
