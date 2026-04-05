@@ -105,7 +105,7 @@ const Artists = () => {
           filteredArtists.map(artist => (
             <div key={artist._id} className="artist-card glass-panel">
               <div className="artist-image-container">
-                <img src={`${import.meta.env.VITE_API_URL}/pages/images/${artist.image}`} alt={artist.name} className="artist-photo" />
+                <img src={`${import.meta.env.VITE_API_URL}/pages/images/${artist.image}`} alt={artist.name} className="artist-photo" loading="lazy" />
               </div>
               <div className="artist-info">
                  <h3 className="artist-name">{artist.name ?? artist.artistName}</h3>

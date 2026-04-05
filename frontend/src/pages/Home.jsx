@@ -182,7 +182,7 @@ const Home = () => {
                 {popularArtists.map(artist => (
                   <div key={artist._id} className="artist-mini-card glass-panel">
                     <div className="artist-mini-image-wrap">
-                      <img src={`${import.meta.env.VITE_API_URL}/pages/images/${artist.image}`} alt={artist.name} />
+                      <img src={`${import.meta.env.VITE_API_URL}/pages/images/${artist.image}`} alt={artist.name} loading="lazy" />
                       <div className="artist-rating-badge">
                         ⭐ {(artist.averageRating || 0).toFixed(1)}
                       </div>

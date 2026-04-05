@@ -68,7 +68,7 @@ exports.createArtist = async (req, res) => {
 
 exports.getAllArtists = async (req, res) => {
   try {
-    const artists = await Artist.find({}).sort('-createdAt');
+    const artists = await Artist.find({}).lean().sort('-createdAt');
     res.json(artists);
   } catch (error) {
     res.status(500).json({ message: error.message });
