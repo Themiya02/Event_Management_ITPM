@@ -11,7 +11,7 @@ import './FoodDashboard.css';
 
 const ELECTRICITY_PRICE = 3000;
 const WATER_PRICE = 2000;
-
+//fix
 const FoodDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
