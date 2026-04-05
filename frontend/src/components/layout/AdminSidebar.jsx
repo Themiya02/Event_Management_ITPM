@@ -65,7 +65,7 @@ const AdminSidebar = () => {
     };
 
     return (
-        <aside className="sidebar glass-panel admin-sidebar">
+        <aside className="sidebar glass-panel">
             <div className="sidebar-header">
                 <div className="logo-icon"></div>
                 <div>

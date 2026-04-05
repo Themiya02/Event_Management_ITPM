@@ -34,10 +34,6 @@ const eventSchema = new mongoose.Schema({
   },
   registrationsCount: { type: Number, default: 0 },
   stallMapUrl: { type: String, default: '' },
-  stallPricing: [{
-    stall: { type: String, trim: true, required: true },
-    price: { type: Number, required: true, min: 0 }
-  }],
   bankDetails: {
     accountName: { type: String, default: '' },
     bankName: { type: String, default: '' },
@@ -48,8 +44,6 @@ const eventSchema = new mongoose.Schema({
   bookedStalls: [{
     vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     vendorName: { type: String },
-    /** Same email the vendor used when they registered (captured at application submit). */
-    vendorEmail: { type: String, trim: true, default: '' },
     stallLocation: { type: String, default: '' },
     stallName: { type: String },
     description: { type: String },
