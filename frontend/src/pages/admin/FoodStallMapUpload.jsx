@@ -617,5 +617,5 @@ const FoodStallMapUpload = () => {
         </div>
     );
 };
-
+//fix
 export default FoodStallMapUpload;
