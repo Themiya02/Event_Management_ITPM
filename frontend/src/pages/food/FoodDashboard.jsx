@@ -1,16 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Icon } from '@iconify/react';
 import Swal from 'sweetalert2';
+import Topbar from '../../components/layout/Topbar';
+import '../../components/layout/OrganizerLayout.css';
+import '../user/UserDashboard.css';
 import './FoodDashboard.css';
 
-const BASE_STALL_PRICE = 10000;
 const ELECTRICITY_PRICE = 3000;
 const WATER_PRICE = 2000;
 
 const FoodDashboard = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -36,14 +40,32 @@ const FoodDashboard = () => {
   const isDuplicateStallLocation = Boolean(
     selectedEvent &&
     normalizedInputStall &&
-    (selectedEvent.bookedStalls || []).some(
-      (stall) => String(stall.stallLocation || '').trim().toLowerCase() === normalizedInputStall
-    )
+    (selectedEvent.bookedStalls || []).some((stall) => {
+      const same =
+        String(stall.stallLocation || '').trim().toLowerCase() === normalizedInputStall;
+      if (!same) return false;
+      if (editingBookingId && String(stall._id) === String(editingBookingId)) return false;
+      return true;
+    })
   );
 
+  const stallOptions = selectedEvent?.stallPricing || [];
+  const hasStallOptions = stallOptions.length > 0;
+
+  const selectedStallRow = useMemo(() => {
+    if (!stallOptions.length || !stallLocation.trim()) return null;
+    const key = stallLocation.trim().toLowerCase();
+    return stallOptions.find(
+      (s) => String(s.stall || '').trim().toLowerCase() === key
+    );
+  }, [stallOptions, stallLocation]);
+
+  const baseStallAmount = selectedStallRow != null ? Number(selectedStallRow.price) : null;
+
   const totalPrice = useMemo(() => {
-    return BASE_STALL_PRICE + (needsElectricity ? ELECTRICITY_PRICE : 0) + (needsWater ? WATER_PRICE : 0);
-  }, [needsElectricity, needsWater]);
+    const base = baseStallAmount != null && !Number.isNaN(baseStallAmount) ? baseStallAmount : 0;
+    return base + (needsElectricity ? ELECTRICITY_PRICE : 0) + (needsWater ? WATER_PRICE : 0);
+  }, [baseStallAmount, needsElectricity, needsWater]);
 
   const allMyBookings = useMemo(() => {
     return events.flatMap((event) =>
@@ -77,8 +99,6 @@ const FoodDashboard = () => {
   );
 
   useEffect(() => {
-    document.body.classList.add('food-modern-bg');
-
     const fetchEvents = async () => {
       try {
         const res = await axios.get(`${apiUrl}/api/events/mapped`, {
@@ -93,11 +113,12 @@ const FoodDashboard = () => {
     };
 
     fetchEvents();
-
-    return () => {
-      document.body.classList.remove('food-modern-bg');
-    };
   }, [apiUrl]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const resetForm = () => {
     setStallName('');
@@ -123,34 +144,44 @@ const FoodDashboard = () => {
     setErrorMessage('');
     setSuccessMessage('');
 
+    const swalValidation = (text) =>
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cannot submit',
+        text,
+        confirmButtonColor: '#2563eb'
+      });
+
     if (!stallName.trim()) {
-      setErrorMessage('Stall name is required.');
+      await swalValidation('Stall name is required.');
       return;
     }
     if (stallName.trim().length < 5) {
-      setErrorMessage('Stall name must have at least 5 letters.');
+      await swalValidation('Stall name must have at least 5 letters.');
+      return;
+    }
+    if (!hasStallOptions) {
+      await swalValidation('This event has no stalls configured yet. Please contact the organizer.');
       return;
     }
     if (!stallLocation.trim()) {
-      setErrorMessage('Stall location is required.');
+      await swalValidation('Please select a stall location.');
       return;
     }
-    if (!/^[a-zA-Z]$/.test(stallLocation.trim())) {
-      setErrorMessage('Stall location must be exactly one single letter (e.g., A, B, C).');
+    if (!selectedStallRow) {
+      await swalValidation('Selected stall is not valid for this event.');
       return;
     }
-    
-    // Skip duplicate check if we are editing and the location hasn't changed
-    const currentBooking = editingBookingId ? allMyBookings.find(b => b._id === editingBookingId) : null;
-    const locationChanged = currentBooking ? currentBooking.stallLocation.toLowerCase() !== normalizedInputStall : true;
-    
-    if (locationChanged && isDuplicateStallLocation) {
-      setErrorMessage(`Stall "${stallLocation.trim()}" is already in use. Please enter a different stall.`);
+
+    if (isDuplicateStallLocation) {
+      await swalValidation(
+        `Stall "${stallLocation.trim()}" is already in use. Please choose another stall.`
+      );
       return;
     }
-    
+
     if (!editingBookingId && !paymentReceipt) {
-      setErrorMessage('Payment receipt is required.');
+      await swalValidation('Payment receipt is required.');
       return;
     }
 
@@ -158,7 +189,6 @@ const FoodDashboard = () => {
     try {
       let res;
       if (editingBookingId) {
-        // UPDATE EXISTING
         res = await axios.patch(
           `${apiUrl}/api/events/${selectedEvent._id}/stall-booking/${editingBookingId}`,
           {
@@ -168,15 +198,19 @@ const FoodDashboard = () => {
             foodType,
             needsElectricity,
             needsWater,
-            paymentReceipt // only send if vendor uploaded a NEW one
+            paymentReceipt
           },
           {
             headers: { Authorization: `Bearer ${getToken()}` }
           }
         );
-        setSuccessMessage('Application updated successfully.');
+        await Swal.fire({
+          icon: 'success',
+          title: 'Application updated',
+          text: 'Your stall application was updated successfully.',
+          confirmButtonColor: '#2563eb'
+        });
       } else {
-        // CREATE NEW
         res = await axios.post(
           `${apiUrl}/api/events/${selectedEvent._id}/book-stall`,
           {
@@ -192,14 +226,26 @@ const FoodDashboard = () => {
             headers: { Authorization: `Bearer ${getToken()}` }
           }
         );
-        setSuccessMessage('Application submitted. Status is Pending until admin approval.');
+        await Swal.fire({
+          icon: 'success',
+          title: 'Application submitted',
+          text: 'Your application was received. Status stays Pending until an admin approves it.',
+          confirmButtonColor: '#2563eb'
+        });
       }
 
       setSelectedEvent(res.data);
       setEvents((prev) => prev.map((event) => (event._id === res.data._id ? res.data : event)));
       resetForm();
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'Failed to process booking. Please try again.');
+      const msg =
+        error.response?.data?.message || 'Failed to process booking. Please try again.';
+      await Swal.fire({
+        icon: 'error',
+        title: 'Submission failed',
+        text: msg,
+        confirmButtonColor: '#2563eb'
+      });
     } finally {
       setSubmitting(false);
     }
@@ -240,18 +286,52 @@ const FoodDashboard = () => {
       confirmButtonText: 'Yes, delete it!'
     });
 
-    if (loading) return <div style={{ padding: '3rem', textAlign: 'center' }}>Loading vendor data...</div>;
+    if (result.isConfirmed) {
+      try {
+        const res = await axios.delete(
+          `${apiUrl}/api/events/${event._id}/stall-booking/${booking._id}`,
+          { headers: { Authorization: `Bearer ${getToken()}` } }
+        );
+        
+        // Update local state by removing the booking from the event
+        setEvents(prev => prev.map(e => {
+            if (e._id === event._id) {
+                return {
+                    ...e,
+                    bookedStalls: e.bookedStalls.filter(s => s._id !== booking._id)
+                };
+            }
+            return e;
+        }));
+        
+        Swal.fire('Deleted!', 'Your application has been removed.', 'success');
+      } catch (error) {
+        Swal.fire('Error', error.response?.data?.message || 'Failed to delete.', 'error');
+      }
+    }
+  };
 
   if (loading) {
-    return <div className="food-loading">Loading vendor dashboard...</div>;
+    return (
+      <div className="food-loading food-loading-screen">
+        <div className="food-loading-spinner" aria-hidden />
+        <p>Loading vendor dashboard…</p>
+      </div>
+    );
   }
 
   return (
-    <div className="food-shell">
+    <div className="organizer-layout food-vendor-layout">
       <aside className="food-sidebar">
         <div className="food-sidebar-brand">
-          <h2>Vendor Portal</h2>
-          <p>Food Stall Workspace</p>
+          <div className="food-sidebar-header-row">
+            <div className="food-logo-icon" aria-hidden />
+            <div className="food-sidebar-brand-text">
+              <h2 className="food-sidebar-product-title">Eventio</h2>
+              <span className="food-vendor-role-badge">Vendor portal</span>
+              <p className="food-sidebar-tagline">Food stall workspace</p>
+            </div>
+          </div>
         </div>
         <nav className="food-sidebar-nav">
           <button
@@ -286,24 +366,37 @@ const FoodDashboard = () => {
           </button> */}
         </nav>
         <div className="food-sidebar-footer">
-          <p>{user?.name || 'Vendor'}</p>
-          <span>{user?.email || 'Signed in'}</span>
+          {/* <p>{user?.name || 'Vendor'}</p> */}
+          {/* <span>{user?.email || 'Signed in'}</span> */}
+          <button type="button" className="food-sidebar-logout" onClick={handleLogout}>
+            <svg className="food-sidebar-logout-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            Log Out
+          </button>
         </div>
       </aside>
 
-      <main className="food-main">
-        <header className="food-topbar">
-          <div>
-            <h1 className="text-gradient">Food Stall Vendor Portal</h1>
-            <p>Plan your stall, upload receipt, and track approval status in one place.</p>
-          </div>
-          <button onClick={logout} className="food-btn-outline">Logout</button>
-        </header>
+      <div className="main-wrapper admin-app-shell">
+        <Topbar />
+        <main className="content-area food-main">
+          <div className="food-vendor-dashboard animation-fade-in">
+            <div className="page-header-block">
+              <h1 className="page-main-title">FOOD STALL VENDOR PORTAL</h1>
+              <p className="page-main-subtitle">
+                Plan your stall, upload your receipt, and track approval in one place.
+              </p>
+            </div>
 
-        {!!errorMessage && <div className="food-alert food-alert-error">{errorMessage}</div>}
-        {!!successMessage && <div className="food-alert food-alert-success">{successMessage}</div>}
+            {!!errorMessage && <div className="food-alert food-alert-error">{errorMessage}</div>}
+            {!!successMessage && <div className="food-alert food-alert-success">{successMessage}</div>}
 
-        {activeTab === 'payments' ? (
+            {activeTab === 'payments' ? (
           <section className="food-payment-cards">
             <div className="food-section-intro glass-panel">
               <h2>Payment Details by Event</h2>
@@ -318,26 +411,37 @@ const FoodDashboard = () => {
               <div className="food-payment-grid">
                 {eventsWithBankDetails.map((event) => (
                   <article key={event._id} className="glass-panel food-payment-card">
-                    <div className="food-payment-card-head">
-                      <h3>{event.name}</h3>
-                      <button type="button" className="food-link-btn" onClick={() => openEvent(event)}>
-                        Open Event
-                      </button>
+                    <div className="card-img-wrapper food-payment-card-img" style={{ height: '160px' }}>
+                      {event.imageUrl ? (
+                        <img src={event.imageUrl} alt={event.name} />
+                      ) : (
+                        <div className="placeholder-img">
+                          <span>{event.name.charAt(0)}</span>
+                        </div>
+                      )}
                     </div>
-                    <p className="food-payment-meta">
-                      {new Date(event.date).toLocaleDateString()} at {event.time}
-                    </p>
-                    <div className="food-payment-details">
-                      <p><span>Account Name</span><strong>{event.bankDetails?.accountName || '-'}</strong></p>
-                      <p><span>Bank Name</span><strong>{event.bankDetails?.bankName || '-'}</strong></p>
-                      <p><span>Account Number</span><strong>{event.bankDetails?.accountNumber || '-'}</strong></p>
-                      <p><span>Branch</span><strong>{event.bankDetails?.branch || '-'}</strong></p>
-                    </div>
-                    {event.bankDetails?.instructions && (
-                      <p className="food-payment-instructions">
-                        <span>Instructions:</span> {event.bankDetails.instructions}
+                    <div className="food-payment-card-body">
+                      <div className="food-payment-card-head">
+                        <h3>{event.name}</h3>
+                        <button type="button" className="food-link-btn" onClick={() => openEvent(event)}>
+                          Open Event
+                        </button>
+                      </div>
+                      <p className="food-payment-meta">
+                        {new Date(event.date).toLocaleDateString()} at {event.time}
                       </p>
-                    )}
+                      <div className="food-payment-details">
+                        <p><span>Account Name</span><strong>{event.bankDetails?.accountName || '-'}</strong></p>
+                        <p><span>Bank Name</span><strong>{event.bankDetails?.bankName || '-'}</strong></p>
+                        <p><span>Account Number</span><strong>{event.bankDetails?.accountNumber || '-'}</strong></p>
+                        <p><span>Branch</span><strong>{event.bankDetails?.branch || '-'}</strong></p>
+                      </div>
+                      {event.bankDetails?.instructions && (
+                        <p className="food-payment-instructions">
+                          <span>Instructions:</span> {event.bankDetails.instructions}
+                        </p>
+                      )}
+                    </div>
                   </article>
                 ))}
               </div>
@@ -351,7 +455,7 @@ const FoodDashboard = () => {
                 <h3>{events.length}</h3>
               </article>
               <article className="glass-panel food-stat-card">
-                <p>My Applications</p>
+                <p>MY APPLICATIONS</p>
                 <h3>{allMyBookings.length}</h3>
               </article>
               <article className="glass-panel food-stat-card">
@@ -366,29 +470,57 @@ const FoodDashboard = () => {
                 <p>Admins have not uploaded stall maps yet. Check back later.</p>
               </div>
             ) : (
-              <section className="food-events-grid">
-                {events.map((event) => (
-                  <article
-                    key={event._id}
-                    className="glass-panel food-event-card"
-                    onClick={() => openEvent(event)}
-                  >
-                    <div className="food-event-meta">
-                      <h3>{event.name}</h3>
-                      <span>{new Date(event.date).toLocaleDateString()} at {event.time}</span>
-                    </div>
-                    <div className="food-event-footer">
-                      <small>{event.bookedStalls?.length || 0} stalls already booked</small>
-                      <strong>Open Booking</strong>
-                    </div>
-                  </article>
-                ))}
+              <section className="events-grid food-vendor-events-grid">
+                {events.map((event) => {
+                  const dateObj = new Date(event.date);
+                  const month = dateObj.toLocaleString('default', { month: 'short' });
+                  const day = dateObj.getDate();
+                  return (
+                    <article
+                      key={event._id}
+                      className="event-card glass-panel food-vendor-event-card animation-fade-in"
+                      onClick={() => openEvent(event)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          openEvent(event);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="card-img-wrapper" style={{ height: '160px' }}>
+                        {event.imageUrl ? (
+                          <img src={event.imageUrl} alt={event.name} />
+                        ) : (
+                          <div className="placeholder-img">
+                            <span>{event.name.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="card-content">
+                        <h3 style={{ marginBottom: '0.35rem' }}>{event.name}</h3>
+                        <div className="card-details">
+                          <div className="detail-item">
+                            <span>📅</span> {month} {day}, {event.time}
+                          </div>
+                        </div>
+                        <div className="food-event-footer">
+                          <small className="food-event-footer-meta">
+                            {event.bookedStalls?.length || 0} stalls already booked
+                          </small>
+                          <span className="food-open-booking-btn">Open Booking</span>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
               </section>
             )}
 
             {allMyBookings.length > 0 && (
               <section className="glass-panel food-my-applications">
-                <h2>My Applications</h2>
+                <h2>MY APPLICATIONS</h2>
                 <div className="food-application-list">
                   {allMyBookings.slice(0, 5).map((booking) => (
                     <div key={booking._id} className="food-application-item">
@@ -416,8 +548,14 @@ const FoodDashboard = () => {
                             </button>
                           </div>
                         )}
+                        <span className={`food-status-pill food-status-${formatStatus(booking.status).toLowerCase()}`}>
+                          {formatStatus(booking.status)}
+                        </span>
+                      </div>
                     </div>
+                  ))}
                 </div>
+              </section>
             )}
           </>
         ) : (
@@ -517,17 +655,29 @@ const FoodDashboard = () => {
               <form onSubmit={handleBookStall} className="food-form">
                 <label>
                   Stall Location *
-                  <input
-                    type="text"
-                    value={stallLocation}
-                    onChange={(e) => setStallLocation(e.target.value)}
-                    placeholder="Example: A"
-                    required
-                  />
+                  {!hasStallOptions ? (
+                    <p className="food-inline-error" style={{ marginTop: '0.35rem' }}>
+                      No stalls are available for this event yet. The organizer must add stalls and pricing on the map
+                      upload screen.
+                    </p>
+                  ) : (
+                    <select
+                      value={stallLocation}
+                      onChange={(e) => setStallLocation(e.target.value)}
+                      required
+                    >
+                      <option value="">Select a stall…</option>
+                      {stallOptions.map((row) => (
+                        <option key={String(row.stall)} value={String(row.stall)}>
+                          {String(row.stall)} — Rs {Number(row.price).toLocaleString()}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </label>
-                {stallLocation.trim() && isDuplicateStallLocation && (
+                {hasStallOptions && stallLocation.trim() && isDuplicateStallLocation && (
                   <p className="food-inline-error">
-                    This stall is already taken. Please choose another stall letter/code.
+                    This stall is already taken. Please choose another stall.
                   </p>
                 )}
 
@@ -569,18 +719,25 @@ const FoodDashboard = () => {
                 </div>
 
                 <div className="food-price-box">
-                  <p><span>Base Price</span><strong>Rs {BASE_STALL_PRICE.toLocaleString()}</strong></p>
+                  <p>
+                    <span>Base Price</span>
+                    <strong>
+                      {baseStallAmount != null && !Number.isNaN(baseStallAmount)
+                        ? `Rs ${baseStallAmount.toLocaleString()}`
+                        : '—'}
+                    </strong>
+                  </p>
                   {needsElectricity && <p><span>Electricity</span><strong>Rs {ELECTRICITY_PRICE.toLocaleString()}</strong></p>}
                   {needsWater && <p><span>Water</span><strong>Rs {WATER_PRICE.toLocaleString()}</strong></p>}
                   <p className="total"><span>Total</span><strong>Rs {totalPrice.toLocaleString()}</strong></p>
                 </div>
 
                 <label>
-                  Payment Receipt *
+                  Payment Receipt {editingBookingId ? '(optional — upload only if replacing)' : '*'}
                   <input
                     type="file"
                     accept="image/*"
-                    required
+                    required={!editingBookingId}
                     onChange={(e) => {
                       const file = e.target.files[0];
                       if (!file) return;
@@ -591,7 +748,11 @@ const FoodDashboard = () => {
                   />
                 </label>
 
-                <button type="submit" className="food-submit-btn" disabled={submitting || (stallLocation.trim() && isDuplicateStallLocation && !editingBookingId)}>
+                <button
+                  type="submit"
+                  className="food-submit-btn"
+                  disabled={submitting || !hasStallOptions || isDuplicateStallLocation}
+                >
                   {submitting ? 'Processing...' : (editingBookingId ? 'Update Application' : 'Submit Application')}
                 </button>
 
@@ -602,7 +763,9 @@ const FoodDashboard = () => {
             </div>
           </section>
         )}
-      </main>
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
