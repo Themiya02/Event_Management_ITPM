@@ -15,7 +15,7 @@ exports.getEventsWithMaps = async (req, res) => {
 exports.createEvent = async (req, res) => {
   try {
     const {
-      name, description, date, time, location, campusType,
+      name, artistName, description, date, time, location, campusType,
       isPaid, price, isOpenRegistration, seatLimit, imageUrl
     } = req.body;
 
@@ -28,6 +28,7 @@ exports.createEvent = async (req, res) => {
     const event = await Event.create({
       organizer: req.user._id,
       name,
+      artistName,
       description,
       date,
       time,
@@ -143,7 +144,7 @@ exports.getEventById = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const {
-      name, description, date, time, location, campusType,
+      name, artistName, description, date, time, location, campusType,
       isPaid, price, isOpenRegistration, seatLimit, imageUrl
     } = req.body;
 
@@ -151,6 +152,7 @@ exports.updateEvent = async (req, res) => {
     if (!event) return res.status(404).json({ message: 'Event not found' });
 
     event.name = name || event.name;
+    event.artistName = artistName !== undefined ? artistName : event.artistName;
     event.description = description || event.description;
     event.date = date || event.date;
     event.time = time || event.time;
