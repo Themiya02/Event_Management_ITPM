@@ -35,8 +35,16 @@ const Login = () => {
         return;
       }
       
-      if (userData.role) {
-        navigate('/');
+      if (userData.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (userData.role === 'organizer') {
+        navigate('/organizer/dashboard');
+      } else if (userData.role === 'sponsor') {
+        navigate('/sponsor/dashboard');
+      } else if (userData.role === 'food_stall') {
+        navigate('/food/dashboard');
+      } else {
+        navigate('/dashboard');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to login');
@@ -126,9 +134,9 @@ const Login = () => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-
+        
         <p className="auth-footer">
-          Don&apos;t have an account? <Link to="/register">Register</Link>
+          Don't have an account? <Link to="/register">Register</Link>
         </p>
       </div>
     </div>

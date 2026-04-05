@@ -44,32 +44,6 @@ const AdminDashboard = () => {
         fetchData();
     }, []);
 
-    const handleUploadMap = async (eventId, e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-            try {
-                const user = JSON.parse(localStorage.getItem('user'));
-                const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                await axios.patch(`${apiUrl}/api/events/admin/${eventId}/stall-map`, {
-                    stallMapUrl: reader.result
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                
-                setAllEvents(prev => prev.map(ev => ev._id === eventId ? { ...ev, stallMapUrl: reader.result } : ev));
-                alert('Food stall map uploaded successfully!');
-            } catch (error) {
-                console.error('Failed to upload map', error);
-                alert('Failed to upload map');
-            }
-        };
-        reader.readAsDataURL(file);
-    };
-
     const statCards = [
         { label: 'Pending Events', value: stats.pending, icon: '⏳', link: '/admin/events/upcoming', color: 'orange' },
         { label: 'Approved Events', value: stats.approved, icon: '✅', link: '/admin/events/approved', color: 'green' },
@@ -91,11 +65,12 @@ const AdminDashboard = () => {
             </div>
 
             {/* DOMAIN MACRO TOGGLES */}
-            <div className="domain-toggles glass-panel">
+            <div className="domain-toggles">
                 {domains.map(d => (
                     <button 
                         key={d.id}
-                        className={`domain-tab ${activeDomain === d.id ? 'active' : ''}`}
+                        type="button"
+                        className={`domain-tab ${activeDomain === d.id ? 'active' : ''} ${d.id === 'food' ? 'domain-tab-food' : ''}`}
                         onClick={() => setActiveDomain(d.id)}
                     >
                         <span className="domain-icon">{d.icon}</span>
@@ -115,7 +90,7 @@ const AdminDashboard = () => {
                             {/* Stat Cards */}
                             <div className="admin-stat-grid">
                                 {statCards.map((card) => (
-                                    <Link to={card.link} key={card.label} className={`admin-stat-card glass-panel stat-${card.color}`}>
+                                    <Link to={card.link} key={card.label} className={`admin-stat-card stat-${card.color}`}>
                                         <div className="stat-emoji">{card.icon}</div>
                                         <div className="stat-text">
                                             <div className="stat-number">{card.value}</div>
@@ -126,7 +101,7 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Approval Workflow */}
-                            <div className="glass-panel admin-workflow-card">
+                            <div className="admin-workflow-card">
                                 <h2 className="section-title">📋 Event Approval Workflow</h2>
                                 <p className="section-subtitle">Every requested event must securely pass all 4 discrete stages before broad campus publication.</p>
                                 <div className="workflow-row">
@@ -151,7 +126,7 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Recent Pending Events */}
-                            <div className="glass-panel admin-recent-card">
+                            <div className="admin-recent-card">
                                 <div className="card-row-header">
                                     <h2 className="section-title">🕐 Registration Pipeline Highlights</h2>
                                     <Link to="/admin/events/upcoming" className="link-action">View All In Pipeline →</Link>
@@ -177,54 +152,100 @@ const AdminDashboard = () => {
 
                     {/* DOMAIN: FOOD STALL HANDLING */}
                     {activeDomain === 'food' && (
-                        <div className="animation-fade-in glass-panel admin-recent-card">
-                            <div className="card-row-header">
-                                <h2 className="section-title">🍔 Food Stall Handling (Upcoming Events)</h2>
-                            </div>
-                            {allEvents.filter(e => e.status === 'Approved' || e.status === 'Pending').length === 0 ? (
-                                <p className="empty-note">No approved or upcoming events available. 🎉</p>
-                            ) : (
-                                <div className="recent-list">
-                                    {allEvents.filter(e => e.status === 'Approved' || e.status === 'Pending').map(ev => (
-                                        <div key={ev._id} className="recent-row" style={{ alignItems: 'center' }}>
-                                            <div>
-                                                <p className="recent-name">{ev.name} <span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>({ev.status})</span></p>
-                                                <p className="recent-meta">By {ev.organizer?.name || 'Unknown'} · {new Date(ev.date).toLocaleDateString()}</p>
-                                                {ev.stallMapUrl && <span style={{ color: 'var(--success-color)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem' }}>✓ Map Available</span>}
-                                            </div>
-                                            <div>
-                                                <label className="btn-sm-primary" style={{ cursor: 'pointer', margin: 0 }}>
-                                                    {ev.stallMapUrl ? 'Update Map' : 'Upload Map'}
-                                                    <input 
-                                                        type="file" 
-                                                        accept="image/*" 
-                                                        style={{ display: 'none' }} 
-                                                        onChange={(e) => {
-                                                            // We call handleUploadMap as before
-                                                            handleUploadMap(ev._id, e);
-                                                            // Additionally locally update approvedEventsList just to reflect UI instantly
-                                                            const file = e.target.files[0];
-                                                            if (file) {
-                                                                const r = new FileReader();
-                                                                r.onloadend = () => {
-                                                                    setAllEvents(prev => prev.map(a => a._id === ev._id ? { ...a, stallMapUrl: r.result } : a));
-                                                                }
-                                                                r.readAsDataURL(file);
-                                                            }
-                                                        }} 
-                                                    />
-                                                </label>
-                                            </div>
-                                        </div>
-                                    ))}
+                        <div className="admin-food-domain animation-fade-in">
+                            <header className="admin-food-hero">
+                                <span className="admin-food-kicker">Food operations</span>
+                                <h2 className="admin-food-title">Food stall handling</h2>
+                                <p className="admin-food-desc">
+                                    Manage blueprint maps, stall pricing, vendor bank details, and booking approvals in one place.
+                                </p>
+                                <div className="admin-food-quick-links">
+                                    <Link to="/admin/food/upload-map" className="admin-food-btn admin-food-btn-primary">
+                                        Map &amp; stall pricing
+                                    </Link>
+                                    <Link to="/admin/food/bookings" className="admin-food-btn admin-food-btn-secondary">
+                                        Stall bookings
+                                    </Link>
                                 </div>
-                            )}
+                            </header>
+
+                            <section className="admin-food-section" aria-labelledby="admin-food-events-heading">
+                                <div className="admin-food-section-head">
+                                    <h3 id="admin-food-events-heading" className="admin-food-section-title">
+                                        Upcoming &amp; approved events
+                                    </h3>
+                                    <p className="admin-food-section-sub">
+                                        Configure each event on the map screen — add stalls, prices, and layout images.
+                                    </p>
+                                </div>
+                                {allEvents.filter((e) => e.status === 'Approved' || e.status === 'Pending').length === 0 ? (
+                                    <div className="admin-food-empty">
+                                        <span className="admin-food-empty-icon" aria-hidden>🍔</span>
+                                        <p className="admin-food-empty-title">No events to configure</p>
+                                        <p className="admin-food-empty-text">
+                                            When events are pending or approved, they will appear here for food stall setup.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="admin-food-grid">
+                                        {allEvents
+                                            .filter((e) => e.status === 'Approved' || e.status === 'Pending')
+                                            .map((ev) => {
+                                                const stallCount = (ev.stallPricing || []).length;
+                                                const hasMap = Boolean(ev.stallMapUrl);
+                                                return (
+                                                    <article key={ev._id} className="admin-food-card">
+                                                        <div className="admin-food-card-top">
+                                                            <h4 className="admin-food-card-title">{ev.name}</h4>
+                                                            <span
+                                                                className={`admin-food-pill admin-food-pill--${ev.status === 'Approved' ? 'approved' : 'pending'}`}
+                                                            >
+                                                                {ev.status}
+                                                            </span>
+                                                        </div>
+                                                        <p className="admin-food-card-meta">
+                                                            <span>{ev.organizer?.name || 'Unknown organizer'}</span>
+                                                            <span className="admin-food-card-dot" aria-hidden>
+                                                                ·
+                                                            </span>
+                                                            <span>{new Date(ev.date).toLocaleDateString()}</span>
+                                                        </p>
+                                                        <div className="admin-food-card-tags">
+                                                            <span
+                                                                className={
+                                                                    hasMap
+                                                                        ? 'admin-food-tag admin-food-tag--ok'
+                                                                        : 'admin-food-tag admin-food-tag--warn'
+                                                                }
+                                                            >
+                                                                {hasMap ? 'Map uploaded' : 'Map needed'}
+                                                            </span>
+                                                            <span className="admin-food-tag admin-food-tag--neutral">
+                                                                {stallCount > 0
+                                                                    ? `${stallCount} stall${stallCount === 1 ? '' : 's'} priced`
+                                                                    : 'No stall prices'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="admin-food-card-actions">
+                                                            <Link
+                                                                to="/admin/food/upload-map"
+                                                                className="admin-food-card-cta"
+                                                            >
+                                                                Configure
+                                                            </Link>
+                                                        </div>
+                                                    </article>
+                                                );
+                                            })}
+                                    </div>
+                                )}
+                            </section>
                         </div>
                     )}
 
                     {/* BLANK PLACEHOLDER FOR UPCOMING DOMAINS */}
                     {activeDomain !== 'events' && activeDomain !== 'food' && (
-                        <div className="glass-panel empty-domain-state animation-fade-in">
+                        <div className="empty-domain-state animation-fade-in">
                             <span className="massive-icon">{domains.find(d => d.id === activeDomain)?.icon}</span>
                             <h2 className="empty-domain-title">{domains.find(d => d.id === activeDomain)?.label} Module</h2>
                             <p className="empty-domain-desc">This administrative sub-system infrastructure is currently pending provisioning.</p>
