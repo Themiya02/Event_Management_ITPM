@@ -34,13 +34,13 @@ const MyTickets = () => {
     return (
         <div className="user-dashboard animation-fade-in" style={{ padding: '1rem', maxWidth: '1000px', margin: '0 auto' }}>
             <div className="feed-header" style={{ marginBottom: '2rem' }}>
-                <h1 className="page-main-title">My Tickets</h1>
+                <h1 className="page-main-title">My Registered Events</h1>
                 <p className="page-main-subtitle">Manage your reserved seats and past event attendances.</p>
             </div>
 
             {tickets.length === 0 ? (
                 <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem' }}>
-                    <h2 style={{ marginBottom: '1rem' }}>No Tickets Found 🎫</h2>
+                    <h2 style={{ marginBottom: '1rem' }}>No Registered Events Found 🎫</h2>
                     <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>You haven't registered for any upcoming events yet.</p>
                     <button className="btn-sm-primary" onClick={() => navigate('/dashboard')}>
                         Browse Events
@@ -74,6 +74,19 @@ const MyTickets = () => {
                                     </div>
                                     <div style={{ fontSize: '0.85rem', marginTop: '0.5rem', padding: '0.4rem 0.8rem', background: 'rgba(167, 139, 250, 0.1)', borderRadius: '6px', display: 'inline-block', color: 'var(--accent-purple)' }}>
                                         Registered as: <strong>{t.participantName || user?.name}</strong> (ID: {t.campusId || 'N/A'})
+                                    </div>
+                                    <div style={{ marginTop: '0.8rem' }}>
+                                        <span className={`status-badge status-${(t.status || 'pending').toLowerCase()}`} style={{
+                                            padding: '0.4rem 0.8rem', 
+                                            borderRadius: '20px', 
+                                            fontSize: '0.85rem', 
+                                            fontWeight: 'bold',
+                                            background: t.status === 'Approved' ? 'rgba(16, 185, 129, 0.15)' : t.status === 'Rejected' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                                            color: t.status === 'Approved' ? '#10b981' : t.status === 'Rejected' ? '#ef4444' : '#f59e0b',
+                                            border: `1px solid ${t.status === 'Approved' ? 'rgba(16, 185, 129, 0.3)' : t.status === 'Rejected' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`
+                                        }}>
+                                            Status: {t.status || 'Pending'}
+                                        </span>
                                     </div>
                                 </div>
                                 <div>

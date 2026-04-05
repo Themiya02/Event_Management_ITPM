@@ -114,6 +114,41 @@ exports.getMyRegistrations = async (req, res) => {
   }
 };
 
+exports.getOrganizerRegistrations = async (req, res) => {
+  try {
+    const events = await Event.find({ organizer: req.user._id }).select('_id');
+    const eventIds = events.map(e => e._id);
+    
+    const registrations = await Registration.find({ event: { $in: eventIds } })
+      .populate('event', 'name isPaid price')
+      .populate('user', 'name email')
+      .sort('-registeredAt');
+      
+    res.json(registrations);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateRegistrationStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const registration = await Registration.findById(req.params.registrationId).populate('event');
+    if (!registration) return res.status(404).json({ message: 'Registration not found' });
+    
+    if (registration.event.organizer.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    
+    registration.status = status;
+    await registration.save();
+    
+    res.json(registration);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.updateEventStatus = async (req, res) => {
   try {
     const { status } = req.body;
