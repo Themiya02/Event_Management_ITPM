@@ -1,7 +1,5 @@
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
-const User = require('../models/User');
-const { sendStallBookingDecisionEmail } = require('../utils/emailService');
 
 exports.getEventsWithMaps = async (req, res) => {
   try {
@@ -15,7 +13,7 @@ exports.getEventsWithMaps = async (req, res) => {
 exports.createEvent = async (req, res) => {
   try {
     const {
-      name, artistName, description, date, time, location, campusType,
+      name, description, date, time, location, campusType,
       isPaid, price, isOpenRegistration, seatLimit, imageUrl
     } = req.body;
 
@@ -28,7 +26,6 @@ exports.createEvent = async (req, res) => {
     const event = await Event.create({
       organizer: req.user._id,
       name,
-      artistName,
       description,
       date,
       time,
@@ -179,7 +176,7 @@ exports.getEventById = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const {
-      name, artistName, description, date, time, location, campusType,
+      name, description, date, time, location, campusType,
       isPaid, price, isOpenRegistration, seatLimit, imageUrl
     } = req.body;
 
@@ -187,7 +184,6 @@ exports.updateEvent = async (req, res) => {
     if (!event) return res.status(404).json({ message: 'Event not found' });
 
     event.name = name || event.name;
-    event.artistName = artistName !== undefined ? artistName : event.artistName;
     event.description = description || event.description;
     event.date = date || event.date;
     event.time = time || event.time;
@@ -318,72 +314,14 @@ exports.deleteEvent = async (req, res) => {
   }
 };
 
-function normalizeStallPricingRows(stallPricing) {
-  if (!Array.isArray(stallPricing)) return null;
-  const rows = stallPricing
-    .map((r) => ({
-      stall: String(r.stall || '').trim(),
-      price: Number(r.price)
-    }))
-    .filter((r) => r.stall.length > 0 && !Number.isNaN(r.price) && r.price >= 0);
-
-  if (rows.length === 0) return [];
-
-  const seen = new Set();
-  for (const r of rows) {
-    const key = r.stall.toLowerCase();
-    if (seen.has(key)) {
-      throw new Error(`Duplicate stall: ${r.stall}`);
-    }
-    seen.add(key);
-  }
-  return rows;
-}
-
-function resolveStallBasePrice(event, stallLocation) {
-  const normalized = String(stallLocation || '').trim().toLowerCase();
-  const list = event.stallPricing || [];
-  if (!list.length) {
-    return { base: 10000, valid: true };
-  }
-  const row = list.find((s) => String(s.stall || '').trim().toLowerCase() === normalized);
-  if (!row) return { base: null, valid: false };
-  return { base: Number(row.price), valid: true };
-}
-
-// Admin: Upload stall map + stall/price table for an event
+// Admin: Upload stall map for an event
 exports.uploadStallMap = async (req, res) => {
   try {
-    const { stallMapUrl, stallPricing } = req.body;
+    const { stallMapUrl } = req.body;
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
-
-    if (stallMapUrl !== undefined && stallMapUrl !== null && String(stallMapUrl).trim() !== '') {
-      event.stallMapUrl = stallMapUrl;
-    }
-
-    if (Array.isArray(stallPricing)) {
-      let rows;
-      try {
-        rows = normalizeStallPricingRows(stallPricing);
-      } catch (e) {
-        return res.status(400).json({ message: e.message });
-      }
-      if (stallPricing.length > 0 && rows.length === 0) {
-        return res.status(400).json({ message: 'Each row needs a stall name and a valid price (0 or more).' });
-      }
-      if (rows.length > 0) {
-        event.stallPricing = rows;
-      }
-    }
-
-    if (!event.stallMapUrl) {
-      return res.status(400).json({ message: 'Upload a stall map before saving.' });
-    }
-    if (!event.stallPricing || event.stallPricing.length === 0) {
-      return res.status(400).json({ message: 'Add at least one stall with price before saving.' });
-    }
-
+    
+    event.stallMapUrl = stallMapUrl;
     await event.save();
     res.json(event);
   } catch (error) {
@@ -437,11 +375,13 @@ exports.deleteBankDetails = async (req, res) => {
 // Food Stall: Book a stall on the map
 exports.bookFoodStall = async (req, res) => {
   try {
-    const { stallLocation, stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
-    const normalizedStallLocation = String(stallLocation || '').trim();
+    const { stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
     
     if (!normalizedStallLocation || !stallName || !paymentReceipt) {
       return res.status(400).json({ message: 'Stall location, stall name, and payment receipt are required.' });
+    }
+    if (!/^[a-zA-Z]$/.test(normalizedStallLocation)) {
+      return res.status(400).json({ message: 'Stall location must be exactly one single letter (e.g., A, B, C).' });
     }
     if (stallName.trim().length < 5) {
       return res.status(400).json({ message: 'Stall name must have at least 5 letters.' });
@@ -455,11 +395,6 @@ exports.bookFoodStall = async (req, res) => {
       return res.status(400).json({ message: 'Event does not have a stall map available.' });
     }
 
-    const { base, valid } = resolveStallBasePrice(event, normalizedStallLocation);
-    if (!valid || base == null) {
-      return res.status(400).json({ message: 'Selected stall is not valid for this event.' });
-    }
-
     // Block duplicate slot codes (case-insensitive), e.g. A-01 and a-01
     const duplicateSlot = (event.bookedStalls || []).some(
       (booking) => String(booking.stallLocation || '').trim().toLowerCase() === normalizedStallLocation.toLowerCase()
@@ -469,7 +404,7 @@ exports.bookFoodStall = async (req, res) => {
     }
 
     // Calculate total price server-side for integrity
-    let totalPrice = base;
+    let totalPrice = 10000; // Base stall price
     if (needsElectricity) totalPrice += 3000;
     if (needsWater) totalPrice += 2000;
 
@@ -477,7 +412,6 @@ exports.bookFoodStall = async (req, res) => {
     event.bookedStalls.push({
       vendorId: req.user._id,
       vendorName: req.user.name,
-      vendorEmail: req.user.email || '',
       stallLocation: normalizedStallLocation,
       stallName,
       description,
@@ -487,8 +421,8 @@ exports.bookFoodStall = async (req, res) => {
       totalPrice,
       paymentReceipt,
       status: 'Pending',
-      x: x !== undefined ? Number(x) : undefined,
-      y: y !== undefined ? Number(y) : undefined
+      x,
+      y
     });
 
     await event.save();
@@ -503,11 +437,8 @@ exports.updateStallBookingStatus = async (req, res) => {
   try {
     const { eventId, bookingId } = req.params;
     const { status } = req.body;
-    const normalizedStatus = typeof status === 'string'
-      ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
-      : '';
     
-    if (!['Pending', 'Approved', 'Rejected'].includes(normalizedStatus)) {
+    if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
@@ -517,37 +448,9 @@ exports.updateStallBookingStatus = async (req, res) => {
     const booking = event.bookedStalls.id(bookingId);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
+
     booking.status = normalizedStatus;
     await event.save();
-
-    if (['Approved', 'Rejected'].includes(normalizedStatus)) {
-      void (async () => {
-        try {
-          let to = (booking.vendorEmail && String(booking.vendorEmail).trim()) || '';
-          let vendorName = booking.vendorName;
-          if (!to && booking.vendorId) {
-            const vendor = await User.findById(booking.vendorId).select('email name');
-            to = (vendor?.email && String(vendor.email).trim()) || '';
-            if (vendor?.name) vendorName = vendor.name;
-          }
-          if (!to) {
-            console.warn('[stall booking email] No vendor email on booking or user record', bookingId);
-            return;
-          }
-          await sendStallBookingDecisionEmail({
-            to,
-            vendorName,
-            eventName: event.name,
-            stallName: booking.stallName,
-            stallLocation: booking.stallLocation,
-            status: normalizedStatus
-          });
-        } catch (err) {
-          console.error('[stall booking email]', err.message);
-        }
-      })();
-    }
-
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -576,6 +479,9 @@ exports.updateStallBooking = async (req, res) => {
 
     // Validation (reuse same rules as create)
     const normalizedStallLocation = String(stallLocation || '').trim();
+    if (normalizedStallLocation && !/^[a-zA-Z]$/.test(normalizedStallLocation)) {
+      return res.status(400).json({ message: 'Stall location must be exactly one single letter (e.g., A, B, C).' });
+    }
     if (stallName && stallName.trim().length < 5) {
       return res.status(400).json({ message: 'Stall name must have at least 5 letters.' });
     }
@@ -599,48 +505,15 @@ exports.updateStallBooking = async (req, res) => {
     if (needsWater !== undefined) booking.needsWater = Boolean(needsWater);
     if (paymentReceipt !== undefined) booking.paymentReceipt = paymentReceipt;
 
-    const locForPrice = booking.stallLocation;
-    const { base, valid } = resolveStallBasePrice(event, locForPrice);
-    if (!valid || base == null) {
-      return res.status(400).json({ message: 'Selected stall is not valid for this event.' });
-    }
-    let totalPrice = base;
+    // Recalculate price
+    let totalPrice = 10000;
     if (booking.needsElectricity) totalPrice += 3000;
     if (booking.needsWater) totalPrice += 2000;
     booking.totalPrice = totalPrice;
 
-    if (req.user?.email) {
-      booking.vendorEmail = String(req.user.email).trim();
-    }
 
     await event.save();
     res.json(event);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Food Stall: Delete own booking (only if Pending)
-exports.deleteStallBooking = async (req, res) => {
-  try {
-    const { eventId, bookingId } = req.params;
-    const event = await Event.findById(eventId);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-
-    const booking = event.bookedStalls.id(bookingId);
-    if (!booking) return res.status(404).json({ message: 'Booking not found' });
-
-    // Ownership & Status Check
-    if (String(booking.vendorId) !== String(req.user._id)) {
-      return res.status(403).json({ message: 'Not authorized to delete this application' });
-    }
-    if (booking.status !== 'Pending') {
-      return res.status(400).json({ message: 'Cannot delete application after admin review.' });
-    }
-
-    event.bookedStalls.pull(bookingId);
-    await event.save();
-    res.json({ message: 'Application deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

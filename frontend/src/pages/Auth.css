@@ -167,6 +167,18 @@ body {
     text-decoration: underline;
 }
 
+.auth-home-link {
+    color: #0f172a;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.auth-home-link:hover {
+    text-decoration: underline;
+    color: #1e40af;
+}
+
 /* Forgot password and remember me optional styles area */
 .auth-extras {
     display: flex;
@@ -186,39 +198,4 @@ body {
 
 .auth-card {
     animation: slideUp 0.5s ease-out forwards;
-}
-
-/* ── Field-level validation feedback ── */
-.input-field-error {
-    border-bottom: 2px solid #ef4444 !important;
-}
-
-.field-error-text {
-    display: block;
-    margin-top: 4px;
-    font-size: 0.78rem;
-    color: #ef4444;
-    font-weight: 500;
-    animation: fadeInDown 0.2s ease;
-}
-
-.field-hint-text {
-    display: block;
-    margin-top: 4px;
-    font-size: 0.78rem;
-    color: #64748b;
-    font-weight: 400;
-}
-
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0);    }
-}
-
-/* hint-text for CreateEvent form */
-.hint-text {
-    display: block;
-    margin-top: 4px;
-    font-size: 0.78rem;
-    color: #64748b;
 }
