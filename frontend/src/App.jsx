@@ -25,6 +25,10 @@ import SponsorDashboard from './pages/sponsor/SponsorDashboard';
 import FoodDashboard from './pages/food/FoodDashboard';
 import FoodStallMapUpload from './pages/admin/FoodStallMapUpload';
 import FoodStallBookings from './pages/admin/FoodStallBookings';
+import SponsorshipPackages from './pages/Sponsorship/SponsorshipPackages';
+import SponsorshipApply from './pages/Sponsorship/SponsorshipApply';
+import OTPVerification from './pages/Sponsorship/OTPVerification';
+import RoleRoute from './components/RoleRoute';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import './App.css';
@@ -255,9 +259,36 @@ function App() {
             <Route
               path="/sponsor/dashboard"
               element={
-                <PrivateRoute>
-                    <SponsorDashboard />
-                </PrivateRoute>
+                <RoleRoute allowedRole="sponsor">
+                  <SponsorDashboard />
+                </RoleRoute>
+              }
+            />
+
+            <Route
+              path="/sponsor/packages"
+              element={
+                <RoleRoute allowedRole="sponsor">
+                  <SponsorshipPackages />
+                </RoleRoute>
+              }
+            />
+
+            <Route
+              path="/sponsor/apply"
+              element={
+                <RoleRoute allowedRole="sponsor">
+                  <SponsorshipApply />
+                </RoleRoute>
+              }
+            />
+
+            <Route
+              path="/sponsor/verify-otp"
+              element={
+                <RoleRoute allowedRole="sponsor">
+                  <OTPVerification />
+                </RoleRoute>
               }
             />
 
