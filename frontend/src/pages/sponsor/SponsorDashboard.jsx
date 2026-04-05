@@ -3,30 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import './SponsorDashboard.css';
 
 const SponsorDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   const cards = [
     {
       icon: '🗓️',
       title: 'My Events',
       desc: 'View and manage all your created events',
-      action: () => {},
+      action: () => navigate('/home'),
       label: 'View Events',
       color: '#6366f1'
-    },
-    {
-      icon: '✨',
-      title: 'Create Event',
-      desc: 'Launch a new event and start planning',
-      action: () => {},
-      label: 'Create New',
-      color: '#8b5cf6'
     },
     {
       icon: '💎',
@@ -41,7 +28,7 @@ const SponsorDashboard = () => {
       icon: '🔍',
       title: 'Browse Events',
       desc: 'Discover and join upcoming events',
-      action: () => {},
+      action: () => navigate('/home'),
       label: 'Browse',
       color: '#60a5fa'
     }
@@ -54,20 +41,6 @@ const SponsorDashboard = () => {
         <div className="dash-orb dash-orb-2"></div>
         <div className="dash-orb dash-orb-3"></div>
       </div>
-
-      <nav className="dash-nav">
-        <div className="dash-nav-brand">
-          <span className="dash-brand-icon">✦</span>
-          <span className="dash-brand-name">EventHub</span>
-        </div>
-        <div className="dash-nav-right">
-          <div className="dash-user-pill">
-            <div className="dash-avatar">{user?.name?.[0]?.toUpperCase()}</div>
-            <span className="dash-user-name">{user?.name}</span>
-          </div>
-          <button className="dash-logout-btn" onClick={handleLogout}>Logout</button>
-        </div>
-      </nav>
 
       <div className="dash-container">
         <div className="dash-welcome">

@@ -36,7 +36,17 @@ const Login = () => {
       }
       
       if (userData.role) {
-        navigate('/');
+        if (userData.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (userData.role === 'organizer') {
+          navigate('/organizer/dashboard');
+        } else if (userData.role === 'sponsor') {
+          navigate('/sponsor/dashboard');
+        } else if (userData.role === 'food_stall') {
+          navigate('/food/dashboard');
+        } else {
+          navigate('/');
+        }
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to login');

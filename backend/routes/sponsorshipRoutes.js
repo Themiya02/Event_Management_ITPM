@@ -9,7 +9,8 @@ const {
   verifyOTP,
   resendOTP,
   getAllSponsorships,
-  updateStatus
+  updateStatus,
+  deleteSponsorship
 } = require('../controllers/sponsorshipController');
 const { protect } = require('../middleware/auth');
 
@@ -57,5 +58,6 @@ router.post('/resend-otp', resendOTP);
 // Admin routes (protected)
 router.get('/all', protect, getAllSponsorships);
 router.patch('/:id/status', protect, updateStatus);
+router.delete('/:id', protect, deleteSponsorship);
 
 module.exports = router;
