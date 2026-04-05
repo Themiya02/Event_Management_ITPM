@@ -29,6 +29,8 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/events', require('./routes/eventRoutes'));
 app.use('/api/artists', require('./routes/artistRoutes'));
 app.use('/pages/images', express.static(path.join(__dirname, '../frontend/src/pages/images')));
+app.use('/api/sponsorship', require('./routes/sponsorshipRoutes'));
+app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 
 const PORT = process.env.PORT || 5000;
 

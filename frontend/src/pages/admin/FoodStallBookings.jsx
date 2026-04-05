@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import './UpcomingEvents.css';
 import '../user/UserDashboard.css';
 
@@ -181,9 +182,9 @@ const FoodStallBookings = () => {
                                                 {stall.stallName}
                                             </p>
                                             <p className="recent-meta" style={{ marginLeft: '2.3rem', marginTop: '0.5rem', lineHeight: '1.5' }}>
-                                                Vendor: <strong style={{color:'#fff'}}>{stall.vendorName}</strong>
+                                                Vendor: <strong style={{color:'#000'}}>{stall.vendorName}</strong>
                                                 <br />
-                                                <span style={{color: 'var(--primary-color)', fontSize: '0.85rem'}}>{stall.foodType || 'Food'}</span>
+                                                <span style={{color: 'var(--primary-color)', fontSize: '0.85rem'}}>{stall.foodType || 'Food'}</span> | <strong>Stall: {stall.stallLocation || 'N/A'}</strong>
                                                 <br />
                                                 Description: {stall.description || 'No description provided.'}
                                                 <br />
@@ -195,6 +196,12 @@ const FoodStallBookings = () => {
                                                     <>
                                                         <br />
                                                         <a href={stall.paymentReceipt} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '0.4rem', color: '#00d2ff', textDecoration: 'underline', fontSize: '0.85rem' }}>View Payment Receipt</a>
+                                                        <span 
+                                                            onClick={() => setViewingImage(stall.paymentReceipt)} 
+                                                            style={{ display: 'inline-block', marginTop: '0.4rem', color: '#00d2ff', textDecoration: 'underline', fontSize: '0.85rem', cursor: 'pointer' }}
+                                                        >
+                                                            View Payment Receipt
+                                                        </span>
                                                     </>
                                                 )}
                                             </p>
@@ -205,20 +212,25 @@ const FoodStallBookings = () => {
                                             </p>
                                             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
                                                 X: {stall.x.toFixed(1)}% | Y: {stall.y.toFixed(1)}%
+                                                {stall.x != null && stall.y != null ? `X: ${stall.x.toFixed(1)}% | Y: ${stall.y.toFixed(1)}%` : 'Position: Not Assigned'}
                                             </p>
                                             <div style={{ marginBottom: '0.5rem' }}>
                                                 <span style={{ 
                                                     padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
-                                                    background: stall.status === 'Approved' ? 'var(--success-color)' : stall.status === 'Rejected' ? '#e74c3c' : '#f39c12',
+                                                    background: getBookingStatus(stall.status) === 'Approved'
+                                                        ? 'var(--primary-color)'
+                                                        : getBookingStatus(stall.status) === 'Rejected'
+                                                            ? '#e74c3c'
+                                                            : '#f39c12',
                                                     color: '#fff'
                                                 }}>
-                                                    {stall.status || 'Pending'}
+                                                    {getBookingStatus(stall.status)}
                                                 </span>
                                             </div>
                                             <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.3rem' }}>
                                                 Booked: {new Date(stall.bookedAt).toLocaleDateString()}
                                             </p>
-                                            {stall.status === 'Pending' && (
+                                            {getBookingStatus(stall.status) === 'Pending' && (
                                                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', justifyContent: 'flex-end' }}>
                                                     <button onClick={() => updateStatus(selectedEvent._id, stall._id, 'Approved')} className="btn-sm-primary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', margin: 0 }}>Approve</button>
                                                     <button onClick={() => updateStatus(selectedEvent._id, stall._id, 'Rejected')} className="btn-sm-outline" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', borderColor: '#e74c3c', color: '#e74c3c', margin: 0 }}>Reject</button>
@@ -231,6 +243,71 @@ const FoodStallBookings = () => {
                         )}
                     </div>
                 </div>
+            )}
+
+            {/* Image Viewer Modal - Use Portal to escape stacking context */}
+            {viewingImage && createPortal(
+                <div 
+                    className="food-image-modal-overlay" 
+                    onClick={() => setViewingImage(null)}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100vw',
+                        height: '100vh',
+                        backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 9999,
+                        animation: 'fadeIn 0.2s ease-out'
+                    }}
+                >
+                    <div 
+                        className="food-image-modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            position: 'relative',
+                            maxWidth: '90%',
+                            maxHeight: '90%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <button 
+                            onClick={() => setViewingImage(null)}
+                            style={{
+                                position: 'absolute',
+                                top: '-40px',
+                                right: '0',
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'white',
+                                fontSize: '2.5rem',
+                                cursor: 'pointer',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            ×
+                        </button>
+                        <img 
+                            src={viewingImage} 
+                            alt="Payment Receipt" 
+                            style={{ 
+                                width: '100%', 
+                                height: 'auto', 
+                                maxHeight: '85vh', 
+                                objectFit: 'contain', 
+                                borderRadius: '12px',
+                                boxShadow: '0 0 40px rgba(0, 0, 0, 0.5)'
+                            }} 
+                        />
+                        <p style={{ color: 'white', marginTop: '1rem', fontSize: '1rem', fontWeight: 'bold' }}>Payment Receipt Detail</p>
+                    </div>
+                </div>,
+                document.body
             )}
         </div>
     );
