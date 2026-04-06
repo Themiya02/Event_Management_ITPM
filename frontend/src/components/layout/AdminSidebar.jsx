@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import './Sidebar.css';
 import './AdminSidebar.css';
 
 const AdminSidebar = () => {
@@ -69,13 +70,7 @@ const AdminSidebar = () => {
 
     return (
         <aside className="sidebar glass-panel">
-            <div className="sidebar-header">
-                <div className="logo-icon"></div>
-                <div>
-                    <h2 className="text-gradient">Eventio</h2>
-                    <span className="admin-role-badge">Admin Panel</span>
-                </div>
-            </div>
+
             <nav className="sidebar-nav">
                 <ul>
                     {/* Standalone Dashboard Link */}

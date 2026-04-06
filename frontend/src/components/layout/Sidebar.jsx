@@ -26,10 +26,7 @@ const Sidebar = () => {
 
     return (
         <aside className="sidebar glass-panel">
-            <div className="sidebar-header">
-                <div className="logo-icon"></div>
-                <h2 className="text-gradient">Eventio</h2>
-            </div>
+
             <nav className="sidebar-nav">
                 <ul>
                     {navItems.map((item) => {

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import './AdminSidebar.css'; 
+import './Sidebar.css';
+import './AdminSidebar.css';
 
 const UserSidebar = () => {
     const location = useLocation();
@@ -34,13 +35,7 @@ const UserSidebar = () => {
 
     return (
         <aside className="sidebar glass-panel">
-            <div className="sidebar-header">
-                <div className="logo-icon"></div>
-                <div>
-                    <h2 className="text-gradient">Eventio</h2>
-                    <span className="admin-role-badge" style={{ background: 'var(--accent-teal)' }}>Student Portal</span>
-                </div>
-            </div>
+
             <nav className="sidebar-nav">
                 <ul>
                     {navItems.map((item) => {
