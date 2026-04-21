@@ -37,6 +37,17 @@ const eventSchema = new mongoose.Schema({
   bookedStalls: [{
     vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     vendorName: { type: String },
+  bankDetails: {
+    accountName: { type: String, default: '' },
+    bankName: { type: String, default: '' },
+    accountNumber: { type: String, default: '' },
+    branch: { type: String, default: '' },
+    instructions: { type: String, default: '' }
+  },
+  bookedStalls: [{
+    vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    vendorName: { type: String },
+    stallLocation: { type: String, default: '' },
     stallName: { type: String },
     description: { type: String },
     foodType: { type: String },
