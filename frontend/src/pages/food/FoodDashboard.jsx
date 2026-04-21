@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { Icon } from '@iconify/react';
@@ -240,7 +240,31 @@ const FoodDashboard = () => {
       confirmButtonText: 'Yes, delete it!'
     });
 
-    if (loading) return <div style={{ padding: '3rem', textAlign: 'center' }}>Loading vendor data...</div>;
+    if (result.isConfirmed) {
+      try {
+        const userObj = JSON.parse(localStorage.getItem('user'));
+        const token = userObj?.token;
+        await axios.delete(`${apiUrl}/api/events/${event._id}/stall-booking/${booking._id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        Swal.fire('Deleted!', 'Your application has been deleted.', 'success');
+        
+        // Update local state
+        setEvents(prev => prev.map(ev => {
+          if (ev._id === event._id) {
+            return {
+              ...ev,
+              bookedStalls: (ev.bookedStalls || []).filter(s => s._id !== booking._id)
+            };
+          }
+          return ev;
+        }));
+      } catch (error) {
+        Swal.fire('Error', 'Failed to delete application.', 'error');
+      }
+    }
+  };
 
   if (loading) {
     return <div className="food-loading">Loading vendor dashboard...</div>;
@@ -399,14 +423,6 @@ const FoodDashboard = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         {formatStatus(booking.status) === 'Pending' && (
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {/* Edit button is disabled as per user request */}
-                            {/* <button 
-                              onClick={() => handleEditClick(booking)}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1470F9', display: 'flex' }}
-                              title="Edit Application"
-                            >
-                              <Icon icon="mdi:pencil" width="20" height="20" />
-                            </button> */}
                             <button 
                               onClick={() => handleDeleteClick(booking)}
                               style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', display: 'flex' }}
@@ -416,8 +432,11 @@ const FoodDashboard = () => {
                             </button>
                           </div>
                         )}
+                      </div>
                     </div>
+                  ))}
                 </div>
+              </section>
             )}
           </>
         ) : (

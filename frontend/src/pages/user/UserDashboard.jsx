@@ -56,6 +56,26 @@ const UserDashboard = () => {
 
     return (
         <div className="user-dashboard animation-fade-in">
+            <div className="search-hero-section">
+                <div className="dashboard-search-wrapper">
+                    <div className="search-label">Events</div>
+                    <div className="search-input-group">
+                        <input 
+                            type="text" 
+                            placeholder="I'm looking for events, artists, or locations..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <button className="search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
             <div className="header-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <div>
                     <h1 className="page-title" style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>Welcome back, {user?.name?.split(' ')[0] || 'Student'}! 👋</h1>
@@ -104,25 +124,6 @@ const UserDashboard = () => {
                 <h2 style={{ fontSize: '1.5rem', margin: 0 }}>
                     {activeTab === 'register' ? 'Upcoming Registration Events' : 'Upcoming Open Events'}
                 </h2>
-                
-                <div style={{ position: 'relative' }}>
-                    <input 
-                        type="text" 
-                        placeholder="Search event name..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{
-                            padding: '0.6rem 1rem 0.6rem 2.5rem',
-                            borderRadius: '50px',
-                            border: '1px solid var(--border-color)',
-                            background: 'var(--glass-bg)',
-                            color: 'var(--text-color)',
-                            width: '250px',
-                            fontSize: '0.9rem'
-                        }}
-                    />
-                    <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
-                </div>
             </div>
 
             {filteredEvents.length === 0 ? (

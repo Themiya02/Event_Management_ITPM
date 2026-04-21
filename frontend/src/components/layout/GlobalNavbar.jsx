@@ -15,6 +15,7 @@ const GlobalNavbar = () => {
       <div className="navbar-right" style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
         <div className="nav-links" style={{ display: 'flex', gap: '1.5rem', fontSize: '1.15rem' }}>
           <Link to="/" className="nav-link">Home</Link>
+          <Link to="/dashboard" className="nav-link">Events</Link>
           <Link
             to={
               user?.role === 'admin' ? '/admin/artists/view' :
