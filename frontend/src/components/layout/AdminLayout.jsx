@@ -7,7 +7,7 @@ const AdminLayout = ({ children }) => {
   return (
     <div className="organizer-layout">
       <AdminSidebar />
-      <div className="main-wrapper admin-app-shell">
+      <div className="main-wrapper">
         <Topbar />
         <main className="content-area">
           {children}

@@ -3,13 +3,6 @@ import axios from 'axios';
 import './CreateEvent.css';
 import { useNavigate } from 'react-router-dom';
 
-// Minimum allowed event date = today + 21 days (3 weeks)
-const getMinEventDate = () => {
-    const d = new Date();
-    d.setDate(d.getDate() + 21);
-    return d.toISOString().split('T')[0]; // 'YYYY-MM-DD'
-};
-
 const CreateEvent = () => {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
@@ -22,7 +15,6 @@ const CreateEvent = () => {
         organizingBody: '',
         // Step 2
         eventTitle: '',
-        artistName: '',
         eventDescription: '',
         eventDate: '',
         eventTime: '',
@@ -38,64 +30,6 @@ const CreateEvent = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        // Organizer Name: only letters and spaces allowed
-        if (name === 'organizerName') {
-            const lettersOnly = value.replace(/[^a-zA-Z\s]/g, '');
-            setFormData(prev => ({ ...prev, [name]: lettersOnly }));
-            if (lettersOnly.trim() === '') {
-                setErrors(prev => ({ ...prev, [name]: 'Organizer Name is required' }));
-            } else {
-                if (errors[name]) {
-                    setErrors(prev => ({ ...prev, [name]: null }));
-                }
-            }
-            return;
-        }
-
-        // Phone: only digits allowed, max 10
-        if (name === 'organizerPhone') {
-            const digitsOnly = value.replace(/[^0-9]/g, '').slice(0, 10);
-            setFormData(prev => ({ ...prev, [name]: digitsOnly }));
-            // Real-time phone validation
-            if (digitsOnly.length > 0 && digitsOnly.length < 10) {
-                setErrors(prev => ({ ...prev, organizerPhone: `Phone number must be 10 digits (${digitsOnly.length}/10 entered)` }));
-            } else {
-                setErrors(prev => ({ ...prev, organizerPhone: null }));
-            }
-            return;
-        }
-
-        // Email: real-time validation
-        if (name === 'organizerEmail') {
-            setFormData(prev => ({ ...prev, [name]: value }));
-            if (value.length > 0 && !value.includes('@')) {
-                setErrors(prev => ({ ...prev, organizerEmail: "Email must include an '@' symbol" }));
-            } else if (value.length > 0 && !/\S+@\S+\.\S+/.test(value)) {
-                setErrors(prev => ({ ...prev, organizerEmail: 'Please enter a valid email format (e.g. name@example.com)' }));
-            } else {
-                setErrors(prev => ({ ...prev, organizerEmail: null }));
-            }
-            return;
-        }
-
-        // Date: real-time 3-week minimum validation
-        if (name === 'eventDate') {
-            setFormData(prev => ({ ...prev, [name]: value }));
-            if (value) {
-                const minDate = getMinEventDate();
-                if (value < minDate) {
-                    const minFormatted = new Date(minDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-                    setErrors(prev => ({ ...prev, eventDate: `Event date must be at least 3 weeks from today (earliest: ${minFormatted})` }));
-                } else {
-                    setErrors(prev => ({ ...prev, eventDate: null }));
-                }
-            } else {
-                setErrors(prev => ({ ...prev, eventDate: null }));
-            }
-            return;
-        }
-
         setFormData(prev => ({ ...prev, [name]: value }));
         // Clear error when user types
         if (errors[name]) {
@@ -131,17 +65,8 @@ const CreateEvent = () => {
             }
         } else if (step === 2) {
             if (!formData.eventTitle.trim()) newErrors.eventTitle = "Event Title is required";
-            if (!formData.artistName || !formData.artistName.trim()) newErrors.artistName = "Artist Name is required";
             if (!formData.eventDescription.trim()) newErrors.eventDescription = "Event Description is required";
-            if (!formData.eventDate) {
-                newErrors.eventDate = "Date is required";
-            } else {
-                const minDate = getMinEventDate();
-                if (formData.eventDate < minDate) {
-                    const minFormatted = new Date(minDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-                    newErrors.eventDate = `Event date must be at least 3 weeks from today (earliest: ${minFormatted})`;
-                }
-            }
+            if (!formData.eventDate) newErrors.eventDate = "Date is required";
             if (!formData.eventTime) newErrors.eventTime = "Time is required";
         } else if (step === 3) {
             if (!formData.venueName.trim()) newErrors.venueName = "Venue Name is required";
@@ -175,7 +100,6 @@ const CreateEvent = () => {
 
                 const payload = {
                     name: formData.eventTitle,
-                    artistName: formData.artistName,
                     description: formData.eventDescription,
                     date: formData.eventDate,
                     time: formData.eventTime,
@@ -251,20 +175,8 @@ const CreateEvent = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Phone Number</label>
-                                    <input
-                                        type="tel"
-                                        name="organizerPhone"
-                                        value={formData.organizerPhone}
-                                        onChange={handleChange}
-                                        placeholder="e.g. 0712345678 (10 digits)"
-                                        maxLength="10"
-                                        inputMode="numeric"
-                                        className={errors.organizerPhone ? 'input-error' : ''}
-                                    />
+                                    <input type="tel" name="organizerPhone" value={formData.organizerPhone} onChange={handleChange} placeholder="e.g. 0712345678 (10 digits)" className={errors.organizerPhone ? 'input-error' : ''} />
                                     {errors.organizerPhone && <span className="error-text">{errors.organizerPhone}</span>}
-                                    {!errors.organizerPhone && formData.organizerPhone.length > 0 && (
-                                        <span className="hint-text">{formData.organizerPhone.length}/10 digits</span>
-                                    )}
                                 </div>
                             </div>
                         </div>
@@ -286,8 +198,8 @@ const CreateEvent = () => {
                                 {errors.eventTitle && <span className="error-text">{errors.eventTitle}</span>}
                             </div>
                             <div className="form-group">
-                                <label>Artist(s) / Performer(s)</label>
-                                <input type="text" name="artistName" value={formData.artistName} onChange={handleChange} placeholder="e.g. DJ Snake, The Weeknd, Local Band" className={errors.artistName ? 'input-error' : ''} />
+                                <label>Main Artist / Performer Name</label>
+                                <input type="text" name="artistName" value={formData.artistName} onChange={handleChange} placeholder="e.g. DJ Snake / Local Band" className={errors.artistName ? 'input-error' : ''} />
                                 {errors.artistName && <span className="error-text">{errors.artistName}</span>}
                             </div>
                             <div className="form-group">
@@ -298,18 +210,8 @@ const CreateEvent = () => {
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Date</label>
-                                    <input
-                                        type="date"
-                                        name="eventDate"
-                                        value={formData.eventDate}
-                                        onChange={handleChange}
-                                        min={getMinEventDate()}
-                                        className={errors.eventDate ? 'input-error' : ''}
-                                    />
-                                    {errors.eventDate
-                                        ? <span className="error-text">{errors.eventDate}</span>
-                                        : <span className="hint-text">📅 Event must be scheduled at least 3 weeks from today (earliest: {new Date(getMinEventDate()).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })})</span>
-                                    }
+                                    <input type="date" name="eventDate" value={formData.eventDate} onChange={handleChange} className={errors.eventDate ? 'input-error' : ''} />
+                                    {errors.eventDate && <span className="error-text">{errors.eventDate}</span>}
                                 </div>
                                 <div className="form-group">
                                     <label>Time</label>
