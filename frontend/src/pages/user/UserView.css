@@ -99,3 +99,53 @@
 .star.gray:hover {
   color: #fcd34d;
 }
+
+/* AI Result Card Enhancements */
+.ai-search-section {
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.ai-result-card {
+  animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-result-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.ai-result-card li {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 5px;
+  border-radius: 6px;
+  border-left: 3px solid var(--accent-color);
+  transition: all 0.3s ease;
+}
+
+.ai-result-card li:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
