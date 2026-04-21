@@ -11,6 +11,7 @@ const UserDashboard = () => {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('register'); // 'register' or 'open'
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -37,14 +38,20 @@ const UserDashboard = () => {
 
     if (loading) return <div className="loading-state">Loading Global Event Feed...</div>;
 
+    const filteredEvents = events.filter(e => {
+        const matchesSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesTab = activeTab === 'register' ? e.isOpenRegistration : !e.isOpenRegistration;
+        return matchesSearch && matchesTab;
+    });
+
     const totalEvents = events.length;
-    const openEvents = events.filter(e => !e.isOpenRegistration).length;
+    const openEventsCount = events.filter(e => !e.isOpenRegistration).length;
     const mySeats = tickets.length;
 
     const stats = [
         { label: 'Active Campus Events', value: totalEvents, trend: 'Live', isPositive: true },
         { label: 'My Registered Events', value: mySeats, trend: mySeats > 0 ? 'Confirmed' : 'None yet', isPositive: mySeats > 0 },
-        { label: 'Open Entry Events', value: openEvents, trend: 'Free walk-ins', isPositive: true },
+        { label: 'Open Entry Events', value: openEventsCount, trend: 'Free walk-ins', isPositive: true },
     ];
 
     return (
@@ -93,20 +100,39 @@ const UserDashboard = () => {
                 </button>
             </div>
 
-            <div className="feed-header" style={{ marginBottom: '1.5rem', paddingBottom: '1rem' }}>
+            <div className="feed-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
                 <h2 style={{ fontSize: '1.5rem', margin: 0 }}>
                     {activeTab === 'register' ? 'Upcoming Registration Events' : 'Upcoming Open Events'}
                 </h2>
+                
+                <div style={{ position: 'relative' }}>
+                    <input 
+                        type="text" 
+                        placeholder="Search event name..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            padding: '0.6rem 1rem 0.6rem 2.5rem',
+                            borderRadius: '50px',
+                            border: '1px solid var(--border-color)',
+                            background: 'var(--glass-bg)',
+                            color: 'var(--text-color)',
+                            width: '250px',
+                            fontSize: '0.9rem'
+                        }}
+                    />
+                    <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+                </div>
             </div>
 
-            {events.filter(ev => activeTab === 'register' ? ev.isOpenRegistration : !ev.isOpenRegistration).length === 0 ? (
+            {filteredEvents.length === 0 ? (
                 <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem' }}>
-                    <h2>No events found in this category! 🎉</h2>
-                    <p>Check back later when organizers publish new events here.</p>
+                    <h2>No events found! 🔍</h2>
+                    <p>Try searching for a different event name or check back later.</p>
                 </div>
             ) : (
                 <div className="events-grid">
-                    {events.filter(ev => activeTab === 'register' ? ev.isOpenRegistration : !ev.isOpenRegistration).map(ev => {
+                    {filteredEvents.map(ev => {
                         const dateObj = new Date(ev.date);
                         const month = dateObj.toLocaleString('default', { month: 'short' });
                         const day = dateObj.getDate();
@@ -130,6 +156,7 @@ const UserDashboard = () => {
                                     <h3>{ev.name}</h3>
                                     <div className="org-name">
                                         <span>👤 {ev.organizer?.name || 'Local Organizer'}</span>
+                                        {ev.artistName && <span style={{ marginLeft: '1rem' }}>🎤 {ev.artistName}</span>}
                                     </div>
                                     
                                     <div className="card-details">

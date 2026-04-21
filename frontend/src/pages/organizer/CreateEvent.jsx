@@ -286,8 +286,8 @@ const CreateEvent = () => {
                                 {errors.eventTitle && <span className="error-text">{errors.eventTitle}</span>}
                             </div>
                             <div className="form-group">
-                                <label>Main Artist / Performer Name</label>
-                                <input type="text" name="artistName" value={formData.artistName} onChange={handleChange} placeholder="e.g. DJ Snake / Local Band" className={errors.artistName ? 'input-error' : ''} />
+                                <label>Artist(s) / Performer(s)</label>
+                                <input type="text" name="artistName" value={formData.artistName} onChange={handleChange} placeholder="e.g. DJ Snake, The Weeknd, Local Band" className={errors.artistName ? 'input-error' : ''} />
                                 {errors.artistName && <span className="error-text">{errors.artistName}</span>}
                             </div>
                             <div className="form-group">

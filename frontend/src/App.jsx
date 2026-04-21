@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import UserDashboard from './pages/user/UserDashboard';
 import EventView from './pages/user/EventView';
 import MyTickets from './pages/user/MyTickets';
+import UserProfile from './pages/user/UserProfile';
 import PrivateRoute from './components/PrivateRoute';
 import UserLayout from './components/layout/UserLayout';
 import OrganizerLayout from './components/layout/OrganizerLayout';
@@ -29,6 +30,7 @@ import FoodStallBookings from './pages/admin/FoodStallBookings';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import './App.css';
+
 
 function App() {
   return (

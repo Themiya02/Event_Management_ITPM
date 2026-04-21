@@ -25,6 +25,20 @@ exports.createEvent = async (req, res) => {
 
     const fee = isPaid ? Number((price || 0) * 0.05).toFixed(2) : 0;
 
+    // Option 1: Venue Availability Checker & Conflict Detection
+    const conflict = await Event.findOne({
+      location: { $regex: new RegExp(`^${location}$`, 'i') }, // Case-insensitive location check
+      date: new Date(date),
+      time: time,
+      status: { $in: ['Pending', 'Approved', 'In Progress'] }
+    });
+
+    if (conflict) {
+      return res.status(400).json({ 
+        message: `Venue Conflict Detected: "${location}" is already scheduled for an event ("${conflict.name}") at ${time} on this date. Please choose a different venue or time.` 
+      });
+    }
+
     const event = await Event.create({
       organizer: req.user._id,
       name,
