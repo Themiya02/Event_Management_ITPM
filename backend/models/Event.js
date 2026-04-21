@@ -34,9 +34,6 @@ const eventSchema = new mongoose.Schema({
   },
   registrationsCount: { type: Number, default: 0 },
   stallMapUrl: { type: String, default: '' },
-  bookedStalls: [{
-    vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    vendorName: { type: String },
   bankDetails: {
     accountName: { type: String, default: '' },
     bankName: { type: String, default: '' },

@@ -8,6 +8,8 @@ import '../user/UserDashboard.css';
 const FoodStallMapUpload = () => {
     const [allEvents, setAllEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [bankForms, setBankForms] = useState({});
+    const [editingEvents, setEditingEvents] = useState({});
 
     const getAuth = () => {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -22,7 +24,21 @@ const FoodStallMapUpload = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // Show approved and pending events
-            setAllEvents(res.data.filter(e => e.status === 'Approved' || e.status === 'Pending'));
+            const events = res.data.filter(e => e.status === 'Approved' || e.status === 'Pending');
+            setAllEvents(events);
+            
+            // Initialize bank forms
+            const forms = {};
+            events.forEach(ev => {
+                forms[ev._id] = {
+                    accountName: ev.bankDetails?.accountName || '',
+                    bankName: ev.bankDetails?.bankName || '',
+                    accountNumber: ev.bankDetails?.accountNumber || '',
+                    branch: ev.bankDetails?.branch || '',
+                    instructions: ev.bankDetails?.instructions || ''
+                };
+            });
+            setBankForms(forms);
         } catch (err) {
             console.error('Error fetching events:', err);
         } finally {
