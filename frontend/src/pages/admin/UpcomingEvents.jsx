@@ -43,22 +43,22 @@ const UpcomingEvents = () => {
                     <p className="page-main-subtitle">Review pending events and grant stage-by-stage approvals.</p>
                 </div>
 
-                <div style={{ position: 'relative' }}>
-                    <input 
-                        type="text" 
-                        placeholder="Search pending events..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{
-                            padding: '0.6rem 1rem 0.6rem 2.5rem',
-                            borderRadius: '50px',
-                            border: '1px solid var(--border-color)',
-                            background: 'rgba(255,255,255,0.05)',
-                            color: 'var(--text-color)',
-                            width: '250px'
-                        }}
-                    />
-                    <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+                <div className="ud-search-wrapper" style={{ flex: 1, maxWidth: '400px', marginLeft: '2rem' }}>
+                    <div className="ud-search-bar" style={{ padding: '4px 4px 4px 1.2rem', boxShadow: '0 8px 20px rgba(0,0,0,0.08)' }}>
+                        <span className="ud-search-category">Search</span>
+                        <input
+                            type="text"
+                            placeholder="Find upcoming events..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ padding: '0.4rem 0' }}
+                        />
+                        <button className="ud-search-btn" style={{ padding: '0.5rem 1.2rem' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 

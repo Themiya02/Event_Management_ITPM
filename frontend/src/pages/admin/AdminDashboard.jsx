@@ -151,24 +151,63 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Recent Pending Events */}
-                            <div className="glass-panel admin-recent-card">
-                                <div className="card-row-header">
-                                    <h2 className="section-title">🕐 Registration Pipeline Highlights</h2>
+                            <div className="glass-panel admin-recent-card" style={{ padding: '2rem', marginTop: '2rem' }}>
+                                <div className="card-row-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <h2 className="section-title" style={{ margin: 0 }}>🕐 Registration Pipeline Highlights</h2>
                                     <Link to="/admin/events/upcoming" className="link-action">View All In Pipeline →</Link>
                                 </div>
                                 {recentEvents.length === 0 ? (
                                     <p className="empty-note">No requested events currently active. 🎉</p>
                                 ) : (
-                                    <div className="recent-list">
-                                        {recentEvents.map(ev => (
-                                            <div key={ev._id} className="recent-row">
-                                                <div>
-                                                    <p className="recent-name">{ev.name}</p>
-                                                    <p className="recent-meta">By {ev.organizer?.name || 'Unknown'} · {new Date(ev.date).toLocaleDateString()}</p>
+                                    <div className="events-grid">
+                                        {recentEvents.map(ev => {
+                                            const dateObj = new Date(ev.date);
+                                            const month = dateObj.toLocaleString('default', { month: 'short' });
+                                            const day = dateObj.getDate();
+
+                                            return (
+                                                <div key={ev._id} className="event-card glass-panel">
+                                                    <div className="card-img-wrapper">
+                                                        {ev.imageUrl ? (
+                                                            <img src={ev.imageUrl} alt={ev.name} />
+                                                        ) : (
+                                                            <div className="placeholder-img">
+                                                                <span>{ev.name.charAt(0)}</span>
+                                                            </div>
+                                                        )}
+                                                        <span className="reg-badge required">Review Pending</span>
+                                                    </div>
+
+                                                    <div className="card-content">
+                                                        <h3>{ev.name}</h3>
+                                                        <div className="org-name">
+                                                            <span>👤 {ev.organizer?.name || 'Local Organizer'}</span>
+                                                        </div>
+
+                                                        <div className="card-details">
+                                                            <div className="detail-item">
+                                                                <span>📅</span> {month} {day}, {ev.time || 'TBD'}
+                                                            </div>
+                                                            <div className="detail-item">
+                                                                <span>📍</span> {ev.location || 'TBA'}
+                                                            </div>
+                                                            <div className="detail-item">
+                                                                <span>🎟️</span> {ev.isPaid ? `Rs ${ev.price}` : 'Free'}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="card-actions">
+                                                            <Link
+                                                                to={`/admin/events/review/${ev._id}`}
+                                                                className="btn-view-event"
+                                                            >
+                                                                Review Event
+                                                            </Link>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <Link to="/admin/events/upcoming" className="btn-sm-primary">Review Details</Link>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

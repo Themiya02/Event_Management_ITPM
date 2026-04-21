@@ -38,22 +38,22 @@ const RejectedEvents = () => {
                     <p className="page-main-subtitle">Events that were reviewed and not approved by the admin.</p>
                 </div>
 
-                <div className="search-wrapper" style={{ position: 'relative' }}>
-                    <input 
-                        type="text" 
-                        placeholder="Search Rejected Events..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{
-                            padding: '0.6rem 1rem 0.6rem 2.5rem',
-                            borderRadius: '50px',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            background: 'rgba(255,255,255,0.05)',
-                            color: '#fff',
-                            width: '250px'
-                        }}
-                    />
-                    <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+                <div className="ud-search-wrapper" style={{ flex: 1, maxWidth: '400px', marginLeft: '2rem' }}>
+                    <div className="ud-search-bar" style={{ padding: '4px 4px 4px 1.2rem', boxShadow: '0 8px 20px rgba(0,0,0,0.08)' }}>
+                        <span className="ud-search-category">Search</span>
+                        <input
+                            type="text"
+                            placeholder="Find rejected events..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ padding: '0.4rem 0' }}
+                        />
+                        <button className="ud-search-btn" style={{ padding: '0.5rem 1.2rem' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -65,32 +65,58 @@ const RejectedEvents = () => {
                     <h3>{searchTerm ? 'No matching events' : 'No Rejected Events Yet'}</h3>
                 </div>
             ) : (
-                <div className="simple-card-list">
-                    {filteredEvents.map(ev => (
-                        <div key={ev._id} className="simple-event-card glass-panel">
-                            <div className="sec-info">
-                                <h3 className="sec-name">{ev.name}</h3>
-                                <div className="sec-meta" style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-                                    <span style={{background: 'rgba(255,255,255,0.1)', padding:'0.2rem 0.6rem', borderRadius:'20px'}}>📅 {new Date(ev.date).toLocaleDateString()}</span>
-                                    <span style={{background: 'rgba(255,255,255,0.1)', padding:'0.2rem 0.6rem', borderRadius:'20px'}}>📍 {ev.location}</span>
-                                    
-                                    <span className={`ticket-badge ${ev.isOpenRegistration ? 'required' : 'open'}`} style={{ marginLeft: 'auto' }}>
-                                        {ev.isOpenRegistration ? '📝 Registration Required' : '🚪 Open Walk-in'}
-                                    </span>
+                <div className="events-grid">
+                    {filteredEvents.map(ev => {
+                        const dateObj = new Date(ev.date);
+                        const month = dateObj.toLocaleString('default', { month: 'short' });
+                        const day = dateObj.getDate();
 
-                                    <span className={`ticket-badge ${ev.isPaid ? 'paid' : 'free'}`}>
-                                        {ev.isPaid ? `💳 Paid: Rs ${ev.price}` : '🎟️ Free Entry'}
+                        return (
+                            <div key={ev._id} className="event-card glass-panel animation-fade-in" style={{ border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                                <div className="card-img-wrapper">
+                                    {ev.imageUrl ? (
+                                        <img src={ev.imageUrl} alt={ev.name} style={{ filter: 'grayscale(0.5)' }} />
+                                    ) : (
+                                        <div className="placeholder-img" style={{ background: 'linear-gradient(135deg, #7f1d1d, #ef4444)' }}>
+                                            <span>{ev.name.charAt(0)}</span>
+                                        </div>
+                                    )}
+                                    <span className={`reg-badge required`}>
+                                        ✕ Rejected
                                     </span>
                                 </div>
-                                {ev.rejectionReason && (
-                                    <div className="rejection-reason-box" style={{ marginTop: '1rem', padding: '0.8rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                                        <strong style={{ color: '#ef4444' }}>Rejection Reason:</strong> {ev.rejectionReason}
+                                
+                                <div className="card-content">
+                                    <h3>{ev.name}</h3>
+                                    <div className="org-name">
+                                        <span>👤 {ev.organizer?.name || 'Local Organizer'}</span>
+                                        {ev.artistName && <span style={{ marginLeft: '1rem' }}>🎤 {ev.artistName}</span>}
                                     </div>
-                                )}
+                                    
+                                    <div className="card-details">
+                                        <div className="detail-item">
+                                            <span>📅</span> {month} {day}, {ev.time || 'TBA'}
+                                        </div>
+                                        <div className="detail-item">
+                                            <span>📍</span> {ev.location || 'TBA'}
+                                        </div>
+                                    </div>
+
+                                    {ev.rejectionReason && (
+                                        <div style={{ marginTop: 'auto', padding: '0.8rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)', fontSize: '0.85rem', color: '#ef4444' }}>
+                                            <strong>Reason:</strong> {ev.rejectionReason}
+                                        </div>
+                                    )}
+
+                                    <div className="card-actions" style={{ borderTop: 'none', paddingTop: '0.5rem' }}>
+                                        <div className="btn-view-event" style={{background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', pointerEvents: 'none'}}>
+                                            Rejected Event
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <span className="status-tag rejected" style={{ marginTop: '1rem', display: 'inline-block', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '0.3rem 0.8rem', borderRadius: '4px', fontSize: '0.8rem' }}>✕ Rejected</span>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>
