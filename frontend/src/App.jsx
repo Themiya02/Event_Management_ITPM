@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import UserDashboard from './pages/user/UserDashboard';
 import EventView from './pages/user/EventView';
 import MyTickets from './pages/user/MyTickets';
+import UserProfile from './pages/user/UserProfile';
 import PrivateRoute from './components/PrivateRoute';
 import UserLayout from './components/layout/UserLayout';
 import OrganizerLayout from './components/layout/OrganizerLayout';
@@ -37,10 +38,13 @@ import AdminArtistsView from './pages/admin/AdminArtistsView';
 import SponsorshipPackages from './pages/Sponsorship/SponsorshipPackages';
 import SponsorshipApply from './pages/Sponsorship/SponsorshipApply';
 import OTPVerification from './pages/Sponsorship/OTPVerification';
+import AdminEventsHandling from './pages/admin/AdminEventsHandling';
+import Messages from './pages/chat/Messages';
 import RoleRoute from './components/RoleRoute';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import Home from './pages/Home';
+import LandingPage from './pages/LandingPage';
 import GlobalNavbar from './components/layout/GlobalNavbar';
 import GlobalFooter from './components/layout/GlobalFooter';
 import './App.css';
@@ -61,6 +65,7 @@ const AppContent = () => {
           <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
           <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
 
+<<<<<<< HEAD
 
           <Route
             path="/dashboard"
@@ -72,6 +77,18 @@ const AppContent = () => {
               </PrivateRoute>
             }
           />
+=======
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <UserLayout>
+                    <UserDashboard />
+                  </UserLayout>
+                </PrivateRoute>
+              }
+            />
+>>>>>>> kumuthu01
 
           <Route
             path="/dashboard/event/:id"
@@ -203,6 +220,17 @@ const AppContent = () => {
               </PrivateRoute>
             }
           />
+
+            <Route
+              path="/organizer/messages"
+              element={
+                <PrivateRoute allowedRoles={['organizer']}>
+                  <OrganizerLayout>
+                    <Messages />
+                  </OrganizerLayout>
+                </PrivateRoute>
+              }
+            />
 
 
           {/* Admin Routes */}
@@ -397,7 +425,134 @@ const AppContent = () => {
             }
           />
 
+<<<<<<< HEAD
           <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
+=======
+            <Route
+              path="/admin/artists"
+              element={
+                <PrivateRoute>
+                  <AdminLayout>
+                    <AddArtists />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/admin/events-handling"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <AdminEventsHandling />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/admin/artists/view"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <Artists />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/admin/messages"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Messages />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/artists/analyze"
+              element={
+                <PrivateRoute allowedRoles={['admin', 'organizer']}>
+                  {user?.role === 'admin' ? (
+                    <AdminLayout>
+                      <RatingAnalyze />
+                    </AdminLayout>
+                  ) : (
+                    <OrganizerLayout>
+                      <RatingAnalyze />
+                    </OrganizerLayout>
+                  )}
+                </PrivateRoute>
+              }
+            />
+
+            {/* Public Domains */}
+            <Route path="/artists" element={<Artists />} />
+            <Route
+              path="/user/artists"
+              element={
+                <PrivateRoute>
+                  <Artists />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/user/rating"
+              element={
+                <PrivateRoute>
+                  <UserRating />
+                </PrivateRoute>
+              }
+            />
+
+            {/* New Domains */}
+            <Route
+              path="/sponsor/dashboard"
+              element={
+                <RoleRoute allowedRole="sponsor">
+                  <SponsorDashboard />
+                </RoleRoute>
+              }
+            />
+
+            <Route
+              path="/sponsor/packages"
+              element={
+                <RoleRoute allowedRole="sponsor">
+                  <SponsorshipPackages />
+                </RoleRoute>
+              }
+            />
+
+            <Route
+              path="/sponsor/apply"
+              element={
+                <RoleRoute allowedRole="sponsor">
+                  <SponsorshipApply />
+                </RoleRoute>
+              }
+            />
+
+            <Route
+              path="/sponsor/verify-otp"
+              element={
+                <RoleRoute allowedRole="sponsor">
+                  <OTPVerification />
+                </RoleRoute>
+              }
+            />
+
+            <Route
+              path="/food/dashboard"
+              element={
+                <PrivateRoute>
+                    <FoodDashboard />
+                </PrivateRoute>
+              }
+            />
+
+            <Route path="/" element={user ? <Home /> : <LandingPage />} />
+>>>>>>> kumuthu01
         </Routes>
       </main>
       {showNavAndFooter && <GlobalFooter />}

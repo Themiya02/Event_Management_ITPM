@@ -119,13 +119,15 @@ const RegisteredUsers = () => {
                                         {(!reg.status || reg.status === 'Pending') && (
                                             <div className="action-buttons">
                                                 <button
-                                                    className="btn btn-success btn-sm"
+                                                    className="btn btn-sm"
+                                                    style={{ backgroundColor: '#2563eb', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
                                                     onClick={() => handleStatusChange(reg._id, 'Approved')}
                                                 >
                                                     Approve
                                                 </button>
                                                 <button
-                                                    className="btn btn-danger btn-sm"
+                                                    className="btn btn-sm"
+                                                    style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
                                                     onClick={() => handleStatusChange(reg._id, 'Rejected')}
                                                 >
                                                     Reject

@@ -8,7 +8,7 @@ const AdminSidebar = () => {
     const location = useLocation();
     const currentPath = location.pathname;
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
 
     // Default expand the domain the user is currently inside
     const [expandedAccordion, setExpandedAccordion] = useState(() => {
@@ -63,6 +63,28 @@ const AdminSidebar = () => {
         }
     ];
 
+    const [unreadMessages, setUnreadMessages] = useState(0);
+
+    React.useEffect(() => {
+        if (!user) return;
+        const fetchUnread = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/messages/unread-count', {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setUnreadMessages(data.count);
+                }
+            } catch (err) {
+                console.error('Failed to fetch unread messages count', err);
+            }
+        };
+        fetchUnread();
+        const interval = setInterval(fetchUnread, 10000);
+        return () => clearInterval(interval);
+    }, [user]);
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -70,7 +92,16 @@ const AdminSidebar = () => {
 
     return (
         <aside className="sidebar glass-panel">
+<<<<<<< HEAD
 
+=======
+            <div className="sidebar-header">
+                <div className="logo-icon"></div>
+                <div>
+                    <span className="admin-role-badge">Admin Panel</span>
+                </div>
+            </div>
+>>>>>>> kumuthu01
             <nav className="sidebar-nav">
                 <ul>
                     {/* Standalone Dashboard Link */}
@@ -80,6 +111,19 @@ const AdminSidebar = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={dashboardItem.icon} />
                             </svg>
                             <span>{dashboardItem.label}</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/admin/messages" className={`nav-link ${currentPath === '/admin/messages' ? 'active' : ''}`} style={{ position: 'relative' }}>
+                            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            <span>Inbox / Messages</span>
+                            {unreadMessages > 0 && (
+                                <span style={{ position: 'absolute', right: '15px', background: '#ef4444', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
+                                    {unreadMessages}
+                                </span>
+                            )}
                         </Link>
                     </li>
 

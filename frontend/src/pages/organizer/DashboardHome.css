@@ -264,7 +264,7 @@
 
 .status-badge.upcoming {
     background: rgba(147, 51, 234, 0.15);
-    color: #7E22CE;
+    color: var(--primary-color-hover);
 }
 
 .status-badge.draft {

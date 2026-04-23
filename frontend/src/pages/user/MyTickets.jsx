@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { QRCodeCanvas } from 'qrcode.react';
+import html2canvas from 'html2canvas';
+import './MyTickets.css';
 
 const MyTickets = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const ticketRef = useRef(null);
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedTicket, setSelectedTicket] = useState(null);
+    const [showTicketModal, setShowTicketModal] = useState(false);
 
     useEffect(() => {
         const fetchTickets = async () => {
             try {
                 const localUser = JSON.parse(localStorage.getItem('user'));
                 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                
+
                 const res = await axios.get(`${apiUrl}/api/events/my-registrations`, {
                     headers: { Authorization: `Bearer ${localUser?.token}` }
                 });
@@ -28,6 +34,28 @@ const MyTickets = () => {
 
         fetchTickets();
     }, []);
+
+    const openTicket = (t) => {
+        if (t.status !== 'Approved') return;
+        setSelectedTicket(t);
+        setShowTicketModal(true);
+    };
+
+    const downloadTicketImage = async () => {
+        if (!ticketRef.current) return;
+        try {
+            const canvas = await html2canvas(ticketRef.current, {
+                backgroundColor: '#ffffff',
+                scale: 2
+            });
+            const link = document.createElement('a');
+            link.download = `Ticket-${selectedTicket.event.name}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (err) {
+            console.error('Failed to download ticket', err);
+        }
+    };
 
     if (loading) return <div className="loading-state">Loading your reserved tickets...</div>;
 
@@ -51,7 +79,7 @@ const MyTickets = () => {
                     {tickets.map((t) => {
                         const ev = t.event;
                         if (!ev) return null;
-                        
+
                         const dateObj = new Date(ev.date);
                         const dateStr = dateObj.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -75,11 +103,11 @@ const MyTickets = () => {
                                     <div style={{ fontSize: '0.85rem', marginTop: '0.5rem', padding: '0.4rem 0.8rem', background: 'rgba(167, 139, 250, 0.1)', borderRadius: '6px', display: 'inline-block', color: 'var(--accent-purple)' }}>
                                         Registered as: <strong>{t.participantName || user?.name}</strong> (ID: {t.campusId || 'N/A'})
                                     </div>
-                                    <div style={{ marginTop: '0.8rem' }}>
+                                    <div style={{ marginTop: '0.8rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
                                         <span className={`status-badge status-${(t.status || 'pending').toLowerCase()}`} style={{
-                                            padding: '0.4rem 0.8rem', 
-                                            borderRadius: '20px', 
-                                            fontSize: '0.85rem', 
+                                            padding: '0.4rem 0.8rem',
+                                            borderRadius: '20px',
+                                            fontSize: '0.85rem',
                                             fontWeight: 'bold',
                                             background: t.status === 'Approved' ? 'rgba(16, 185, 129, 0.15)' : t.status === 'Rejected' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
                                             color: t.status === 'Approved' ? '#10b981' : t.status === 'Rejected' ? '#ef4444' : '#f59e0b',
@@ -89,14 +117,75 @@ const MyTickets = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <div>
-                                    <button className="btn-sm-outline" onClick={() => navigate(`/dashboard/event/${ev._id}`)}>
-                                        View Event
+                                <div className="ticket-actions-group">
+                                    <button 
+                                        className="btn-premium-action btn-view-ticket"
+                                        disabled={t.status !== 'Approved'}
+                                        onClick={() => openTicket(t)}
+                                    >
+                                        {t.status === 'Approved' ? (
+                                            <><span>🎫</span> View Ticket</>
+                                        ) : (
+                                            <><span>⏳</span> Reviewing...</>
+                                        )}
+                                    </button>
+                                    <button 
+                                        className="btn-premium-action btn-details-outline" 
+                                        onClick={() => navigate(`/dashboard/event/${ev._id}`)}
+                                    >
+                                        <span>ℹ️</span> Details
                                     </button>
                                 </div>
                             </div>
                         );
                     })}
+                </div>
+            )}
+
+            {/* Professional White-Style Ticket Modal (Reference based) */}
+            {showTicketModal && selectedTicket && (
+                <div className="ticket-modal-backdrop" onClick={() => setShowTicketModal(false)}>
+                    <div className="share-modal-card" ref={ticketRef} onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Event Entry Pass</h3>
+                            <button className="close-btn" onClick={() => setShowTicketModal(false)}>×</button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="qr-section">
+                                <div className="qr-instruction">Digital Entry Ticket</div>
+                                <div className="qr-subtext">Present this QR code to the organizer for verification.</div>
+                                
+                                <div className="qr-display-container">
+                                    <QRCodeCanvas 
+                                        value={JSON.stringify({
+                                            ticketId: selectedTicket._id,
+                                            eventId: selectedTicket.event._id,
+                                            participant: selectedTicket.participantName,
+                                            campusId: selectedTicket.campusId
+                                        })}
+                                        size={200}
+                                        level={"H"}
+                                        includeMargin={false}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <button className="action-btn" onClick={downloadTicketImage}>
+                                📥 Download Ticket as Image
+                            </button>
+                        </div>
+
+                        <div className="modal-footer">
+                            <div className="footer-label">Share event pass via</div>
+                            <div className="social-icons-row">
+                                <span className="social-icon">f</span>
+                                <span className="social-icon">in</span>
+                                <span className="social-icon">📷</span>
+                                <span className="social-icon">🐦</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

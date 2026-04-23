@@ -1,6 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import NotificationsDropdown from './NotificationsDropdown';
 import './GlobalNavbar.css';
 
 const GlobalNavbar = () => {
@@ -14,8 +15,24 @@ const GlobalNavbar = () => {
 
       <div className="navbar-right" style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
         <div className="nav-links" style={{ display: 'flex', gap: '1.5rem', fontSize: '1.15rem' }}>
-          <Link to="/" className="nav-link">Home</Link>
-          <Link
+          <NavLink 
+            to="/" 
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+            end
+          >
+            Home
+          </NavLink>
+          <NavLink 
+            to={
+              user?.role === 'admin' ? '/admin/events-handling' : 
+              user?.role === 'organizer' ? '/organizer/dashboard' : 
+              '/dashboard'
+            } 
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+          >
+            Events
+          </NavLink>
+          <NavLink
             to={
               user?.role === 'admin' ? '/admin/events/upcoming' :
               user?.role === 'organizer' ? '/organizer/dashboard' :
@@ -33,22 +50,41 @@ const GlobalNavbar = () => {
               user?.role === 'user' ? '/user/artists' :
               '/artists'
             }
-            className="nav-link"
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
           >
             Artists
-          </Link>
-          <Link to="/contact" className="nav-link">Contact</Link>
-          <Link to="/about" className="nav-link">About</Link>
+          </NavLink>
+          <NavLink 
+            to="/contact" 
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+          >
+            Contact
+          </NavLink>
+          <NavLink 
+            to="/about" 
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+          >
+            About
+          </NavLink>
           {user && user.role === 'admin' && (
+<<<<<<< HEAD
             <Link
               to="/admin/dashboard"
               className="nav-link"
               style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}
+=======
+            <NavLink 
+              to="/admin/dashboard"
+              className={({ isActive }) => isActive ? "nav-link active-dashboard" : "nav-link"} 
+              style={({ isActive }) => ({ fontWeight: 'bold', color: isActive ? 'var(--primary-color)' : 'var(--text-main)' })}
+>>>>>>> kumuthu01
             >
               Dashboard
-            </Link>
+            </NavLink>
           )}
         </div>
+
+        {user && <NotificationsDropdown />}
 
         {user ? (
           <Link

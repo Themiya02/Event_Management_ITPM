@@ -35,10 +35,13 @@ const eventSchema = new mongoose.Schema({
   },
   registrationsCount: { type: Number, default: 0 },
   stallMapUrl: { type: String, default: '' },
+<<<<<<< HEAD
   stallPricing: [{
     stall: { type: String, trim: true, required: true },
     price: { type: Number, required: true, min: 0 }
   }],
+=======
+>>>>>>> kumuthu01
   bankDetails: {
     accountName: { type: String, default: '' },
     bankName: { type: String, default: '' },
@@ -66,6 +69,8 @@ const eventSchema = new mongoose.Schema({
     },
     x: { type: Number },
     y: { type: Number },
+    status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+    paymentReceipt: { type: String, default: '' },
     bookedAt: { type: Date, default: Date.now }
   }]
 }, {
