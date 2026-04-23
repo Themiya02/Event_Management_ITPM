@@ -7,6 +7,7 @@ const registrationSchema = new mongoose.Schema({
   campusId: { type: String, required: true },
   campusYear: { type: String, required: true },
   paymentSlip: { type: String },
+  status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
   registeredAt: { type: Date, default: Date.now }
 });
 

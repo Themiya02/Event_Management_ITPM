@@ -15,6 +15,7 @@ import EditEvent from './pages/organizer/EditEvent';
 import TrackEvent from './pages/organizer/TrackEvent';
 import EventsList from './pages/organizer/EventsList';
 import Settings from './pages/organizer/Settings';
+import RegisteredUsers from './pages/organizer/RegisteredUsers';
 import OrganizerArtists from './pages/organizer/OrganizerArtists';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UpcomingEvents from './pages/admin/UpcomingEvents';
@@ -156,6 +157,17 @@ const AppContent = () => {
                 <PrivateRoute>
                   <OrganizerLayout>
                     <TrackEvent />
+                  </OrganizerLayout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/organizer/registered-users"
+              element={
+                <PrivateRoute>
+                  <OrganizerLayout>
+                    <RegisteredUsers />
                   </OrganizerLayout>
                 </PrivateRoute>
               }
