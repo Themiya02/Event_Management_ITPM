@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import './Sidebar.css';
 import './AdminSidebar.css';
 
 const AdminSidebar = () => {
@@ -55,7 +56,10 @@ const AdminSidebar = () => {
             id: 'artists',
             label: 'Artist Handling',
             icon: 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3',
-            links: [] // Blank placeholder as requested
+            links: [
+                { label: 'Add/Manage Artists', path: '/admin/artists' },
+                { label: 'Ratings Analyze', path: '/artists/analyze' }
+            ]
         }
     ];
 
@@ -65,14 +69,8 @@ const AdminSidebar = () => {
     };
 
     return (
-        <aside className="sidebar glass-panel admin-sidebar">
-            <div className="sidebar-header">
-                <div className="logo-icon"></div>
-                <div>
-                    <h2 className="text-gradient">Eventio</h2>
-                    <span className="admin-role-badge">Admin Panel</span>
-                </div>
-            </div>
+        <aside className="sidebar glass-panel">
+
             <nav className="sidebar-nav">
                 <ul>
                     {/* Standalone Dashboard Link */}

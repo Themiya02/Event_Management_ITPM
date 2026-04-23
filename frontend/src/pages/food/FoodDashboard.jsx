@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -11,7 +11,7 @@ import './FoodDashboard.css';
 
 const ELECTRICITY_PRICE = 3000;
 const WATER_PRICE = 2000;
-
+//fix
 const FoodDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -265,7 +265,7 @@ const FoodDashboard = () => {
     setNeedsWater(!!booking.needsWater);
     // Note: we don't pre-fill paymentReceipt (file input can't be set programmatically)
     // The backend update should ignore it if null
-    
+
     setEditingBookingId(booking._id);
     setActiveTab('application');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -397,72 +397,65 @@ const FoodDashboard = () => {
             {!!successMessage && <div className="food-alert food-alert-success">{successMessage}</div>}
 
             {activeTab === 'payments' ? (
-          <section className="food-payment-cards">
-            <div className="food-section-intro glass-panel">
-              <h2>Payment Details by Event</h2>
-              <p>These bank details are entered by admins. Use them to complete your transfer before submitting applications.</p>
-            </div>
-            {eventsWithBankDetails.length === 0 ? (
-              <div className="glass-panel food-empty-state">
-                <h2>No bank details available yet</h2>
-                <p>Ask admin to add bank details for events so they appear here.</p>
-              </div>
-            ) : (
-              <div className="food-payment-grid">
-                {eventsWithBankDetails.map((event) => (
-                  <article key={event._id} className="glass-panel food-payment-card">
-                    <div className="card-img-wrapper food-payment-card-img" style={{ height: '160px' }}>
-                      {event.imageUrl ? (
-                        <img src={event.imageUrl} alt={event.name} />
-                      ) : (
-                        <div className="placeholder-img">
-                          <span>{event.name.charAt(0)}</span>
+              <section className="food-payment-cards">
+                <div className="food-section-intro glass-panel">
+                  <h2>Payment Details by Event</h2>
+                  <p>These bank details are entered by admins. Use them to complete your transfer before submitting applications.</p>
+                </div>
+                <div className="food-payment-grid">
+                  {eventsWithBankDetails.map((event) => (
+                    <article key={event._id} className="glass-panel food-payment-card">
+                      <div className="card-img-wrapper food-payment-card-img" style={{ height: '160px' }}>
+                        {event.imageUrl ? (
+                          <img src={event.imageUrl} alt={event.name} />
+                        ) : (
+                          <div className="placeholder-img">
+                            <span>{event.name.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="food-payment-card-body">
+                        <div className="food-payment-card-head">
+                          <h3>{event.name}</h3>
+                          <button type="button" className="food-link-btn" onClick={() => openEvent(event)}>
+                            Open Event
+                          </button>
                         </div>
-                      )}
-                    </div>
-                    <div className="food-payment-card-body">
-                      <div className="food-payment-card-head">
-                        <h3>{event.name}</h3>
-                        <button type="button" className="food-link-btn" onClick={() => openEvent(event)}>
-                          Open Event
-                        </button>
-                      </div>
-                      <p className="food-payment-meta">
-                        {new Date(event.date).toLocaleDateString()} at {event.time}
-                      </p>
-                      <div className="food-payment-details">
-                        <p><span>Account Name</span><strong>{event.bankDetails?.accountName || '-'}</strong></p>
-                        <p><span>Bank Name</span><strong>{event.bankDetails?.bankName || '-'}</strong></p>
-                        <p><span>Account Number</span><strong>{event.bankDetails?.accountNumber || '-'}</strong></p>
-                        <p><span>Branch</span><strong>{event.bankDetails?.branch || '-'}</strong></p>
-                      </div>
-                      {event.bankDetails?.instructions && (
-                        <p className="food-payment-instructions">
-                          <span>Instructions:</span> {event.bankDetails.instructions}
+                        <p className="food-payment-meta">
+                          {new Date(event.date).toLocaleDateString()} at {event.time}
                         </p>
-                      )}
-                    </div>
+                        <div className="food-payment-details">
+                          <p><span>Account Name</span><strong>{event.bankDetails?.accountName || '-'}</strong></p>
+                          <p><span>Bank Name</span><strong>{event.bankDetails?.bankName || '-'}</strong></p>
+                          <p><span>Account Number</span><strong>{event.bankDetails?.accountNumber || '-'}</strong></p>
+                          <p><span>Branch</span><strong>{event.bankDetails?.branch || '-'}</strong></p>
+                        </div>
+                        {event.bankDetails?.instructions && (
+                          <p className="food-payment-instructions">
+                            <span>Instructions:</span> {event.bankDetails.instructions}
+                          </p>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : !selectedEvent ? (
+              <>
+                <section className="food-stats-grid">
+                  <article className="glass-panel food-stat-card">
+                    <p>Mapped Events</p>
+                    <h3>{events.length}</h3>
                   </article>
-                ))}
-              </div>
-            )}
-          </section>
-        ) : !selectedEvent ? (
-          <>
-            <section className="food-stats-grid">
-              <article className="glass-panel food-stat-card">
-                <p>Mapped Events</p>
-                <h3>{events.length}</h3>
-              </article>
-              <article className="glass-panel food-stat-card">
-                <p>MY APPLICATIONS</p>
-                <h3>{allMyBookings.length}</h3>
-              </article>
-              <article className="glass-panel food-stat-card">
-                <p>Pending Reviews</p>
-                <h3>{pendingCount}</h3>
-              </article>
-            </section>
+                  <article className="glass-panel food-stat-card">
+                    <p>MY APPLICATIONS</p>
+                    <h3>{allMyBookings.length}</h3>
+                  </article>
+                  <article className="glass-panel food-stat-card">
+                    <p>Pending Reviews</p>
+                    <h3>{pendingCount}</h3>
+                  </article>
+                </section>
 
             {events.length === 0 ? (
               <div className="glass-panel food-empty-state">
@@ -518,21 +511,22 @@ const FoodDashboard = () => {
               </section>
             )}
 
-            {allMyBookings.length > 0 && (
-              <section className="glass-panel food-my-applications">
-                <h2>MY APPLICATIONS</h2>
-                <div className="food-application-list">
-                  {allMyBookings.slice(0, 5).map((booking) => (
-                    <div key={booking._id} className="food-application-item">
-                      <div>
-                        <h4>{booking.stallName}</h4>
-                        <p>{booking.eventName} - {new Date(booking.eventDate).toLocaleDateString()}</p>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        {formatStatus(booking.status) === 'Pending' && (
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {/* Edit button is disabled as per user request */}
-                            {/* <button 
+
+              {allMyBookings.length > 0 && (
+                <section className="glass-panel food-my-applications">
+                  <h2>My Applications</h2>
+                  <div className="food-application-list">
+                    {allMyBookings.slice(0, 5).map((booking) => (
+                      <div key={booking._id} className="food-application-item">
+                        <div>
+                          <h4>{booking.stallName}</h4>
+                          <p>{booking.eventName} - {new Date(booking.eventDate).toLocaleDateString()}</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          {formatStatus(booking.status) === 'Pending' && (
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              {/* Edit button is disabled as per user request */}
+                              {/* <button 
                               onClick={() => handleEditClick(booking)}
                               style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1470F9', display: 'flex' }}
                               title="Edit Application"
@@ -567,72 +561,72 @@ const FoodDashboard = () => {
                   <h2>{selectedEvent.name}</h2>
                   <p>Map preview of the event stall layout.</p>
                 </div>
-              </div>
 
-              <div className="food-map-wrapper">
-                <img src={selectedEvent.stallMapUrl} alt={`${selectedEvent.name} stall map`} />
+                <div className="food-map-wrapper">
+                  <img src={selectedEvent.stallMapUrl} alt={`${selectedEvent.name} stall map`} />
 
-                {(selectedEvent.bookedStalls || [])
-                  .filter((stall) => stall.x !== undefined && stall.y !== undefined)
-                  .map((stall) => {
-                  const isMine = String(stall.vendorId) === String(user?._id);
-                  const status = formatStatus(stall.status);
-                  return (
-                    <button
-                      key={stall._id}
-                      type="button"
-                      className={`food-map-marker ${isMine ? 'mine' : ''} ${status.toLowerCase()}`}
-                      style={{ left: `${stall.x}%`, top: `${stall.y}%` }}
-                      title={`${stall.stallName} - ${status}`}
-                    />
-                  );
-                })}
-              </div>
+                  {(selectedEvent.bookedStalls || [])
+                    .filter((stall) => stall.x !== undefined && stall.y !== undefined)
+                    .map((stall) => {
+                      const isMine = String(stall.vendorId) === String(user?._id);
+                      const status = formatStatus(stall.status);
+                      return (
+                        <button
+                          key={stall._id}
+                          type="button"
+                          className={`food-map-marker ${isMine ? 'mine' : ''} ${status.toLowerCase()}`}
+                          style={{ left: `${stall.x}%`, top: `${stall.y}%` }}
+                          title={`${stall.stallName} - ${status}`}
+                        />
+                      );
+                    })}
+                </div>
 
-              {/* <div className="food-map-help">
+                {/* <div className="food-map-help">
                 <span><i className="dot mine" /> My stalls</span>
                 <span><i className="dot pending" /> Pending</span>
                 <span><i className="dot approved" /> Approved</span>
                 <span><i className="dot rejected" /> Rejected</span>
               </div> */}
 
-              <div className="food-stall-table-wrap">
-                <h4>Stall Allocation Table</h4>
-                {(selectedEvent.bookedStalls || []).filter(
-                  (stall) => formatStatus(stall.status) === 'Approved'
-                ).length === 0 ? (
-                  <p className="food-stall-table-empty">No approved stall allocations yet for this event.</p>
-                ) : (
-                  <table className="food-stall-table">
-                    <thead>
-                      <tr>
-                        <th>Stall</th>
-                        <th>Owner Name</th>
-                        <th>Stall Name</th>
-                        <th>Food Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(selectedEvent.bookedStalls || [])
-                        .filter((stall) => formatStatus(stall.status) === 'Approved')
-                        .map((stall) => (
-                        <tr key={stall._id}>
-                          <td>{stall.stallLocation || '-'}</td>
-                          <td>{stall.vendorName || '-'}</td>
-                          <td>{stall.stallName || '-'}</td>
-                          <td>{stall.foodType || '-'}</td>
+                <div className="food-stall-table-wrap">
+                  <h4>Stall Allocation Table</h4>
+                  {(selectedEvent.bookedStalls || []).filter(
+                    (stall) => formatStatus(stall.status) === 'Approved'
+                  ).length === 0 ? (
+                    <p className="food-stall-table-empty">No approved stall allocations yet for this event.</p>
+                  ) : (
+                    <table className="food-stall-table">
+                      <thead>
+                        <tr>
+                          <th>Stall</th>
+                          <th>Owner Name</th>
+                          <th>Stall Name</th>
+                          <th>Food Type</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
+                      </thead>
+                      <tbody>
+                        {(selectedEvent.bookedStalls || [])
+                          .filter((stall) => formatStatus(stall.status) === 'Approved')
+                          .map((stall) => (
+                            <tr key={stall._id}>
+                              <td>{stall.stallLocation || '-'}</td>
+                              <td>{stall.vendorName || '-'}</td>
+                              <td>{stall.stallName || '-'}</td>
+                              <td>{stall.foodType || '-'}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="glass-panel food-form-panel">
-              <h3>Submit Stall Application</h3>
-              {/* Bank Details (Provided by Admin) */}
-              {/* {(selectedEvent.bankDetails?.accountName ||
+                <h3>Submit Stall Application</h3>
+                {/* Bank Details (Provided by Admin) */}
+                {/* {(selectedEvent.bankDetails?.accountName ||
                 selectedEvent.bankDetails?.bankName ||
                 selectedEvent.bankDetails?.accountNumber ||
                 selectedEvent.bankDetails?.branch ||
@@ -770,4 +764,4 @@ const FoodDashboard = () => {
   );
 };
 
-export default FoodDashboard;
+  export default FoodDashboard;

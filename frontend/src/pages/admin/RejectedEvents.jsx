@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './EventListPage.css';
+import '../user/UserDashboard.css';
 
 const RejectedEvents = () => {
     const [events, setEvents] = useState([]);
@@ -41,32 +42,53 @@ const RejectedEvents = () => {
                     <p>Any events you reject will appear here.</p>
                 </div>
             ) : (
-                <div className="simple-card-list">
-                    {events.map(ev => (
-                        <div key={ev._id} className="simple-event-card glass-panel">
-                            <div className="sec-info">
-                                <h3 className="sec-name">{ev.name}</h3>
-                                <div className="sec-meta" style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-                                    <span style={{background: 'rgba(255,255,255,0.1)', padding:'0.2rem 0.6rem', borderRadius:'20px'}}>📅 {new Date(ev.date).toLocaleDateString()}</span>
-                                    <span style={{background: 'rgba(255,255,255,0.1)', padding:'0.2rem 0.6rem', borderRadius:'20px'}}>📍 {ev.location}</span>
-                                    
-                                    <span className={`ticket-badge ${ev.isOpenRegistration ? 'required' : 'open'}`} style={{ marginLeft: 'auto' }}>
-                                        {ev.isOpenRegistration ? '📝 Registration Required' : '🚪 Open Walk-in'}
-                                    </span>
+                <div className="events-grid">
+                    {events.map(ev => {
+                        const dateObj = new Date(ev.date);
+                        const month = dateObj.toLocaleString('default', { month: 'short' });
+                        const day = dateObj.getDate();
 
-                                    <span className={`ticket-badge ${ev.isPaid ? 'paid' : 'free'}`}>
-                                        {ev.isPaid ? `💳 Paid: Rs ${ev.price}` : '🎟️ Free Entry'}
+                        return (
+                            <div key={ev._id} className="event-card glass-panel animation-fade-in">
+                                <div className="card-img-wrapper">
+                                    {ev.imageUrl ? (
+                                        <img src={ev.imageUrl} alt={ev.name} />
+                                    ) : (
+                                        <div className="placeholder-img">
+                                            <span>{ev.name.charAt(0)}</span>
+                                        </div>
+                                    )}
+                                    <span className="reg-badge" style={{ background: '#ef4444', color: 'white' }}>
+                                        ✕ Rejected
                                     </span>
                                 </div>
-                                {ev.rejectionReason && (
-                                    <div className="rejection-reason-box">
-                                        <strong>Rejection Reason:</strong> {ev.rejectionReason}
+                                
+                                <div className="card-content">
+                                    <h3>{ev.name}</h3>
+                                    <div className="org-name">
+                                        <span>👤 {ev.organizer?.name || 'Local Organizer'}</span>
                                     </div>
-                                )}
+                                    
+                                    <div className="card-details">
+                                        <div className="detail-item">
+                                            <span>📅</span> {month} {day}, {ev.time}
+                                        </div>
+                                        <div className="detail-item">
+                                            <span>📍</span> {ev.location}
+                                        </div>
+                                        <div className="detail-item">
+                                            <span>🎟️</span> {ev.isPaid ? `Rs ${ev.price}` : 'Free'}
+                                        </div>
+                                    </div>
+
+                                    <div className="card-actions" style={{ flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(239, 68, 68, 0.08)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)', marginTop: '0.5rem', width: '100%' }}>
+                                        <span style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '0.85rem', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Rejection Reason</span>
+                                        <span style={{ color: 'var(--text-main)', fontSize: '0.9rem' }}>{ev.rejectionReason || 'No specific reason provided.'}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <span className="status-tag rejected">✕ Rejected</span>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

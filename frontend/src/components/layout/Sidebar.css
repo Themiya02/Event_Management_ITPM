@@ -1,10 +1,13 @@
 .sidebar {
     width: var(--sidebar-width);
-    height: calc(100vh - 2rem);
-    margin: 1rem;
+    height: calc(100vh - 95px - 1.5rem);
+    margin: 0.5rem 1rem 1rem 1rem;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    position: relative;
+    position: sticky;
+    top: calc(95px + 0.5rem);
+    align-self: flex-start;
     z-index: 10;
     backdrop-filter: blur(40px) saturate(200%);
     -webkit-backdrop-filter: blur(40px) saturate(200%);
@@ -33,7 +36,7 @@
 
 .sidebar-nav {
     flex: 1;
-    padding: 0 1rem;
+    padding: 2.5rem 1rem 0 1rem;
     overflow-y: auto;
 }
 
@@ -67,7 +70,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
     opacity: 0;
     transition: opacity var(--transition-normal);
     z-index: -1;
@@ -87,7 +90,7 @@
     background: rgba(255, 255, 255, 0.7);
     border-left: 4px solid var(--primary-color);
     font-weight: 700;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
 .nav-link.active .nav-icon {

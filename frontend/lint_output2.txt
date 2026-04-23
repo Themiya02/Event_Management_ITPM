@@ -1,0 +1,78 @@
+﻿
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\context\AuthContext.jsx
+   6:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-refresh/only-export-components
+  17:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  15 |     const storedUser = localStorage.getItem('user');
+  16 |     if (storedUser) {
+> 17 |       setUser(JSON.parse(storedUser));
+     |       ^^^^^^^ Avoid calling setState() directly within an effect
+  18 |     }
+  19 |     setLoading(false);
+  20 |   }, []);  react-hooks/set-state-in-effect
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\AdminDashboard.jsx
+  10:12  error  'approvedEventsList' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\AdminEventReview.jsx
+  17:13  error  'id' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\AdminLogin.jsx
+   4:10  error  'useAuth' is defined but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+  14:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\AdminRegister.jsx
+  12:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\ApprovedEvents.jsx
+  10:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\FoodStallBookings.jsx
+  3:10  error  'useNavigate' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\FoodStallMapUpload.jsx
+   3:10  error    'useNavigate' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                              no-unused-vars
+  32:41  warning  React Hook useEffect has a missing dependency: 'fetchEvents'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\RejectedEvents.jsx
+  10:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\admin\UpcomingEvents.jsx
+  31:41  warning  React Hook useEffect has a missing dependency: 'fetchEvents'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\organizer\Auth\OrganizerLogin.jsx
+   4:10  error  'useAuth' is defined but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+  13:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\organizer\Auth\OrganizerRegister.jsx
+   4:10  error  'useAuth' is defined but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+  15:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\organizer\DashboardHome.jsx
+  29:8  warning  React Hook useEffect has a missing dependency: 'user?.token'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\kumut\Desktop\itpm new\Event_Management_ITPM\frontend\src\pages\organizer\TrackEvent.jsx
+  49:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  47 |         if (selectedEventId) {
+  48 |             const found = events.find(e => e.id.toString() === selectedEventId.toString());
+> 49 |             setEventData(found || null);
+     |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  50 |         } else {
+  51 |             setEventData(null);
+  52 |         }  react-hooks/set-state-in-effect
+
+Γ£û 19 problems (16 errors, 3 warnings)
+

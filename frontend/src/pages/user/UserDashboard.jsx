@@ -43,7 +43,7 @@ const UserDashboard = () => {
 
     const stats = [
         { label: 'Active Campus Events', value: totalEvents, trend: 'Live', isPositive: true },
-        { label: 'My Reserved Tickets', value: mySeats, trend: mySeats > 0 ? 'Confirmed' : 'None yet', isPositive: mySeats > 0 },
+        { label: 'My Registered Events', value: mySeats, trend: mySeats > 0 ? 'Confirmed' : 'None yet', isPositive: mySeats > 0 },
         { label: 'Open Entry Events', value: openEvents, trend: 'Free walk-ins', isPositive: true },
     ];
 
@@ -55,7 +55,7 @@ const UserDashboard = () => {
                     <p className="page-subtitle" style={{ color: 'var(--text-muted)' }}>Discover exactly what's happening around campus today.</p>
                 </div>
                 <button className="btn-sm-primary" onClick={() => navigate('/user/tickets')} style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', fontSize: '1rem', fontWeight: 600, background: 'var(--primary-gradient)', border: 'none', color: '#fff', cursor: 'pointer', boxShadow: '0 4px 15px rgba(167, 139, 250, 0.4)' }}>
-                    🎟️ View My Tickets
+                    🎟️ My Registered Events
                 </button>
             </div>
 
