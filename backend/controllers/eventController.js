@@ -1,5 +1,6 @@
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
+const Notification = require('../models/Notification');
 
 exports.getEventsWithMaps = async (req, res) => {
   try {
@@ -55,6 +56,14 @@ exports.createEvent = async (req, res) => {
       trackingStep: 1,
       rejectedAt: null,
       rejectionReason: null
+    });
+
+    // Notify Admin about new event
+    await Notification.create({
+      recipient: 'admin',
+      message: `A new event "${event.name}" has been created and is pending review.`,
+      type: 'event_created',
+      relatedId: event._id
     });
 
     res.status(201).json(event);
@@ -171,6 +180,31 @@ exports.updateEventStatus = async (req, res) => {
 
     event.status = status;
     await event.save();
+
+    if (status === 'Approved') {
+      // Notify Organizer
+      await Notification.create({
+        recipient: event.organizer,
+        message: `Your event "${event.name}" has been approved!`,
+        type: 'event_approved',
+        relatedId: event._id
+      });
+      // Notify All Users
+      await Notification.create({
+        recipient: 'all',
+        message: `New event uploaded: "${event.name}"! Check it out.`,
+        type: 'event_approved',
+        relatedId: event._id
+      });
+    } else if (status === 'Rejected') {
+      await Notification.create({
+        recipient: event.organizer,
+        message: `Your event "${event.name}" has been rejected.`,
+        type: 'event_rejected',
+        relatedId: event._id
+      });
+    }
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -277,6 +311,15 @@ exports.updateApprovalCheckbox = async (req, res) => {
     else event.trackingStep = 1;
 
     await event.save();
+
+    // Notify Organizer about step progress
+    await Notification.create({
+      recipient: event.organizer,
+      message: `Your event "${event.name}" has been approved for the ${field} stage.`,
+      type: 'system',
+      relatedId: event._id
+    });
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -307,6 +350,31 @@ exports.adminDecideEvent = async (req, res) => {
     }
 
     await event.save();
+
+    if (action === 'approve') {
+      // Notify Organizer
+      await Notification.create({
+        recipient: event.organizer,
+        message: `Your event "${event.name}" has been approved by the Admin!`,
+        type: 'event_approved',
+        relatedId: event._id
+      });
+      // Notify All Users
+      await Notification.create({
+        recipient: 'all',
+        message: `New event uploaded: "${event.name}"! Check it out.`,
+        type: 'event_approved',
+        relatedId: event._id
+      });
+    } else if (action === 'reject') {
+      await Notification.create({
+        recipient: event.organizer,
+        message: `Your event "${event.name}" has been rejected by the Admin.`,
+        type: 'event_rejected',
+        relatedId: event._id
+      });
+    }
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });

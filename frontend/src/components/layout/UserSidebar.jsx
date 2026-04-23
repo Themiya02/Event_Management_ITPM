@@ -37,7 +37,6 @@ const UserSidebar = () => {
             <div className="sidebar-header">
                 <div className="logo-icon"></div>
                 <div>
-                    <h2 className="text-gradient">Eventio</h2>
                     <span className="admin-role-badge" style={{ background: 'var(--accent-teal)' }}>Student Portal</span>
                 </div>
             </div>

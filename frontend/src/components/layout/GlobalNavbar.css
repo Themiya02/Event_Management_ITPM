@@ -2,7 +2,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
+  height: 64px;
+  padding: 0 30px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -12,7 +13,6 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: var(--shadow-sm);
-  margin-bottom: 20px;
 }
 
 .navbar-left {
@@ -78,7 +78,8 @@
   padding: 5px 0;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
   color: var(--primary-color);
 }
 
@@ -94,7 +95,8 @@
   border-radius: 2px;
 }
 
-.nav-link:hover::after {
+.nav-link:hover::after,
+.nav-link.active::after {
   width: 100%;
 }
 

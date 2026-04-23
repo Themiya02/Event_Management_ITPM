@@ -72,7 +72,6 @@ const AdminSidebar = () => {
             <div className="sidebar-header">
                 <div className="logo-icon"></div>
                 <div>
-                    <h2 className="text-gradient">Eventio</h2>
                     <span className="admin-role-badge">Admin Panel</span>
                 </div>
             </div>
@@ -85,6 +84,14 @@ const AdminSidebar = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={dashboardItem.icon} />
                             </svg>
                             <span>{dashboardItem.label}</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/admin/messages" className={`nav-link ${currentPath === '/admin/messages' ? 'active' : ''}`}>
+                            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            <span>Inbox / Messages</span>
                         </Link>
                     </li>
 

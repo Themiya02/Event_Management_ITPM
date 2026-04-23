@@ -1,4 +1,5 @@
 import React from 'react';
+
 import AdminSidebar from './AdminSidebar';
 import './OrganizerLayout.css';
 
@@ -10,7 +11,6 @@ const AdminLayout = ({ children }) => {
         <main className="content-area">
           {children}
         </main>
-
       </div>
     </div>
   );

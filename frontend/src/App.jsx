@@ -38,6 +38,8 @@ import AdminArtistsView from './pages/admin/AdminArtistsView';
 import SponsorshipPackages from './pages/Sponsorship/SponsorshipPackages';
 import SponsorshipApply from './pages/Sponsorship/SponsorshipApply';
 import OTPVerification from './pages/Sponsorship/OTPVerification';
+import AdminEventsHandling from './pages/admin/AdminEventsHandling';
+import Messages from './pages/chat/Messages';
 import RoleRoute from './components/RoleRoute';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
@@ -204,6 +206,17 @@ const AppContent = () => {
               }
             />
 
+            <Route
+              path="/organizer/messages"
+              element={
+                <PrivateRoute allowedRoles={['organizer']}>
+                  <OrganizerLayout>
+                    <Messages />
+                  </OrganizerLayout>
+                </PrivateRoute>
+              }
+            />
+
 
             {/* Admin Routes */}
             <Route
@@ -306,10 +319,30 @@ const AppContent = () => {
             />
 
             <Route
+              path="/admin/events-handling"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <AdminEventsHandling />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
               path="/admin/artists/view"
               element={
                 <PrivateRoute allowedRoles={['admin']}>
                   <Artists />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/admin/messages"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Messages />
+                  </AdminLayout>
                 </PrivateRoute>
               }
             />
