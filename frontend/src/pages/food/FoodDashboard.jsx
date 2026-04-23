@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Icon } from '@iconify/react';
 import Swal from 'sweetalert2';
+import Topbar from '../../components/layout/Topbar';
 import '../../components/layout/OrganizerLayout.css';
 import '../user/UserDashboard.css';
 import './FoodDashboard.css';
@@ -291,18 +292,18 @@ const FoodDashboard = () => {
           `${apiUrl}/api/events/${event._id}/stall-booking/${booking._id}`,
           { headers: { Authorization: `Bearer ${getToken()}` } }
         );
-
+        
         // Update local state by removing the booking from the event
         setEvents(prev => prev.map(e => {
-          if (e._id === event._id) {
-            return {
-              ...e,
-              bookedStalls: e.bookedStalls.filter(s => s._id !== booking._id)
-            };
-          }
-          return e;
+            if (e._id === event._id) {
+                return {
+                    ...e,
+                    bookedStalls: e.bookedStalls.filter(s => s._id !== booking._id)
+                };
+            }
+            return e;
         }));
-
+        
         Swal.fire('Deleted!', 'Your application has been removed.', 'success');
       } catch (error) {
         Swal.fire('Error', error.response?.data?.message || 'Failed to delete.', 'error');
@@ -382,6 +383,7 @@ const FoodDashboard = () => {
       </aside>
 
       <div className="main-wrapper admin-app-shell">
+        <Topbar />
         <main className="content-area food-main">
           <div className="food-vendor-dashboard animation-fade-in">
             <div className="page-header-block">
@@ -400,50 +402,43 @@ const FoodDashboard = () => {
                   <h2>Payment Details by Event</h2>
                   <p>These bank details are entered by admins. Use them to complete your transfer before submitting applications.</p>
                 </div>
-                {eventsWithBankDetails.length === 0 ? (
-                  <div className="glass-panel food-empty-state">
-                    <h2>No bank details available yet</h2>
-                    <p>Ask admin to add bank details for events so they appear here.</p>
-                  </div>
-                ) : (
-                  <div className="food-payment-grid">
-                    {eventsWithBankDetails.map((event) => (
-                      <article key={event._id} className="glass-panel food-payment-card">
-                        <div className="card-img-wrapper food-payment-card-img" style={{ height: '160px' }}>
-                          {event.imageUrl ? (
-                            <img src={event.imageUrl} alt={event.name} />
-                          ) : (
-                            <div className="placeholder-img">
-                              <span>{event.name.charAt(0)}</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="food-payment-card-body">
-                          <div className="food-payment-card-head">
-                            <h3>{event.name}</h3>
-                            <button type="button" className="food-link-btn" onClick={() => openEvent(event)}>
-                              Open Event
-                            </button>
+                <div className="food-payment-grid">
+                  {eventsWithBankDetails.map((event) => (
+                    <article key={event._id} className="glass-panel food-payment-card">
+                      <div className="card-img-wrapper food-payment-card-img" style={{ height: '160px' }}>
+                        {event.imageUrl ? (
+                          <img src={event.imageUrl} alt={event.name} />
+                        ) : (
+                          <div className="placeholder-img">
+                            <span>{event.name.charAt(0)}</span>
                           </div>
-                          <p className="food-payment-meta">
-                            {new Date(event.date).toLocaleDateString()} at {event.time}
+                        )}
+                      </div>
+                      <div className="food-payment-card-body">
+                        <div className="food-payment-card-head">
+                          <h3>{event.name}</h3>
+                          <button type="button" className="food-link-btn" onClick={() => openEvent(event)}>
+                            Open Event
+                          </button>
+                        </div>
+                        <p className="food-payment-meta">
+                          {new Date(event.date).toLocaleDateString()} at {event.time}
+                        </p>
+                        <div className="food-payment-details">
+                          <p><span>Account Name</span><strong>{event.bankDetails?.accountName || '-'}</strong></p>
+                          <p><span>Bank Name</span><strong>{event.bankDetails?.bankName || '-'}</strong></p>
+                          <p><span>Account Number</span><strong>{event.bankDetails?.accountNumber || '-'}</strong></p>
+                          <p><span>Branch</span><strong>{event.bankDetails?.branch || '-'}</strong></p>
+                        </div>
+                        {event.bankDetails?.instructions && (
+                          <p className="food-payment-instructions">
+                            <span>Instructions:</span> {event.bankDetails.instructions}
                           </p>
-                          <div className="food-payment-details">
-                            <p><span>Account Name</span><strong>{event.bankDetails?.accountName || '-'}</strong></p>
-                            <p><span>Bank Name</span><strong>{event.bankDetails?.bankName || '-'}</strong></p>
-                            <p><span>Account Number</span><strong>{event.bankDetails?.accountNumber || '-'}</strong></p>
-                            <p><span>Branch</span><strong>{event.bankDetails?.branch || '-'}</strong></p>
-                          </div>
-                          {event.bankDetails?.instructions && (
-                            <p className="food-payment-instructions">
-                              <span>Instructions:</span> {event.bankDetails.instructions}
-                            </p>
-                          )}
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                )}
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
               </section>
             ) : !selectedEvent ? (
               <>
@@ -462,175 +457,176 @@ const FoodDashboard = () => {
                   </article>
                 </section>
 
-                {events.length === 0 ? (
-                  <div className="glass-panel food-empty-state">
-                    <h2>No events available for stall booking</h2>
-                    <p>Admins have not uploaded stall maps yet. Check back later.</p>
-                  </div>
-                ) : (
-                  <section className="events-grid food-vendor-events-grid">
-                    {events.map((event) => {
-                      const dateObj = new Date(event.date);
-                      const month = dateObj.toLocaleString('default', { month: 'short' });
-                      const day = dateObj.getDate();
-                      return (
-                        <article
-                          key={event._id}
-                          className="event-card glass-panel food-vendor-event-card animation-fade-in"
-                          onClick={() => openEvent(event)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              openEvent(event);
-                            }
-                          }}
-                          role="button"
-                          tabIndex={0}
-                        >
-                          <div className="card-img-wrapper" style={{ height: '160px' }}>
-                            {event.imageUrl ? (
-                              <img src={event.imageUrl} alt={event.name} />
-                            ) : (
-                              <div className="placeholder-img">
-                                <span>{event.name.charAt(0)}</span>
-                              </div>
-                            )}
+            {events.length === 0 ? (
+              <div className="glass-panel food-empty-state">
+                <h2>No events available for stall booking</h2>
+                <p>Admins have not uploaded stall maps yet. Check back later.</p>
+              </div>
+            ) : (
+              <section className="events-grid food-vendor-events-grid">
+                {events.map((event) => {
+                  const dateObj = new Date(event.date);
+                  const month = dateObj.toLocaleString('default', { month: 'short' });
+                  const day = dateObj.getDate();
+                  return (
+                    <article
+                      key={event._id}
+                      className="event-card glass-panel food-vendor-event-card animation-fade-in"
+                      onClick={() => openEvent(event)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          openEvent(event);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="card-img-wrapper" style={{ height: '160px' }}>
+                        {event.imageUrl ? (
+                          <img src={event.imageUrl} alt={event.name} />
+                        ) : (
+                          <div className="placeholder-img">
+                            <span>{event.name.charAt(0)}</span>
                           </div>
-                          <div className="card-content">
-                            <h3 style={{ marginBottom: '0.35rem' }}>{event.name}</h3>
-                            <div className="card-details">
-                              <div className="detail-item">
-                                <span>📅</span> {month} {day}, {event.time}
-                              </div>
-                            </div>
-                            <div className="food-event-footer">
-                              <small className="food-event-footer-meta">
-                                {event.bookedStalls?.length || 0} stalls already booked
-                              </small>
-                              <span className="food-open-booking-btn">Open Booking</span>
-                            </div>
+                        )}
+                      </div>
+                      <div className="card-content">
+                        <h3 style={{ marginBottom: '0.35rem' }}>{event.name}</h3>
+                        <div className="card-details">
+                          <div className="detail-item">
+                            <span>📅</span> {month} {day}, {event.time}
                           </div>
-                        </article>
-                      );
-                    })}
-                  </section>
-                )}
+                        </div>
+                        <div className="food-event-footer">
+                          <small className="food-event-footer-meta">
+                            {event.bookedStalls?.length || 0} stalls already booked
+                          </small>
+                          <span className="food-open-booking-btn">Open Booking</span>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </section>
+            )}
 
-                {allMyBookings.length > 0 && (
-                  <section className="glass-panel food-my-applications">
-                    <h2>MY APPLICATIONS</h2>
-                    <div className="food-application-list">
-                      {allMyBookings.slice(0, 5).map((booking) => (
-                        <div key={booking._id} className="food-application-item">
-                          <div>
-                            <h4>{booking.stallName}</h4>
-                            <p>{booking.eventName} - {new Date(booking.eventDate).toLocaleDateString()}</p>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            {formatStatus(booking.status) === 'Pending' && (
-                              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                {/* Edit button is disabled as per user request */}
-                                {/* <button 
+
+              {allMyBookings.length > 0 && (
+                <section className="glass-panel food-my-applications">
+                  <h2>My Applications</h2>
+                  <div className="food-application-list">
+                    {allMyBookings.slice(0, 5).map((booking) => (
+                      <div key={booking._id} className="food-application-item">
+                        <div>
+                          <h4>{booking.stallName}</h4>
+                          <p>{booking.eventName} - {new Date(booking.eventDate).toLocaleDateString()}</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          {formatStatus(booking.status) === 'Pending' && (
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              {/* Edit button is disabled as per user request */}
+                              {/* <button 
                               onClick={() => handleEditClick(booking)}
                               style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1470F9', display: 'flex' }}
                               title="Edit Application"
                             >
                               <Icon icon="mdi:pencil" width="20" height="20" />
                             </button> */}
-                                <button
-                                  onClick={() => handleDeleteClick(booking)}
-                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', display: 'flex' }}
-                                  title="Delete Application"
-                                >
-                                  <Icon icon="mdi:trash-can" width="20" height="20" />
-                                </button>
-                              </div>
-                            )}
-                            <span className={`food-status-pill food-status-${formatStatus(booking.status).toLowerCase()}`}>
-                              {formatStatus(booking.status)}
-                            </span>
+                            <button 
+                              onClick={() => handleDeleteClick(booking)}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', display: 'flex' }}
+                              title="Delete Application"
+                            >
+                              <Icon icon="mdi:trash-can" width="20" height="20" />
+                            </button>
                           </div>
-                        </div>
-                      ))}
+                        )}
+                        <span className={`food-status-pill food-status-${formatStatus(booking.status).toLowerCase()}`}>
+                          {formatStatus(booking.status)}
+                        </span>
+                      </div>
                     </div>
-                  </section>
-                )}
-              </>
-            ) : (
-              <section className="food-booking-layout">
-                <div className="food-map-panel glass-panel">
-                  <div className="food-section-header">
-                    <button className="food-back-btn" onClick={() => setSelectedEvent(null)}>← Back</button>
-                    <div>
-                      <h2>{selectedEvent.name}</h2>
-                      <p>Map preview of the event stall layout.</p>
-                    </div>
-                  </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        ) : (
+          <section className="food-booking-layout">
+            <div className="food-map-panel glass-panel">
+              <div className="food-section-header">
+                <button className="food-back-btn" onClick={() => setSelectedEvent(null)}>← Back</button>
+                <div>
+                  <h2>{selectedEvent.name}</h2>
+                  <p>Map preview of the event stall layout.</p>
+                </div>
 
-                  <div className="food-map-wrapper">
-                    <img src={selectedEvent.stallMapUrl} alt={`${selectedEvent.name} stall map`} />
+                <div className="food-map-wrapper">
+                  <img src={selectedEvent.stallMapUrl} alt={`${selectedEvent.name} stall map`} />
 
-                    {(selectedEvent.bookedStalls || [])
-                      .filter((stall) => stall.x !== undefined && stall.y !== undefined)
-                      .map((stall) => {
-                        const isMine = String(stall.vendorId) === String(user?._id);
-                        const status = formatStatus(stall.status);
-                        return (
-                          <button
-                            key={stall._id}
-                            type="button"
-                            className={`food-map-marker ${isMine ? 'mine' : ''} ${status.toLowerCase()}`}
-                            style={{ left: `${stall.x}%`, top: `${stall.y}%` }}
-                            title={`${stall.stallName} - ${status}`}
-                          />
-                        );
-                      })}
-                  </div>
+                  {(selectedEvent.bookedStalls || [])
+                    .filter((stall) => stall.x !== undefined && stall.y !== undefined)
+                    .map((stall) => {
+                      const isMine = String(stall.vendorId) === String(user?._id);
+                      const status = formatStatus(stall.status);
+                      return (
+                        <button
+                          key={stall._id}
+                          type="button"
+                          className={`food-map-marker ${isMine ? 'mine' : ''} ${status.toLowerCase()}`}
+                          style={{ left: `${stall.x}%`, top: `${stall.y}%` }}
+                          title={`${stall.stallName} - ${status}`}
+                        />
+                      );
+                    })}
+                </div>
 
-                  {/* <div className="food-map-help">
+                {/* <div className="food-map-help">
                 <span><i className="dot mine" /> My stalls</span>
                 <span><i className="dot pending" /> Pending</span>
                 <span><i className="dot approved" /> Approved</span>
                 <span><i className="dot rejected" /> Rejected</span>
               </div> */}
 
-                  <div className="food-stall-table-wrap">
-                    <h4>Stall Allocation Table</h4>
-                    {(selectedEvent.bookedStalls || []).filter(
-                      (stall) => formatStatus(stall.status) === 'Approved'
-                    ).length === 0 ? (
-                      <p className="food-stall-table-empty">No approved stall allocations yet for this event.</p>
-                    ) : (
-                      <table className="food-stall-table">
-                        <thead>
-                          <tr>
-                            <th>Stall</th>
-                            <th>Owner Name</th>
-                            <th>Stall Name</th>
-                            <th>Food Type</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {(selectedEvent.bookedStalls || [])
-                            .filter((stall) => formatStatus(stall.status) === 'Approved')
-                            .map((stall) => (
-                              <tr key={stall._id}>
-                                <td>{stall.stallLocation || '-'}</td>
-                                <td>{stall.vendorName || '-'}</td>
-                                <td>{stall.stallName || '-'}</td>
-                                <td>{stall.foodType || '-'}</td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
+                <div className="food-stall-table-wrap">
+                  <h4>Stall Allocation Table</h4>
+                  {(selectedEvent.bookedStalls || []).filter(
+                    (stall) => formatStatus(stall.status) === 'Approved'
+                  ).length === 0 ? (
+                    <p className="food-stall-table-empty">No approved stall allocations yet for this event.</p>
+                  ) : (
+                    <table className="food-stall-table">
+                      <thead>
+                        <tr>
+                          <th>Stall</th>
+                          <th>Owner Name</th>
+                          <th>Stall Name</th>
+                          <th>Food Type</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(selectedEvent.bookedStalls || [])
+                          .filter((stall) => formatStatus(stall.status) === 'Approved')
+                          .map((stall) => (
+                            <tr key={stall._id}>
+                              <td>{stall.stallLocation || '-'}</td>
+                              <td>{stall.vendorName || '-'}</td>
+                              <td>{stall.stallName || '-'}</td>
+                              <td>{stall.foodType || '-'}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
+              </div>
+            </div>
 
-                <div className="glass-panel food-form-panel">
-                  <h3>Submit Stall Application</h3>
-                  {/* Bank Details (Provided by Admin) */}
-                  {/* {(selectedEvent.bankDetails?.accountName ||
+            <div className="glass-panel food-form-panel">
+                <h3>Submit Stall Application</h3>
+                {/* Bank Details (Provided by Admin) */}
+                {/* {(selectedEvent.bankDetails?.accountName ||
                 selectedEvent.bankDetails?.bankName ||
                 selectedEvent.bankDetails?.accountNumber ||
                 selectedEvent.bankDetails?.branch ||
@@ -650,117 +646,117 @@ const FoodDashboard = () => {
                   )}
                 </div>
               )} */}
-                  <form onSubmit={handleBookStall} className="food-form">
-                    <label>
-                      Stall Location *
-                      {!hasStallOptions ? (
-                        <p className="food-inline-error" style={{ marginTop: '0.35rem' }}>
-                          No stalls are available for this event yet. The organizer must add stalls and pricing on the map
-                          upload screen.
-                        </p>
-                      ) : (
-                        <select
-                          value={stallLocation}
-                          onChange={(e) => setStallLocation(e.target.value)}
-                          required
-                        >
-                          <option value="">Select a stall…</option>
-                          {stallOptions.map((row) => (
-                            <option key={String(row.stall)} value={String(row.stall)}>
-                              {String(row.stall)} — Rs {Number(row.price).toLocaleString()}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </label>
-                    {hasStallOptions && stallLocation.trim() && isDuplicateStallLocation && (
-                      <p className="food-inline-error">
-                        This stall is already taken. Please choose another stall.
-                      </p>
-                    )}
-
-                    <label>
-                      Stall Name *
-                      <input
-                        type="text"
-                        value={stallName}
-                        onChange={(e) => setStallName(e.target.value)}
-                        placeholder="Example: Chill Bites"
-                        required
-                      />
-                    </label>
-
-                    <label>
-                      Food Type
-                      <select value={foodType} onChange={(e) => setFoodType(e.target.value)} required>
-                        <option value="Fast Food">Fast Food</option>
-                        <option value="Beverages">Beverages</option>
-                        <option value="Desserts">Desserts</option>
-                        <option value="Traditional Food">Traditional Food</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </label>
-
-                    <label>
-                      Description
-                      <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="What will you sell?"
-                        rows="3"
-                      />
-                    </label>
-
-                    <div className="food-form-checks">
-                      <label><input type="checkbox" checked={needsElectricity} onChange={(e) => setNeedsElectricity(e.target.checked)} /> Electricity (+Rs 3,000)</label>
-                      <label><input type="checkbox" checked={needsWater} onChange={(e) => setNeedsWater(e.target.checked)} /> Water (+Rs 2,000)</label>
-                    </div>
-
-                    <div className="food-price-box">
-                      <p>
-                        <span>Base Price</span>
-                        <strong>
-                          {baseStallAmount != null && !Number.isNaN(baseStallAmount)
-                            ? `Rs ${baseStallAmount.toLocaleString()}`
-                            : '—'}
-                        </strong>
-                      </p>
-                      {needsElectricity && <p><span>Electricity</span><strong>Rs {ELECTRICITY_PRICE.toLocaleString()}</strong></p>}
-                      {needsWater && <p><span>Water</span><strong>Rs {WATER_PRICE.toLocaleString()}</strong></p>}
-                      <p className="total"><span>Total</span><strong>Rs {totalPrice.toLocaleString()}</strong></p>
-                    </div>
-
-                    <label>
-                      Payment Receipt {editingBookingId ? '(optional — upload only if replacing)' : '*'}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        required={!editingBookingId}
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (!file) return;
-                          const reader = new FileReader();
-                          reader.onloadend = () => setPaymentReceipt(reader.result);
-                          reader.readAsDataURL(file);
-                        }}
-                      />
-                    </label>
-
-                    <button
-                      type="submit"
-                      className="food-submit-btn"
-                      disabled={submitting || !hasStallOptions || isDuplicateStallLocation}
-                    >
-                      {submitting ? 'Processing...' : (editingBookingId ? 'Update Application' : 'Submit Application')}
-                    </button>
-
-                    <p className="food-form-note">
-                      After submission your status remains <strong>Pending</strong> until admin approves.
+              <form onSubmit={handleBookStall} className="food-form">
+                <label>
+                  Stall Location *
+                  {!hasStallOptions ? (
+                    <p className="food-inline-error" style={{ marginTop: '0.35rem' }}>
+                      No stalls are available for this event yet. The organizer must add stalls and pricing on the map
+                      upload screen.
                     </p>
-                  </form>
+                  ) : (
+                    <select
+                      value={stallLocation}
+                      onChange={(e) => setStallLocation(e.target.value)}
+                      required
+                    >
+                      <option value="">Select a stall…</option>
+                      {stallOptions.map((row) => (
+                        <option key={String(row.stall)} value={String(row.stall)}>
+                          {String(row.stall)} — Rs {Number(row.price).toLocaleString()}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </label>
+                {hasStallOptions && stallLocation.trim() && isDuplicateStallLocation && (
+                  <p className="food-inline-error">
+                    This stall is already taken. Please choose another stall.
+                  </p>
+                )}
+
+                <label>
+                  Stall Name *
+                  <input
+                    type="text"
+                    value={stallName}
+                    onChange={(e) => setStallName(e.target.value)}
+                    placeholder="Example: Chill Bites"
+                    required
+                  />
+                </label>
+
+                <label>
+                  Food Type
+                  <select value={foodType} onChange={(e) => setFoodType(e.target.value)} required>
+                    <option value="Fast Food">Fast Food</option>
+                    <option value="Beverages">Beverages</option>
+                    <option value="Desserts">Desserts</option>
+                    <option value="Traditional Food">Traditional Food</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </label>
+
+                <label>
+                  Description
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="What will you sell?"
+                    rows="3"
+                  />
+                </label>
+
+                <div className="food-form-checks">
+                  <label><input type="checkbox" checked={needsElectricity} onChange={(e) => setNeedsElectricity(e.target.checked)} /> Electricity (+Rs 3,000)</label>
+                  <label><input type="checkbox" checked={needsWater} onChange={(e) => setNeedsWater(e.target.checked)} /> Water (+Rs 2,000)</label>
                 </div>
-              </section>
-            )}
+
+                <div className="food-price-box">
+                  <p>
+                    <span>Base Price</span>
+                    <strong>
+                      {baseStallAmount != null && !Number.isNaN(baseStallAmount)
+                        ? `Rs ${baseStallAmount.toLocaleString()}`
+                        : '—'}
+                    </strong>
+                  </p>
+                  {needsElectricity && <p><span>Electricity</span><strong>Rs {ELECTRICITY_PRICE.toLocaleString()}</strong></p>}
+                  {needsWater && <p><span>Water</span><strong>Rs {WATER_PRICE.toLocaleString()}</strong></p>}
+                  <p className="total"><span>Total</span><strong>Rs {totalPrice.toLocaleString()}</strong></p>
+                </div>
+
+                <label>
+                  Payment Receipt {editingBookingId ? '(optional — upload only if replacing)' : '*'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    required={!editingBookingId}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onloadend = () => setPaymentReceipt(reader.result);
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                </label>
+
+                <button
+                  type="submit"
+                  className="food-submit-btn"
+                  disabled={submitting || !hasStallOptions || isDuplicateStallLocation}
+                >
+                  {submitting ? 'Processing...' : (editingBookingId ? 'Update Application' : 'Submit Application')}
+                </button>
+
+                <p className="food-form-note">
+                  After submission your status remains <strong>Pending</strong> until admin approves.
+                </p>
+              </form>
+            </div>
+          </section>
+        )}
           </div>
         </main>
       </div>
@@ -768,4 +764,4 @@ const FoodDashboard = () => {
   );
 };
 
-export default FoodDashboard;
+  export default FoodDashboard;

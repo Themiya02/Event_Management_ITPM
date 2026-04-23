@@ -1,4 +1,5 @@
 const Artist = require('../models/Artist');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -145,5 +146,51 @@ exports.rateArtist = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+exports.aiSearchArtist = async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name) {
+      return res.status(400).json({ message: 'Artist name is required' });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ message: 'Gemini API key is not configured.' });
+    }
+
+    // Using the verified working model name
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY.trim());
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+
+    const prompt = `Search for artist details for the name: "${name}". 
+    Provide the information in the following JSON format:
+    {
+      "name": "Artist Name",
+      "contactNumber": "A hypothetical or general contact number if available, otherwise 'Not available'",
+      "songs": ["Song 1", "Song 2", "Song 3"],
+      "description": "Short bio"
+    }
+    Only return the JSON.`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    // Extract JSON from the text response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      return res.status(500).json({ message: 'Failed to parse AI response' });
+    }
+    
+    const artistDetails = JSON.parse(jsonMatch[0]);
+    res.json(artistDetails);
+  } catch (error) {
+    console.error('AI Search Error:', error);
+    res.status(500).json({ 
+      message: 'AI search failed', 
+      details: error.message
+    });
   }
 };

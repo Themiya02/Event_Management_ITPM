@@ -9,6 +9,10 @@ const Artists = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiArtist, setAiArtist] = useState(null);
+  const [aiError, setAiError] = useState('');
+
   useEffect(() => {
     const fetchArtists = async () => {
       try {
@@ -58,6 +62,30 @@ const Artists = () => {
     } catch (error) {
       console.error('Error rating artist:', error);
       alert('Failed to submit rating.');
+    }
+  };
+
+  const handleAiSearch = async () => {
+    if (!searchQuery) return;
+    setAiLoading(true);
+    setAiError('');
+    setAiArtist(null);
+    try {
+      const token = JSON.parse(localStorage.getItem('user'))?.token || user?.token;
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/artists/ai-search?name=${searchQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      setAiArtist(data);
+    } catch (error) {
+      console.error('AI search failed:', error);
+      setAiError(error.response?.data?.details || error.response?.data?.message || 'AI search failed.');
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -157,6 +185,80 @@ const Artists = () => {
           ))
         )}
       </div>
+
+      {/* Internal AI Search Results */}
+      {searchQuery && filteredArtists.length === 0 && user?.role === 'organizer' && (
+        <div className="ai-search-view" style={{ textAlign: 'center', marginTop: '60px', padding: '0 20px 40px' }}>
+          <div className="glass-panel" style={{ display: 'inline-block', padding: '40px', maxWidth: '800px', width: '100%', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+            <div style={{ fontSize: '3.5rem', marginBottom: '25px' }}>🤖</div>
+            <h3 style={{ color: 'var(--accent-color)', marginBottom: '15px', fontSize: '2rem' }}>Artist Not Found Locally</h3>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '35px', fontSize: '1.1rem' }}>
+               As an organizer, you can use our <b>AI Assistant</b> to retrieve details for "{searchQuery}" automatically.
+            </p>
+            
+            <button 
+              onClick={handleAiSearch} 
+              disabled={aiLoading}
+              className="view-btn"
+              style={{ 
+                background: 'linear-gradient(135deg, #6366f1, #a855f7)', 
+                border: 'none', 
+                cursor: 'pointer',
+                padding: '14px 40px',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                borderRadius: '50px',
+                boxShadow: '0 10px 25px rgba(99, 102, 241, 0.4)',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              {aiLoading ? 'AI is searching...' : '✨ Find with AI Assistant'}
+            </button>
+
+            {aiError && (
+              <div style={{ marginTop: '25px', padding: '15px', background: 'rgba(255, 77, 77, 0.1)', borderRadius: '12px', border: '1px solid rgba(255, 77, 77, 0.2)' }}>
+                <p style={{ color: '#ff4d4d', margin: 0 }}>{aiError}</p>
+                <p style={{ color: '#ff4d4d', fontSize: '0.85rem', marginTop: '5px' }}>Please ensure the API key is valid and backend is running.</p>
+              </div>
+            )}
+
+            {aiArtist && (
+              <div className="ai-detail-section" style={{ marginTop: '50px', textAlign: 'left', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '40px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                   <h2 style={{ color: '#fff', fontSize: '2.5rem', margin: 0 }}>{aiArtist.name}</h2>
+                   <div style={{ background: 'var(--primary-gradient)', padding: '5px 15px', borderRadius: '30px', fontSize: '0.85rem', fontWeight: 'bold' }}>AI VERIFIED</div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+                  <div className="detail-box" style={{ background: 'rgba(255,255,255,0.05)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <h4 style={{ color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem', marginBottom: '15px' }}>📞 Contact Details</h4>
+                    <p style={{ color: '#fff', fontSize: '1.3rem', fontWeight: '600', margin: 0 }}>{aiArtist.contactNumber}</p>
+                  </div>
+
+                  <div className="detail-box" style={{ background: 'rgba(255,255,255,0.05)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <h4 style={{ color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem', marginBottom: '15px' }}>🎵 Top Tracks</h4>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                      {aiArtist.songs?.map((song, idx) => (
+                        <li key={idx} style={{ color: '#ccc', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                           <span style={{ color: 'var(--accent-color)' }}>▶</span> {song}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {aiArtist.description && (
+                   <div style={{ marginTop: '30px', padding: '25px', background: 'rgba(99, 102, 241, 0.05)', borderRadius: '20px', border: '1px dashed rgba(99, 102, 241, 0.3)' }}>
+                      <p style={{ color: '#aaa', lineHeight: '1.7', margin: 0, fontStyle: 'italic' }}>
+                        {aiArtist.description}
+                      </p>
+                   </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
