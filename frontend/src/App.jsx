@@ -44,6 +44,7 @@ import RoleRoute from './components/RoleRoute';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import Home from './pages/Home';
+import LandingPage from './pages/LandingPage';
 import GlobalNavbar from './components/layout/GlobalNavbar';
 import GlobalFooter from './components/layout/GlobalFooter';
 import './App.css';
@@ -430,7 +431,7 @@ const AppContent = () => {
               }
             />
 
-            <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
+            <Route path="/" element={user ? <Home /> : <LandingPage />} />
         </Routes>
       </main>
       {showNavAndFooter && <GlobalFooter />}

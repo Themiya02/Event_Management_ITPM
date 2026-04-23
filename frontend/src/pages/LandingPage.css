@@ -1,0 +1,416 @@
+.landing-page {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NAVIGATION */
+.landing-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  z-index: 100;
+  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+}
+
+.landing-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon-small {
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+.landing-logo h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin: 0;
+  color: #fff;
+}
+
+.landing-nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+.landing-nav-links a {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.landing-nav-links a:hover {
+  color: #fff;
+}
+
+.landing-auth-buttons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-signin {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  padding: 10px 20px;
+  transition: opacity 0.3s;
+}
+
+.btn-signin:hover {
+  opacity: 0.8;
+}
+
+.btn-register {
+  background: #3b0764; /* Deep purple matching reference */
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  padding: 12px 25px;
+  border-radius: 30px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(59, 7, 100, 0.5);
+}
+
+.btn-register:hover {
+  background: #581c87;
+  transform: translateY(-2px);
+}
+
+/* HERO SECTION */
+.landing-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  /* Premium concert/event background */
+  background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+/* Blue glass type overlay as requested */
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.65); /* Dark base */
+  backdrop-filter: blur(3px);
+  z-index: 1;
+}
+
+/* Abstract shapes for reference image feel */
+.abstract-shape {
+  position: absolute;
+  filter: blur(60px);
+  z-index: 2;
+  opacity: 0.6;
+}
+
+.shape-1 {
+  width: 500px;
+  height: 500px;
+  background: #8b5cf6; /* Purple blob */
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  top: -10%;
+  left: -10%;
+  animation: float 10s ease-in-out infinite;
+}
+
+.shape-2 {
+  width: 600px;
+  height: 600px;
+  background: #2563eb; /* Blue blob */
+  border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
+  bottom: -20%;
+  right: -10%;
+  animation: float 12s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(30px, -50px) rotate(10deg); }
+  66% { transform: translate(-20px, 20px) rotate(-10deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 900px;
+  margin-top: 50px;
+}
+
+.hero-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, #e879f9 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.btn-primary-large {
+  display: inline-block;
+  background: #3b0764;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  padding: 16px 40px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s;
+  box-shadow: 0 10px 30px rgba(59, 7, 100, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary-large:hover {
+  background: #581c87;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(59, 7, 100, 0.8);
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  animation: bounce 2s infinite;
+}
+
+.scroll-indicator svg {
+  width: 20px;
+  height: 20px;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+  40% { transform: translateY(-15px) translateX(-50%); }
+  60% { transform: translateY(-7px) translateX(-50%); }
+}
+
+/* ABOUT SECTION */
+.landing-about {
+  background: #ffffff;
+  color: #0f172a;
+  padding: 100px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.landing-about::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 300px;
+  height: 300px;
+  background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 100V0L100 100H0Z" fill="%23f1f5f9"/></svg>') no-repeat bottom right;
+  background-size: contain;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.section-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #3b0764; /* Matching reference image heading color */
+  margin-bottom: 0.5rem;
+}
+
+.section-subheading {
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  color: #94a3b8;
+  margin-bottom: 3rem;
+}
+
+.about-text {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #64748b;
+}
+
+/* ARTISTS SECTION */
+.landing-artists {
+  background: #f8fafc;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.artists-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.artist-card {
+  width: 250px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  transition: transform 0.3s;
+}
+
+.artist-card:hover {
+  transform: translateY(-10px);
+}
+
+.artist-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.artist-info {
+  padding: 20px;
+  text-align: left;
+}
+
+.artist-info h3 {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  color: #0f172a;
+  font-size: 1.2rem;
+}
+
+.artist-info p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* PAST EVENTS SECTION */
+.landing-events {
+  background: #0f172a;
+  padding: 80px 20px;
+  text-align: center;
+  color: #fff;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.event-photo {
+  position: relative;
+  height: 250px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.event-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.event-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.event-overlay span {
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.event-photo:hover img {
+  transform: scale(1.1);
+}
+
+.event-photo:hover .event-overlay {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  .landing-nav {
+    padding: 20px;
+  }
+  .landing-nav-links {
+    display: none;
+  }
+}
