@@ -32,16 +32,33 @@ const EventView = () => {
         }
     };
 
+    const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
+
     useEffect(() => {
-        const fetchEvent = async () => {
+        const fetchEventAndRegistrations = async () => {
             try {
                 const localUser = JSON.parse(localStorage.getItem('user'));
                 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+                // Fetch event details
                 const res = await axios.get(`${apiUrl}/api/events/${id}`, {
                     headers: { Authorization: `Bearer ${localUser?.token}` }
                 });
                 setEvent(res.data);
+
+                // Fetch user registrations to check if already registered
+                try {
+                    const regRes = await axios.get(`${apiUrl}/api/events/my-registrations`, {
+                        headers: { Authorization: `Bearer ${localUser?.token}` }
+                    });
+                    const registrations = regRes.data;
+                    const alreadyRegistered = registrations.some(reg => 
+                        (reg.event._id || reg.event) === id
+                    );
+                    setIsAlreadyRegistered(alreadyRegistered);
+                } catch (regError) {
+                    console.error('Failed to load user registrations', regError);
+                }
 
                 if (localUser?.name) {
                     setRegForm(prev => ({ ...prev, participantName: localUser.name }));
@@ -52,7 +69,7 @@ const EventView = () => {
                 setLoading(false);
             }
         };
-        fetchEvent();
+        fetchEventAndRegistrations();
     }, [id]);
 
     const handleRegister = async (e) => {
@@ -64,7 +81,7 @@ const EventView = () => {
             const localUser = JSON.parse(localStorage.getItem('user'));
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
             
-            await axios.post(`${apiUrl}/api/events/register/${id}`, regForm, {
+            await axios.post(`${apiUrl}/api/events/${id}/register`, regForm, {
                 headers: { Authorization: `Bearer ${localUser?.token}` }
             });
             
@@ -262,75 +279,87 @@ const EventView = () => {
                     </div>
                 ) : (
                     <>
-                        <h2>Secure Your Ticket</h2>
-                        <p>Please provide your campus credentials to reliably reserve your seat.</p>
-                        
-                        <form onSubmit={handleRegister} className="styled-form" style={{ marginTop: '1.5rem' }}>
-                            <div className="form-group">
-                                <label>Participant Full Name</label>
-                                <input 
-                                    type="text" 
-                                    required 
-                                    value={regForm.participantName}
-                                    onChange={(e) => setRegForm({...regForm, participantName: e.target.value})}
-                                    placeholder="Jane Doe"
-                                />
+                        {isAlreadyRegistered ? (
+                            <div className="already-registered-notice" style={{ textAlign: 'center', padding: '3rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '12px', marginTop: '1rem' }}>
+                                <h3 style={{ color: '#10b981', marginBottom: '0.5rem', fontSize: '1.4rem' }}>🎉 You are registered!</h3>
+                                <p style={{ color: 'var(--text-muted)' }}>You have already secured your ticket for this event.</p>
+                                <button className="btn-sm-primary" onClick={() => navigate('/dashboard')} style={{ marginTop: '1.5rem', padding: '0.8rem 1.5rem', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                                    Go to Dashboard
+                                </button>
                             </div>
-                            
-                            <div className="form-grid-2">
-                                <div className="form-group">
-                                    <label>Campus ID Number</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        value={regForm.campusId}
-                                        onChange={(e) => setRegForm({...regForm, campusId: e.target.value})}
-                                        placeholder="IT21XXXXXX"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Campus Year</label>
-                                    <select 
-                                        required
-                                        className="styled-input"
-                                        value={regForm.campusYear}
-                                        onChange={(e) => setRegForm({...regForm, campusYear: e.target.value})}
-                                    >
-                                        <option value="">Select Year</option>
-                                        <option value="1st Year">1st Year</option>
-                                        <option value="2nd Year">2nd Year</option>
-                                        <option value="3rd Year">3rd Year</option>
-                                        <option value="4th Year">4th Year</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {event.isPaid && (
-                                <div className="form-group" style={{ marginTop: '1rem' }}>
-                                    <label>Payment Slip (Rs. {event.price})</label>
-                                    <div className="file-input-wrapper">
+                        ) : (
+                            <>
+                                <h2>Secure Your Ticket</h2>
+                                <p>Please provide your campus credentials to reliably reserve your seat.</p>
+                                
+                                <form onSubmit={handleRegister} className="styled-form" style={{ marginTop: '1.5rem' }}>
+                                    <div className="form-group">
+                                        <label>Participant Full Name</label>
                                         <input 
-                                            type="file" 
-                                            accept="image/*"
-                                            required
-                                            onChange={handleFileUpload}
+                                            type="text" 
+                                            required 
+                                            value={regForm.participantName}
+                                            onChange={(e) => setRegForm({...regForm, participantName: e.target.value})}
+                                            placeholder="Jane Doe"
                                         />
-                                        <div className="file-custom-placeholder">
-                                            {regForm.paymentSlip ? '✅ Slip Uploaded' : '📁 Click to upload payment receipt'}
+                                    </div>
+                                    
+                                    <div className="form-grid-2">
+                                        <div className="form-group">
+                                            <label>Campus ID Number</label>
+                                            <input 
+                                                type="text" 
+                                                required 
+                                                value={regForm.campusId}
+                                                onChange={(e) => setRegForm({...regForm, campusId: e.target.value})}
+                                                placeholder="IT21XXXXXX"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Campus Year</label>
+                                            <select 
+                                                required
+                                                className="styled-input"
+                                                value={regForm.campusYear}
+                                                onChange={(e) => setRegForm({...regForm, campusYear: e.target.value})}
+                                            >
+                                                <option value="">Select Year</option>
+                                                <option value="1st Year">1st Year</option>
+                                                <option value="2nd Year">2nd Year</option>
+                                                <option value="3rd Year">3rd Year</option>
+                                                <option value="4th Year">4th Year</option>
+                                            </select>
                                         </div>
                                     </div>
-                                </div>
-                            )}
 
-                            <button 
-                                type="submit" 
-                                className="btn-sm-primary" 
-                                style={{ width: '100%', marginTop: '2rem', padding: '1.2rem' }}
-                                disabled={submitting}
-                            >
-                                {submitting ? 'Processing...' : (event.isPaid ? 'Submit Registration' : 'Register Now')}
-                            </button>
-                        </form>
+                                    {event.isPaid && (
+                                        <div className="form-group" style={{ marginTop: '1rem' }}>
+                                            <label>Payment Slip (Rs. {event.price})</label>
+                                            <div className="file-input-wrapper">
+                                                <input 
+                                                    type="file" 
+                                                    accept="image/*"
+                                                    required
+                                                    onChange={handleFileUpload}
+                                                />
+                                                <div className="file-custom-placeholder">
+                                                    {regForm.paymentSlip ? '✅ Slip Uploaded' : '📁 Click to upload payment receipt'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <button 
+                                        type="submit" 
+                                        className="btn-sm-primary" 
+                                        style={{ width: '100%', marginTop: '2rem', padding: '1.2rem', backgroundColor: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 'bold' }}
+                                        disabled={submitting}
+                                    >
+                                        {submitting ? 'Processing...' : (event.isPaid ? 'Submit Registration' : 'Register Now')}
+                                    </button>
+                                </form>
+                            </>
+                        )}
                     </>
                 )}
             </div>

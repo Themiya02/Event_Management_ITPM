@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import './NotificationsDropdown.css';
@@ -66,6 +67,32 @@ const NotificationsDropdown = () => {
         }
     };
 
+    const [activeTab, setActiveTab] = useState('all');
+    const navigate = useNavigate();
+
+    const handleView = (notif, e) => {
+        e.stopPropagation();
+        if (!notif.isRead) handleMarkAsRead(notif._id);
+        
+        // Navigation logic based on type and role
+        if (notif.type === 'new_message') {
+            navigate(user.role === 'admin' ? '/admin/messages' : '/organizer/support');
+        } else if (notif.type === 'registration_received') {
+            navigate('/organizer/registered-users');
+        } else if (notif.type.includes('event')) {
+            if (user.role === 'admin') navigate('/admin');
+            else if (user.role === 'organizer') navigate('/organizer');
+            else navigate(`/events/${notif.relatedId}`);
+        } else {
+            navigate('/dashboard');
+        }
+        setIsOpen(false);
+    };
+
+    const displayedNotifications = activeTab === 'all' 
+        ? notifications 
+        : notifications.filter(n => !n.isRead);
+
     return (
         <div className="notifications-wrapper" ref={dropdownRef}>
             <button className="notification-bell" onClick={() => setIsOpen(!isOpen)}>
@@ -77,43 +104,80 @@ const NotificationsDropdown = () => {
             </button>
 
             {isOpen && (
-                <div className="notifications-dropdown glass-panel">
-                    <div className="notifications-header">
-                        <h3>Notifications</h3>
-                        {unreadCount > 0 && (
-                            <button className="mark-all-btn" onClick={handleMarkAllAsRead}>
-                                Mark all as read
+                <div className="notifications-dropdown">
+                    <div className="notifications-header-wrapper">
+                        <div className="notifications-header">
+                            <h3>Notifications</h3>
+                            {unreadCount > 0 && (
+                                <button className="mark-all-btn" onClick={handleMarkAllAsRead}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M20 6L9 17l-5-5"></path>
+                                    </svg>
+                                    Mark all as read
+                                </button>
+                            )}
+                        </div>
+                        <div className="notifications-tabs">
+                            <button 
+                                className={`tab ${activeTab === 'all' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('all')}
+                            >
+                                All Notifications
                             </button>
-                        )}
+                            <button 
+                                className={`tab ${activeTab === 'unread' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('unread')}
+                            >
+                                Unread
+                            </button>
+                        </div>
                     </div>
+                    
                     <div className="notifications-list">
-                        {notifications.length === 0 ? (
-                            <div className="no-notifications">No new notifications</div>
+                        {displayedNotifications.length === 0 ? (
+                            <div className="no-notifications">
+                                {activeTab === 'unread' ? 'No unread notifications' : 'No new notifications'}
+                            </div>
                         ) : (
-                            notifications.map(notif => (
-                                <div 
-                                    key={notif._id} 
-                                    className={`notification-item ${!notif.isRead ? 'unread' : ''}`}
-                                    onClick={() => {
-                                        if (!notif.isRead) handleMarkAsRead(notif._id);
-                                    }}
-                                >
-                                    <div className="notification-icon">
-                                        {notif.type === 'new_message' && '💬'}
-                                        {notif.type === 'event_created' && '📅'}
-                                        {notif.type === 'event_approved' && '✅'}
-                                        {notif.type === 'event_rejected' && '❌'}
-                                        {notif.type === 'system' && '🔔'}
+                            displayedNotifications.map(notif => {
+                                // Generate a simple avatar based on type
+                                let avatarName = 'System';
+                                let showViewBtn = true;
+                                if (notif.type.includes('event')) avatarName = 'Eventio Admin';
+                                if (notif.type.includes('message')) avatarName = 'Support';
+                                if (notif.type.includes('registration')) avatarName = 'Organizer';
+
+                                return (
+                                    <div 
+                                        key={notif._id} 
+                                        className={`notification-item ${!notif.isRead ? 'unread' : ''}`}
+                                        onClick={() => {
+                                            if (!notif.isRead) handleMarkAsRead(notif._id);
+                                        }}
+                                    >
+                                        <div className="notification-avatar-wrapper">
+                                            <img src={`https://ui-avatars.com/api/?name=${avatarName}&background=random&color=fff&rounded=true`} alt="Avatar" className="notification-avatar" />
+                                            {!notif.isRead && <span className="unread-indicator"></span>}
+                                        </div>
+                                        <div className="notification-content">
+                                            <p className="notification-text">
+                                                <strong>{avatarName}</strong> {notif.message}
+                                            </p>
+                                            <span className="notification-time">
+                                                {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                            {showViewBtn && (
+                                                <div className="notification-actions">
+                                                    <button className="notif-btn-secondary" onClick={(e) => handleView(notif, e)}>View</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="notification-options">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                                        </div>
                                     </div>
-                                    <div className="notification-content">
-                                        <p>{notif.message}</p>
-                                        <span className="notification-time">
-                                            {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </div>
-                                    {!notif.isRead && <div className="unread-dot"></div>}
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 </div>

@@ -20,9 +20,12 @@ const Messages = () => {
             try {
                 const response = await axios.get(`${apiUrl}/api/messages/contacts`, { headers });
                 setContacts(response.data);
-                if (response.data.length > 0) {
-                    setSelectedContact(response.data[0]);
-                }
+                
+                // Set initial selected contact only once
+                setSelectedContact(prev => {
+                    if (!prev && response.data.length > 0) return response.data[0];
+                    return prev;
+                });
             } catch (error) {
                 console.error('Error fetching contacts:', error);
             } finally {
@@ -32,6 +35,8 @@ const Messages = () => {
 
         if (user) {
             fetchContacts();
+            const interval = setInterval(fetchContacts, 10000);
+            return () => clearInterval(interval);
         }
     }, [user]);
 
@@ -47,6 +52,14 @@ const Messages = () => {
                     }
                     return prev;
                 });
+
+                // Mark messages as read
+                await axios.put(`${apiUrl}/api/messages/${selectedContact._id}/read`, {}, { headers });
+                
+                // Locally clear the unread count for the active contact so the badge disappears immediately
+                setContacts(prev => prev.map(c => 
+                    c._id === selectedContact._id ? { ...c, unreadCount: 0 } : c
+                ));
             } catch (error) {
                 console.error('Error fetching messages:', error);
             }
@@ -115,7 +128,14 @@ const Messages = () => {
                                     )}
                                 </div>
                                 <div className="contact-info">
-                                    <h4>{contact.name}</h4>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <h4>{contact.name}</h4>
+                                        {contact.unreadCount > 0 && selectedContact?._id !== contact._id && (
+                                            <span style={{ backgroundColor: '#ef4444', color: 'white', borderRadius: '10px', padding: '2px 8px', fontSize: '10px', fontWeight: 'bold' }}>
+                                                {contact.unreadCount} New
+                                            </span>
+                                        )}
+                                    </div>
                                     <span className="contact-role">{contact.role}</span>
                                 </div>
                             </div>

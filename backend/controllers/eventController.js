@@ -66,6 +66,14 @@ exports.createEvent = async (req, res) => {
       relatedId: event._id
     });
 
+    // Notify Organizer about successful creation
+    await Notification.create({
+      recipient: req.user._id,
+      message: `Your event "${event.name}" was created successfully and is pending review.`,
+      type: 'system',
+      relatedId: event._id
+    });
+
     res.status(201).json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -122,6 +130,22 @@ exports.registerForEvent = async (req, res) => {
     event.registrationsCount += 1;
     await event.save();
 
+    // Notify the user about successful registration
+    await Notification.create({
+      recipient: req.user._id,
+      message: `You have successfully registered for "${event.name}".`,
+      type: 'system',
+      relatedId: event._id
+    });
+
+    // Notify the organizer about the new registration
+    await Notification.create({
+      recipient: event.organizer,
+      message: `New registration: ${participantName} has registered for "${event.name}".`,
+      type: 'registration_received',
+      relatedId: event._id
+    });
+
     res.json({ message: 'Registered successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -165,6 +189,14 @@ exports.updateRegistrationStatus = async (req, res) => {
     
     registration.status = status;
     await registration.save();
+    
+    // Notify the user about their registration status update
+    await Notification.create({
+      recipient: registration.user,
+      message: `Your registration for "${registration.event.name}" has been ${status.toLowerCase()}.`,
+      type: status === 'Approved' ? 'registration_approved' : 'registration_rejected',
+      relatedId: registration.event._id
+    });
     
     res.json(registration);
   } catch (error) {

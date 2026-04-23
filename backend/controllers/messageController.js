@@ -68,18 +68,55 @@ exports.getContacts = async (req, res) => {
 
         let contacts;
         if (role === 'admin') {
-            // Admin can chat with organizers
-            contacts = await User.find({ role: 'organizer' }).select('name email role avatar');
+            contacts = await User.find({ role: 'organizer' }).select('name email role avatar').lean();
         } else if (role === 'organizer') {
-            // Organizer can chat with admins
-            contacts = await User.find({ role: 'admin' }).select('name email role avatar');
+            contacts = await User.find({ role: 'admin' }).select('name email role avatar').lean();
         } else {
             return res.status(403).json({ message: 'Unauthorized role for messaging' });
         }
 
-        res.json(contacts);
+        // Attach unread count to each contact
+        const contactsWithUnread = await Promise.all(contacts.map(async (contact) => {
+            const unreadCount = await Message.countDocuments({
+                sender: contact._id,
+                receiver: req.user._id,
+                read: false
+            });
+            return { ...contact, unreadCount };
+        }));
+
+        res.json(contactsWithUnread);
     } catch (error) {
         console.error('Error fetching contacts:', error);
         res.status(500).json({ message: 'Server error while fetching contacts' });
+    }
+};
+
+// Get total unread messages count for the logged-in user
+exports.getUnreadMessageCount = async (req, res) => {
+    try {
+        const count = await Message.countDocuments({
+            receiver: req.user._id,
+            read: false
+        });
+        res.json({ count });
+    } catch (error) {
+        console.error('Error getting unread count:', error);
+        res.status(500).json({ message: 'Server error while fetching unread count' });
+    }
+};
+
+// Mark messages from a specific user as read
+exports.markMessagesAsRead = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        await Message.updateMany(
+            { sender: userId, receiver: req.user._id, read: false },
+            { $set: { read: true } }
+        );
+        res.json({ message: 'Messages marked as read' });
+    } catch (error) {
+        console.error('Error marking messages as read:', error);
+        res.status(500).json({ message: 'Server error while updating messages' });
     }
 };
