@@ -1,5 +1,6 @@
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
+const Notification = require('../models/Notification');
 
 exports.getEventsWithMaps = async (req, res) => {
   try {
@@ -23,6 +24,20 @@ exports.createEvent = async (req, res) => {
 
     const fee = isPaid ? Number((price || 0) * 0.05).toFixed(2) : 0;
 
+    // Option 1: Venue Availability Checker & Conflict Detection
+    const conflict = await Event.findOne({
+      location: { $regex: new RegExp(`^${location}$`, 'i') }, // Case-insensitive location check
+      date: new Date(date),
+      time: time,
+      status: { $in: ['Pending', 'Approved', 'In Progress'] }
+    });
+
+    if (conflict) {
+      return res.status(400).json({ 
+        message: `Venue Conflict Detected: "${location}" is already scheduled for an event ("${conflict.name}") at ${time} on this date. Please choose a different venue or time.` 
+      });
+    }
+
     const event = await Event.create({
       organizer: req.user._id,
       name,
@@ -41,6 +56,22 @@ exports.createEvent = async (req, res) => {
       trackingStep: 1,
       rejectedAt: null,
       rejectionReason: null
+    });
+
+    // Notify Admin about new event
+    await Notification.create({
+      recipient: 'admin',
+      message: `A new event "${event.name}" has been created and is pending review.`,
+      type: 'event_created',
+      relatedId: event._id
+    });
+
+    // Notify Organizer about successful creation
+    await Notification.create({
+      recipient: req.user._id,
+      message: `Your event "${event.name}" was created successfully and is pending review.`,
+      type: 'system',
+      relatedId: event._id
     });
 
     res.status(201).json(event);
@@ -99,6 +130,22 @@ exports.registerForEvent = async (req, res) => {
     event.registrationsCount += 1;
     await event.save();
 
+    // Notify the user about successful registration
+    await Notification.create({
+      recipient: req.user._id,
+      message: `You have successfully registered for "${event.name}".`,
+      type: 'system',
+      relatedId: event._id
+    });
+
+    // Notify the organizer about the new registration
+    await Notification.create({
+      recipient: event.organizer,
+      message: `New registration: ${participantName} has registered for "${event.name}".`,
+      type: 'registration_received',
+      relatedId: event._id
+    });
+
     res.json({ message: 'Registered successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -143,6 +190,14 @@ exports.updateRegistrationStatus = async (req, res) => {
     registration.status = status;
     await registration.save();
     
+    // Notify the user about their registration status update
+    await Notification.create({
+      recipient: registration.user,
+      message: `Your registration for "${registration.event.name}" has been ${status.toLowerCase()}.`,
+      type: status === 'Approved' ? 'registration_approved' : 'registration_rejected',
+      relatedId: registration.event._id
+    });
+    
     res.json(registration);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -157,6 +212,31 @@ exports.updateEventStatus = async (req, res) => {
 
     event.status = status;
     await event.save();
+
+    if (status === 'Approved') {
+      // Notify Organizer
+      await Notification.create({
+        recipient: event.organizer,
+        message: `Your event "${event.name}" has been approved!`,
+        type: 'event_approved',
+        relatedId: event._id
+      });
+      // Notify All Users
+      await Notification.create({
+        recipient: 'all',
+        message: `New event uploaded: "${event.name}"! Check it out.`,
+        type: 'event_approved',
+        relatedId: event._id
+      });
+    } else if (status === 'Rejected') {
+      await Notification.create({
+        recipient: event.organizer,
+        message: `Your event "${event.name}" has been rejected.`,
+        type: 'event_rejected',
+        relatedId: event._id
+      });
+    }
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -263,6 +343,15 @@ exports.updateApprovalCheckbox = async (req, res) => {
     else event.trackingStep = 1;
 
     await event.save();
+
+    // Notify Organizer about step progress
+    await Notification.create({
+      recipient: event.organizer,
+      message: `Your event "${event.name}" has been approved for the ${field} stage.`,
+      type: 'system',
+      relatedId: event._id
+    });
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -293,6 +382,31 @@ exports.adminDecideEvent = async (req, res) => {
     }
 
     await event.save();
+
+    if (action === 'approve') {
+      // Notify Organizer
+      await Notification.create({
+        recipient: event.organizer,
+        message: `Your event "${event.name}" has been approved by the Admin!`,
+        type: 'event_approved',
+        relatedId: event._id
+      });
+      // Notify All Users
+      await Notification.create({
+        recipient: 'all',
+        message: `New event uploaded: "${event.name}"! Check it out.`,
+        type: 'event_approved',
+        relatedId: event._id
+      });
+    } else if (action === 'reject') {
+      await Notification.create({
+        recipient: event.organizer,
+        message: `Your event "${event.name}" has been rejected by the Admin.`,
+        type: 'event_rejected',
+        relatedId: event._id
+      });
+    }
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -375,7 +489,8 @@ exports.deleteBankDetails = async (req, res) => {
 // Food Stall: Book a stall on the map
 exports.bookFoodStall = async (req, res) => {
   try {
-    const { stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
+    const { stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y, stallLocation } = req.body;
+    const normalizedStallLocation = String(stallLocation || '').trim();
     
     if (!normalizedStallLocation || !stallName || !paymentReceipt) {
       return res.status(400).json({ message: 'Stall location, stall name, and payment receipt are required.' });
@@ -449,7 +564,7 @@ exports.updateStallBookingStatus = async (req, res) => {
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
 
-    booking.status = normalizedStatus;
+    booking.status = status;
     await event.save();
     res.json(event);
   } catch (error) {

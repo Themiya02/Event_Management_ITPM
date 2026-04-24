@@ -8,7 +8,7 @@ const AdminSidebar = () => {
     const location = useLocation();
     const currentPath = location.pathname;
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
 
     // Default expand the domain the user is currently inside
     const [expandedAccordion, setExpandedAccordion] = useState(() => {
@@ -41,7 +41,9 @@ const AdminSidebar = () => {
             id: 'sponsors',
             label: 'Sponsor Handling',
             icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-            links: [] // Blank placeholder as requested
+            links: [
+                { label: 'Manage Sponsorships', path: '/admin/sponsorships' }
+            ]
         },
         {
             id: 'food',
@@ -63,14 +65,44 @@ const AdminSidebar = () => {
         }
     ];
 
+    const [unreadMessages, setUnreadMessages] = useState(0);
+
+    React.useEffect(() => {
+        if (!user) return;
+        const fetchUnread = async () => {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/messages/unread-count`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setUnreadMessages(data.count);
+                }
+            } catch (err) {
+                console.error('Failed to fetch unread messages count', err);
+            }
+        };
+        fetchUnread();
+        const interval = setInterval(fetchUnread, 10000);
+        return () => clearInterval(interval);
+    }, [user]);
+
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
     return (
-        <aside className="sidebar glass-panel">
-
+        <aside className="sidebar">
+            <div className="sidebar-brand">
+                <div className="brand-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                </div>
+                <div>
+                    <div className="brand-name">Eventio</div>
+                    <span className="admin-role-badge">Admin Panel</span>
+                </div>
+            </div>
             <nav className="sidebar-nav">
                 <ul>
                     {/* Standalone Dashboard Link */}
@@ -80,6 +112,19 @@ const AdminSidebar = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={dashboardItem.icon} />
                             </svg>
                             <span>{dashboardItem.label}</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/admin/messages" className={`nav-link ${currentPath === '/admin/messages' ? 'active' : ''}`} style={{ position: 'relative' }}>
+                            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            <span>Inbox / Messages</span>
+                            {unreadMessages > 0 && (
+                                <span style={{ position: 'absolute', right: '15px', background: '#ef4444', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
+                                    {unreadMessages}
+                                </span>
+                            )}
                         </Link>
                     </li>
 

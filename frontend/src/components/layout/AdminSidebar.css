@@ -1,51 +1,59 @@
 /* Admin-specific additions on top of the shared sidebar CSS */
 .admin-role-badge {
-    display: block;
-    font-size: 0.65rem;
+    display: inline-block;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--primary-color);
-    margin-top: 2px;
+    color: #93c5fd; /* Light blue */
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 4px;
 }
 
 .nav-divider {
     height: 1px;
-    background: rgba(255,255,255,0.08);
-    margin: 1.5rem 0;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 1rem 0;
 }
 
 /* Accordion Specific Targeting */
 .nav-accordion-group {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
 }
 
 .nav-accordion-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.85rem 1rem;
-    border-radius: 12px;
-    color: var(--text-muted);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.7);
     font-weight: 500;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .nav-accordion-header:hover {
-    background: var(--surface-color-hover);
-    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
 }
 
 .nav-accordion-header.child-active {
-    background: rgba(167, 139, 250, 0.08);
-    color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
 }
 
 .accordion-title-flex {
     display: flex;
     align-items: center;
     gap: 0.8rem;
+}
+
+.chevron {
+    transition: transform 0.3s ease;
 }
 
 .chevron.rotated {
@@ -57,11 +65,10 @@
     overflow: hidden;
     transition: max-height 0.35s ease-in-out, opacity 0.3s;
     opacity: 0;
-    margin-left: 2.8rem;
 }
 
 .nav-accordion-content.expanded {
-    max-height: 200px;
+    max-height: 250px;
     opacity: 1;
     margin-top: 0.2rem;
 }
@@ -69,44 +76,40 @@
 .sub-nav-list {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 0 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-    border-left: 1px solid rgba(255,255,255,0.1);
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    padding-left: 0.5rem;
 }
 
 .sub-nav-link {
     display: block;
-    padding: 0.6rem 1rem;
-    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
     font-size: 0.85rem;
-    border-radius: 0 8px 8px 0;
+    border-radius: 8px;
     transition: all 0.2s;
-    position: relative;
-    border-left: 2px solid transparent;
-    margin-left: -1px;
 }
 
 .sub-nav-link:hover {
-    color: var(--text-main);
-    background: var(--surface-color-hover);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .sub-nav-link.active {
-    color: var(--primary-color);
+    color: #ffffff;
     font-weight: 600;
-    border-left-color: var(--primary-color);
-    background: rgba(167, 139, 250, 0.05);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .empty-domain-notice {
     font-size: 0.75rem;
-    color: rgba(255,255,255,0.3);
+    color: rgba(255, 255, 255, 0.4);
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem 0.5rem 2rem;
     font-weight: 600;
-    border-left: 1px dashed rgba(255,255,255,0.1);
 }

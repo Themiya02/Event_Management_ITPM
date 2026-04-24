@@ -6,13 +6,14 @@ import '../user/UserDashboard.css';
 const ApprovedEvents = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 const res = await axios.get(`${apiUrl}/api/events/approved`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -26,24 +27,47 @@ const ApprovedEvents = () => {
         fetchData();
     }, []);
 
+    const filteredEvents = events.filter(e => 
+        e.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="event-list-page animation-fade-in">
-            <div className="page-header-block">
-                <h1 className="page-main-title">Approved Events</h1>
-                <p className="page-main-subtitle">All events that have been fully approved and are live on the platform.</p>
+            <div className="page-header-block" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                    <h1 className="page-main-title">Approved Events</h1>
+                    <p className="page-main-subtitle">All events that have been fully approved and are live on the platform.</p>
+                </div>
+
+                <div className="ud-search-wrapper" style={{ flex: 1, maxWidth: '400px', marginLeft: '2rem' }}>
+                    <div className="ud-search-bar" style={{ padding: '4px 4px 4px 1.2rem', boxShadow: '0 8px 20px rgba(0,0,0,0.08)' }}>
+                        <span className="ud-search-category">Search</span>
+                        <input
+                            type="text"
+                            placeholder="Find approved events..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ padding: '0.4rem 0' }}
+                        />
+                        <button className="ud-search-btn" style={{ padding: '0.5rem 1.2rem' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {loading ? (
                 <p className="loading-msg">Loading...</p>
-            ) : events.length === 0 ? (
+            ) : filteredEvents.length === 0 ? (
                 <div className="glass-panel empty-state">
-                    <div className="empty-big-icon">✅</div>
-                    <h3>No Approved Events Yet</h3>
-                    <p>Approved events will appear here once organizer events are reviewed.</p>
+                    <div className="empty-big-icon">{searchTerm ? '🔍' : '✅'}</div>
+                    <h3>{searchTerm ? 'No matching events' : 'No Approved Events Yet'}</h3>
                 </div>
             ) : (
                 <div className="events-grid">
-                    {events.map(ev => {
+                    {filteredEvents.map(ev => {
                         const dateObj = new Date(ev.date);
                         const month = dateObj.toLocaleString('default', { month: 'short' });
                         const day = dateObj.getDate();
@@ -67,14 +91,15 @@ const ApprovedEvents = () => {
                                     <h3>{ev.name}</h3>
                                     <div className="org-name">
                                         <span>👤 {ev.organizer?.name || 'Local Organizer'}</span>
+                                        {ev.artistName && <span style={{ marginLeft: '1rem' }}>🎤 {ev.artistName}</span>}
                                     </div>
                                     
                                     <div className="card-details">
                                         <div className="detail-item">
-                                            <span>📅</span> {month} {day}, {ev.time}
+                                            <span>📅</span> {month} {day}, {ev.time || 'TBA'}
                                         </div>
                                         <div className="detail-item">
-                                            <span>📍</span> {ev.location}
+                                            <span>📍</span> {ev.location || 'TBA'}
                                         </div>
                                         <div className="detail-item">
                                             <span>🎟️</span> {ev.isPaid ? `Rs ${ev.price}` : 'Free'}

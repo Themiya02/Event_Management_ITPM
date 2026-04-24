@@ -6,6 +6,7 @@
 }
 
 /* Compact top bar: title + one search (replaces old hero + Quick Search panel) */
+
 .home-toolbar {
   display: flex;
   flex-direction: column;
@@ -102,6 +103,7 @@
 .home-search-clear:hover {
   background: rgba(255, 255, 255, 0.12);
 }
+
 
 .events-content {
   display: flex;

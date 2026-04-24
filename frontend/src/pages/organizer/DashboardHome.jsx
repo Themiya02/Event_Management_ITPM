@@ -14,7 +14,7 @@ const DashboardHome = () => {
         const fetchDashboardData = async () => {
             try {
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 const response = await axios.get(`${apiUrl}/api/events/organizer`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -31,12 +31,12 @@ const DashboardHome = () => {
     // Calculate real stats
     const totalEvents = events.length;
     const activeAttendees = events.reduce((acc, ev) => acc + (ev.registrationsCount || 0), 0);
-    const pendingEvents = events.filter(e => e.status && e.status.toLowerCase() === 'pending').length;
+    const pendingEvents = events.filter(e => e.status === 'Pending').length;
 
     const stats = [
         { label: 'Total Events', value: totalEvents.toString(), trend: '+0%', isPositive: true },
         { label: 'Active Attendees', value: activeAttendees.toString(), trend: '+0%', isPositive: true },
-        { label: 'Pending Events', value: pendingEvents.toString(), trend: pendingEvents > 0 ? 'Action Needed' : 'All Clear', isPositive: pendingEvents === 0 },
+        { label: 'Pending Events', value: pendingEvents.toString(), trend: '+0%', isPositive: true },
     ];
 
     const recentEvents = events.slice(0, 4).map(ev => ({

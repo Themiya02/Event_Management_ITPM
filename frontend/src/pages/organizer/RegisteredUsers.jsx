@@ -13,7 +13,7 @@ const RegisteredUsers = () => {
     useEffect(() => {
         const fetchRegistrations = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/events/organizer/registrations', {
+                const response = await axios.get('http://localhost:5002/api/events/organizer/registrations', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -33,7 +33,7 @@ const RegisteredUsers = () => {
 
     const handleStatusChange = async (id, status) => {
         try {
-            await axios.patch(`http://localhost:5000/api/events/registrations/${id}/status`, { status }, {
+            await axios.patch(`http://localhost:5002/api/events/registrations/${id}/status`, { status }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -119,13 +119,15 @@ const RegisteredUsers = () => {
                                         {(!reg.status || reg.status === 'Pending') && (
                                             <div className="action-buttons">
                                                 <button
-                                                    className="btn btn-success btn-sm"
+                                                    className="btn btn-sm"
+                                                    style={{ backgroundColor: '#2563eb', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
                                                     onClick={() => handleStatusChange(reg._id, 'Approved')}
                                                 >
                                                     Approve
                                                 </button>
                                                 <button
-                                                    className="btn btn-danger btn-sm"
+                                                    className="btn btn-sm"
+                                                    style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
                                                     onClick={() => handleStatusChange(reg._id, 'Rejected')}
                                                 >
                                                     Reject

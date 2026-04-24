@@ -32,7 +32,7 @@ const FoodDashboard = () => {
   const [paymentReceipt, setPaymentReceipt] = useState(null);
   const [editingBookingId, setEditingBookingId] = useState(null);
 
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
   const getToken = () => JSON.parse(localStorage.getItem('user'))?.token;
   const formatStatus = (status) => status || 'Pending';
@@ -298,7 +298,7 @@ const FoodDashboard = () => {
             if (e._id === event._id) {
                 return {
                     ...e,
-                    bookedStalls: e.bookedStalls.filter(s => s._id !== booking._id)
+                    bookedStalls: (e.bookedStalls || []).filter(s => s._id !== booking._id)
                 };
             }
             return e;
@@ -511,7 +511,6 @@ const FoodDashboard = () => {
               </section>
             )}
 
-
               {allMyBookings.length > 0 && (
                 <section className="glass-panel food-my-applications">
                   <h2>My Applications</h2>
@@ -525,14 +524,6 @@ const FoodDashboard = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                           {formatStatus(booking.status) === 'Pending' && (
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
-                              {/* Edit button is disabled as per user request */}
-                              {/* <button 
-                              onClick={() => handleEditClick(booking)}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1470F9', display: 'flex' }}
-                              title="Edit Application"
-                            >
-                              <Icon icon="mdi:pencil" width="20" height="20" />
-                            </button> */}
                             <button 
                               onClick={() => handleDeleteClick(booking)}
                               style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', display: 'flex' }}
