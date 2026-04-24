@@ -16,7 +16,7 @@ const AdminDashboard = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 const headers = { Authorization: `Bearer ${token}` };
 
                 const [pendingRes, approvedRes, allRes] = await Promise.all([
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 await axios.patch(`${apiUrl}/api/events/admin/${eventId}/stall-map`, {
                     stallMapUrl: reader.result
                 }, {
@@ -291,8 +291,45 @@ const AdminDashboard = () => {
                         </div>
                     )}
 
+                    {/* DOMAIN: SPONSOR HANDLING */}
+                    {activeDomain === 'sponsors' && (
+                        <div className="animation-fade-in glass-panel admin-recent-card">
+                            <div className="card-row-header">
+                                <h2 className="section-title">🤝 Sponsor & Partnership Management</h2>
+                                <Link to="/admin/sponsorships" className="link-action">Go to Management Portal →</Link>
+                            </div>
+                            <div className="workflow-row" style={{ marginTop: '1rem', paddingBottom: '0' }}>
+                                <div className="workflow-step" style={{ flex: 1 }}>
+                                    <div className="workflow-icon">📋</div>
+                                    <div className="workflow-text">
+                                        <strong>Review Applications</strong>
+                                        <span>Verify details and documents</span>
+                                    </div>
+                                </div>
+                                <div className="workflow-step" style={{ flex: 1 }}>
+                                    <div className="workflow-icon">📄</div>
+                                    <div className="workflow-text">
+                                        <strong>Validate Slips</strong>
+                                        <span>Ensure payments are genuine</span>
+                                    </div>
+                                </div>
+                                <div className="workflow-step" style={{ flex: 1 }}>
+                                    <div className="workflow-icon">🤝</div>
+                                    <div className="workflow-text">
+                                        <strong>Manage Partners</strong>
+                                        <span>Build long-term relationships</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ marginTop: '2rem', textAlign: 'center', padding: '2rem', background: 'var(--bg-color)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                                <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Access the dedicated portal to manage all incoming sponsorship requests.</p>
+                                <Link to="/admin/sponsorships" className="btn-sm-primary" style={{ padding: '0.8rem 2rem' }}>Open Sponsorship Portal</Link>
+                            </div>
+                        </div>
+                    )}
+
                     {/* BLANK PLACEHOLDER FOR UPCOMING DOMAINS */}
-                    {activeDomain !== 'events' && activeDomain !== 'food' && (
+                    {activeDomain !== 'events' && activeDomain !== 'food' && activeDomain !== 'sponsors' && (
                         <div className="glass-panel empty-domain-state animation-fade-in">
                             <span className="massive-icon">{domains.find(d => d.id === activeDomain)?.icon}</span>
                             <h2 className="empty-domain-title">{domains.find(d => d.id === activeDomain)?.label} Module</h2>

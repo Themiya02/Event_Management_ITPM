@@ -13,7 +13,7 @@ const ApprovedEvents = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 const res = await axios.get(`${apiUrl}/api/events/approved`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });

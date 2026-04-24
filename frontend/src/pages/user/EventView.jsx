@@ -38,7 +38,7 @@ const EventView = () => {
         const fetchEventAndRegistrations = async () => {
             try {
                 const localUser = JSON.parse(localStorage.getItem('user'));
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
                 // Fetch event details
                 const res = await axios.get(`${apiUrl}/api/events/${id}`, {
@@ -79,7 +79,7 @@ const EventView = () => {
 
         try {
             const localUser = JSON.parse(localStorage.getItem('user'));
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
             
             await axios.post(`${apiUrl}/api/events/${id}/register`, regForm, {
                 headers: { Authorization: `Bearer ${localUser?.token}` }

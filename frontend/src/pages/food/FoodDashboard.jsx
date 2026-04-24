@@ -32,7 +32,7 @@ const FoodDashboard = () => {
   const [paymentReceipt, setPaymentReceipt] = useState(null);
   const [editingBookingId, setEditingBookingId] = useState(null);
 
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
   const getToken = () => JSON.parse(localStorage.getItem('user'))?.token;
   const formatStatus = (status) => status || 'Pending';

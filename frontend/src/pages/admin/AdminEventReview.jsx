@@ -32,7 +32,7 @@ const AdminEventReview = () => {
 
     const getAuth = () => {
         const user = JSON.parse(localStorage.getItem('user'));
-        return { token: user?.token, apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000' };
+        return { token: user?.token, apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5002' };
     };
 
     const handleCheckboxChange = async (field, currentValue) => {
@@ -135,22 +135,10 @@ const AdminEventReview = () => {
                         </div>
 
                         <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Ticket Pricing</span>
-                            <span className={`ticket-badge ${event.isPaid ? 'paid' : 'free'}`} style={{ alignSelf: 'flex-start', margin: 0 }}>
-                                {event.isPaid ? `💳 Paid: Rs ${event.price}` : '🎟️ Free Auto-Entry'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                {event.description && (
-                    <div className="review-description">
-                        <h3>Event Description</h3>
-                        <p>{event.description}</p>
                     </div>
                 )}
 
-                <div className="review-approval-section">
+                <div className="review-approval-section" style={{ padding: '2rem' }}>
                     <div className="review-approval-header">
                         <h3>Security & Stage Approvals</h3>
                         <p>Every department must review and authorize the event parameters before it becomes visible to the campus.</p>
@@ -192,7 +180,7 @@ const AdminEventReview = () => {
                     </div>
                 </div>
 
-                <div className="review-actions">
+                <div className="review-actions" style={{ padding: '2rem' }}>
                     <button className="btn-reject" onClick={() => setRejectModal({ open: true, reason: '' })}>
                         ✕ Reject & Return to Organizer
                     </button>
