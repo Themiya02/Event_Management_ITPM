@@ -6,110 +6,7 @@
 }
 
 /* Compact top bar: title + one search (replaces old hero + Quick Search panel) */
-<<<<<<< HEAD
-/* New Hero Banner Styles */
-.home-hero-banner {
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-  padding: 3.5rem 1rem;
-  border-radius: 20px;
-  margin-bottom: 3rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
-}
 
-.hero-content h1 {
-  color: white;
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.hero-content p {
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
-}
-
-.search-wrapper {
-  background: white;
-  display: flex;
-  align-items: center;
-  padding: 6px;
-  border-radius: 50px;
-  width: 100%;
-  max-width: 750px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.search-wrapper:focus-within {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-}
-
-.search-label {
-  padding: 0 1.5rem;
-  color: #1e40af;
-  font-weight: 700;
-  font-size: 0.95rem;
-  border-right: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.search-input-group {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  padding-left: 1rem;
-}
-
-.search-input-group input {
-  width: 100%;
-  border: none;
-  outline: none;
-  padding: 12px 0;
-  font-size: 1rem;
-  color: #1f2937;
-  background: transparent;
-}
-
-.search-input-group input::placeholder {
-  color: #9ca3af;
-}
-
-.search-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  margin-left: 8px;
-}
-
-.search-btn:hover {
-  background: #1d4ed8;
-}
-
-.search-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-
-=======
 .home-toolbar {
   display: flex;
   flex-direction: column;
@@ -207,7 +104,7 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
->>>>>>> hasini_dev
+
 .events-content {
   display: flex;
   flex-direction: column;

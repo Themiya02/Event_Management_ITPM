@@ -2,12 +2,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-<<<<<<< HEAD
-  height: 64px;
-  padding: 0 30px;
-=======
+
   padding: 15px 30px;
->>>>>>> hasini_dev
+
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -17,10 +14,9 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: var(--shadow-sm);
-<<<<<<< HEAD
-=======
+
   margin-bottom: 20px;
->>>>>>> hasini_dev
+
 }
 
 .navbar-left {
@@ -32,17 +28,14 @@
   display: flex;
   align-items: center;
   gap: 12px;
-<<<<<<< HEAD
-  background: rgba(255, 255, 255, 0.4);
-=======
+
   background: rgba(255, 255, 255, 0.05);
->>>>>>> hasini_dev
+
   padding: 8px 16px;
   border-radius: 30px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
-<<<<<<< HEAD
-=======
+
   transition: all 0.3s ease;
   user-select: none;
 }
@@ -50,7 +43,7 @@
 .profile-info:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: var(--primary-color);
->>>>>>> hasini_dev
+
 }
 
 .profile-icon {
@@ -81,8 +74,7 @@
   letter-spacing: 0.05em;
 }
 
-<<<<<<< HEAD
-=======
+
 .profile-container {
   position: relative;
 }
@@ -178,7 +170,7 @@
   display: none;
 }
 
->>>>>>> hasini_dev
+
 .navbar-right {
   display: flex;
   align-items: center;
@@ -198,12 +190,9 @@
   padding: 5px 0;
 }
 
-<<<<<<< HEAD
-.nav-link:hover,
-.nav-link.active {
-=======
+
 .nav-link:hover {
->>>>>>> hasini_dev
+
   color: var(--primary-color);
 }
 
@@ -219,12 +208,9 @@
   border-radius: 2px;
 }
 
-<<<<<<< HEAD
-.nav-link:hover::after,
-.nav-link.active::after {
-=======
+
 .nav-link:hover::after {
->>>>>>> hasini_dev
+
   width: 100%;
 }
 
@@ -234,8 +220,6 @@
   font-size: 1.8rem;
   letter-spacing: -0.02em;
   text-transform: uppercase;
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> hasini_dev
+
