@@ -1,123 +1,158 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Calendar, Users, Music, MapPin, ArrowRight, ShieldCheck, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import concertBg from './images/concert_bg.png';
 import './LandingPage.css';
 
 const LandingPage = () => {
   const { user } = useAuth();
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { staggerChildren: 0.2 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="landing-page">
-      {/* Navigation Bar */}
-      <nav className="landing-nav">
-        <div className="landing-logo">
-          <div className="logo-icon-small"></div>
-          <h2>EVENTIO</h2>
-        </div>
-        <div className="landing-nav-links">
-          <Link to="/">HOME</Link>
-          <a href="#about">ABOUT</a>
-          <a href="#artists">ARTISTS</a>
-          <a href="#contact">CONTACT</a>
-        </div>
-        <div className="landing-auth-buttons">
-          {user ? (
-            <Link to={`/${user.role === 'admin' ? 'admin' : user.role === 'organizer' ? 'organizer' : 'dashboard'}${user.role === 'admin' || user.role === 'organizer' ? '/dashboard' : ''}`} className="btn-register">GO TO DASHBOARD</Link>
-          ) : (
-            <>
-              <Link to="/login" className="btn-signin">SIGN IN</Link>
-              <Link to="/register" className="btn-register">REGISTER NOW</Link>
-            </>
-          )}
-        </div>
-      </nav>
-
+    <div className="landing-page-wrapper">
       {/* Hero Section */}
-      <section className="landing-hero">
-        {/* Abstract shapes for decoration like the reference image */}
-        <div className="abstract-shape shape-1"></div>
-        <div className="abstract-shape shape-2"></div>
-        
-        <div className="hero-content">
+      <section className="hero-section">
+        <div className="hero-background">
+          <div className="overlay"></div>
+          <img 
+            src={concertBg} 
+            alt="Concert Background" 
+            className="bg-image"
+          />
+        </div>
+
+        <motion.div 
+          className="hero-content"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <motion.span 
+            className="hero-badge"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            🚀 Empowering SLIIT Campus Events
+          </motion.span>
           <h1 className="hero-title">
-            DISCOVER AMAZING EVENTS<br/>
-            <span className="text-gradient-purple">AT SLIIT CAMPUS</span>
+            Your Ultimate <span className="text-gradient">Eventio</span> <br/> 
+            Experience Starts Here
           </h1>
-          <p className="hero-subtitle">
-            Experience University Life Like Never Before. Join the ultimate platform for all campus events, festivals, and artist performances.
+          <p className="hero-description">
+            Discover, organize, and experience the best campus festivals, tech meets, and artistic performances. All in one premium platform.
           </p>
-          <div className="hero-actions">
-            <Link to="/register" className="btn-primary-large">GET STARTED</Link>
+          <div className="hero-buttons">
+            <Link to="/register" className="btn-primary-glow">
+              Get Started Now <ArrowRight size={20} />
+            </Link>
+            <a href="#features" className="btn-secondary-outline">
+              Explore Features
+            </a>
           </div>
+        </motion.div>
+
+        <motion.div 
+          className="hero-stats"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div className="stat-item" variants={itemVariants}>
+            <span className="stat-number">50+</span>
+            <span className="stat-label">Monthly Events</span>
+          </motion.div>
+          <motion.div className="stat-item" variants={itemVariants}>
+            <span className="stat-number">5K+</span>
+            <span className="stat-label">Active Students</span>
+          </motion.div>
+          <motion.div className="stat-item" variants={itemVariants}>
+            <span className="stat-number">20+</span>
+            <span className="stat-label">Partner Brands</span>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="features-section">
+        <div className="section-header">
+          <span className="section-tag">What We Offer</span>
+          <h2 className="section-title">Designed for the Next Generation</h2>
         </div>
-        <div className="scroll-indicator">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+
+        <div className="features-grid">
+          <motion.div 
+            className="feature-card glass-card"
+            whileHover={{ y: -10 }}
+          >
+            <div className="feature-icon-box purple">
+              <Calendar size={32} />
+            </div>
+            <h3>Event Management</h3>
+            <p>End-to-end management for organizers, from creation to ticket tracking and analytics.</p>
+          </motion.div>
+
+          <motion.div 
+            className="feature-card glass-card"
+            whileHover={{ y: -10 }}
+          >
+            <div className="feature-icon-box blue">
+              <ShieldCheck size={32} />
+            </div>
+            <h3>Secure Ticketing</h3>
+            <p>Fraud-proof QR ticketing system with instant validation and secure payment integration.</p>
+          </motion.div>
+
+          <motion.div 
+            className="feature-card glass-card"
+            whileHover={{ y: -10 }}
+          >
+            <div className="feature-icon-box green">
+              <Music size={32} />
+            </div>
+            <h3>Artist Directory</h3>
+            <p>Connect with campus talent. Rate, review, and book artists for your next big event.</p>
+          </motion.div>
+
+          <motion.div 
+            className="feature-card glass-card"
+            whileHover={{ y: -10 }}
+          >
+            <div className="feature-icon-box orange">
+              <Users size={32} />
+            </div>
+            <h3>Sponsor Portal</h3>
+            <p>Dedicated space for sponsors to find events that align with their brand and audience.</p>
+          </motion.div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="landing-about">
-        <h2 className="section-heading">ABOUT EVENTIO</h2>
-        <p className="section-subheading">E X P E R I E N C E  &nbsp; C A M P U S &nbsp; L I F E</p>
-        <p className="about-text">
-          Eventio is the premier event management platform dedicated to SLIIT. Whether it's a massive music festival, an academic conference, or a student meetup, we bring everything into one place. Register now to book tickets, track your favorite artists, and never miss out on campus memories.
-        </p>
-      </section>
-
-      {/* Artists Section */}
-      <section id="artists" className="landing-artists">
-        <h2 className="section-heading">MEET OUR ARTISTS</h2>
-        <p className="section-subheading">S H O W C A S I N G  &nbsp; T O P  &nbsp; T A L E N T S</p>
-        
-        <div className="artists-grid">
-          <div className="artist-card">
-            <img src="https://loremflickr.com/400/400/singer" alt="Artist 1" />
-            <div className="artist-info">
-              <h3>BROWN</h3>
-              <p>Lead Vocalist</p>
-            </div>
+      {/* Social Proof Section */}
+      <section className="cta-section">
+        <div className="cta-glass glass-panel">
+          <div className="cta-content">
+            <h2>Ready to transform your campus life?</h2>
+            <p>Join the thousands of SLIIT students already using Eventio to make memories.</p>
+            <Link to="/register" className="btn-primary-large">
+              Join the Community
+            </Link>
           </div>
-          <div className="artist-card">
-            <img src="https://loremflickr.com/400/400/guitarist" alt="Artist 2" />
-            <div className="artist-info">
-              <h3>ALLEN</h3>
-              <p>Guitarist</p>
-            </div>
-          </div>
-          <div className="artist-card">
-            <img src="https://loremflickr.com/400/400/dj" alt="Artist 3" />
-            <div className="artist-info">
-              <h3>COLLIN</h3>
-              <p>DJ & Producer</p>
-            </div>
-          </div>
-          <div className="artist-card">
-            <img src="https://loremflickr.com/400/400/pianist" alt="Artist 4" />
-            <div className="artist-info">
-              <h3>SARAH</h3>
-              <p>Pianist</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Past Events Section */}
-      <section className="landing-events">
-        <h2 className="section-heading" style={{ color: '#fff' }}>EVENT HIGHLIGHTS</h2>
-        <p className="section-subheading" style={{ color: 'rgba(255,255,255,0.7)' }}>P A S T  &nbsp; M E M O R I E S</p>
-        
-        <div className="events-grid">
-          <div className="event-photo">
-            <img src="https://loremflickr.com/800/400/concert" alt="Event 1" />
-            <div className="event-overlay"><span>SLIIT Fest 2025</span></div>
-          </div>
-          <div className="event-photo">
-            <img src="https://loremflickr.com/800/400/festival" alt="Event 2" />
-            <div className="event-overlay"><span>Gaming Tournament</span></div>
-          </div>
-          <div className="event-photo">
-            <img src="https://loremflickr.com/800/400/culture,dance" alt="Cultural Event" />
-            <div className="event-overlay"><span>Cultural Night</span></div>
+          <div className="cta-image">
+            <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop" alt="Campus Life" />
           </div>
         </div>
       </section>

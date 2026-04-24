@@ -22,6 +22,7 @@ import ApprovedEvents from './pages/admin/ApprovedEvents';
 import RejectedEvents from './pages/admin/RejectedEvents';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminEventReview from './pages/admin/AdminEventReview';
+import AdminEventsHandling from './pages/admin/AdminEventsHandling';
 import SponsorDashboard from './pages/sponsor/SponsorDashboard';
 import SponsorProfile from './pages/sponsor/SponsorProfile';
 import FoodDashboard from './pages/food/FoodDashboard';
@@ -42,6 +43,8 @@ import RoleRoute from './components/RoleRoute';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import Home from './pages/Home';
+import LandingPage from './pages/LandingPage';
+import Messages from './pages/chat/Messages';
 import GlobalNavbar from './components/layout/GlobalNavbar';
 import GlobalFooter from './components/layout/GlobalFooter';
 import './App.css';
@@ -60,7 +63,8 @@ const AppContent = () => {
 
   // Only show global navbar on public-style pages (Home, Artists, etc.) 
   // and NOT on dashboard pages to avoid double headers.
-  const showNavAndFooter = !isAuthPage && user && !isDashboardPage;
+  // Show navbar on all pages as requested by the user
+  const showNavAndFooter = true;
 
   return (
     <div className="app">
@@ -460,6 +464,8 @@ const AppContent = () => {
           />
 
           <Route path="/" element={user ? <Home /> : <LandingPage />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/landing" element={<LandingPage />} />
         </Routes>
       </main>
       {showNavAndFooter && <GlobalFooter />}

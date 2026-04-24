@@ -70,8 +70,10 @@ const GlobalNavbar = () => {
     width: isDashboardLayout ? 'calc(100% - var(--sidebar-width) - 2rem)' : '100%'
   };
 
+  const isLandingPage = location.pathname === '/' || location.pathname === '/landing';
+
   return (
-    <nav className="global-navbar glass-panel" style={navbarStyle}>
+    <nav className={`global-navbar glass-panel ${isLandingPage && !user ? 'landing-nav' : ''}`} style={navbarStyle}>
       <div className="navbar-left" style={{ display: 'flex', alignItems: 'center' }}>
         <Link to="/" className="navbar-brand text-gradient" style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Eventio</Link>
       </div>

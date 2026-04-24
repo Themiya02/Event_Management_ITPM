@@ -11,7 +11,7 @@ const NotificationsDropdown = () => {
     const dropdownRef = useRef(null);
     const { user } = useAuth();
     
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     useEffect(() => {
         if (!user) return;

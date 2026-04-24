@@ -133,10 +133,8 @@ const AdminEventReview = () => {
                                 {event.isOpenRegistration ? '📝 Registration Required' : '🚪 Open Walk-in (Free)'}
                             </span>
                         </div>
-
-                        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                     </div>
-                )}
+                </div>
 
                 <div className="review-approval-section" style={{ padding: '2rem' }}>
                     <div className="review-approval-header">
