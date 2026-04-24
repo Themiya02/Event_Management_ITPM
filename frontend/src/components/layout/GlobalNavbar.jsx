@@ -1,14 +1,34 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import NotificationsDropdown from './NotificationsDropdown';
 import './GlobalNavbar.css';
 
 const GlobalNavbar = () => {
   const { user } = useAuth();
+  const location = useLocation();
+
+  const isDashboardLayout = location.pathname.startsWith('/admin') ||
+                            location.pathname.startsWith('/organizer') ||
+                            location.pathname.startsWith('/user') ||
+                            location.pathname.startsWith('/dashboard');
+
+  const navbarStyle = {
+    display: 'flex', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    padding: '0 2rem', 
+    height: '95px', 
+    boxSizing: 'border-box', 
+    position: 'sticky', 
+    top: 0, 
+    zIndex: 50,
+    marginLeft: isDashboardLayout ? 'calc(var(--sidebar-width) + 2rem)' : '0',
+    width: isDashboardLayout ? 'calc(100% - var(--sidebar-width) - 2rem)' : '100%'
+  };
 
   return (
-    <nav className="global-navbar glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem', height: '95px', boxSizing: 'border-box' }}>
+    <nav className="global-navbar glass-panel" style={navbarStyle}>
       <div className="navbar-left" style={{ display: 'flex', alignItems: 'center' }}>
         <Link to="/" className="navbar-brand text-gradient" style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Eventio</Link>
       </div>
@@ -24,8 +44,8 @@ const GlobalNavbar = () => {
           </NavLink>
           <NavLink 
             to={
-              user?.role === 'admin' ? '/admin/events-handling' : 
-              user?.role === 'organizer' ? '/organizer/dashboard' : 
+              user?.role === 'admin' ? '/admin/events/upcoming' : 
+              user?.role === 'organizer' ? '/organizer/events' : 
               '/dashboard'
             } 
             className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
@@ -33,17 +53,6 @@ const GlobalNavbar = () => {
             Events
           </NavLink>
           <NavLink
-            to={
-              user?.role === 'admin' ? '/admin/events/upcoming' :
-              user?.role === 'organizer' ? '/organizer/dashboard' :
-              user?.role === 'user' ? '/dashboard' :
-              '/'
-            }
-            className="nav-link"
-          >
-            Events
-          </Link>
-          <Link
             to={
               user?.role === 'admin' ? '/admin/artists/view' :
               user?.role === 'organizer' ? '/organizer/artists' :
@@ -67,17 +76,10 @@ const GlobalNavbar = () => {
             About
           </NavLink>
           {user && user.role === 'admin' && (
-<<<<<<< HEAD
-            <Link
-              to="/admin/dashboard"
-              className="nav-link"
-              style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}
-=======
             <NavLink 
               to="/admin/dashboard"
               className={({ isActive }) => isActive ? "nav-link active-dashboard" : "nav-link"} 
               style={({ isActive }) => ({ fontWeight: 'bold', color: isActive ? 'var(--primary-color)' : 'var(--text-main)' })}
->>>>>>> kumuthu01
             >
               Dashboard
             </NavLink>

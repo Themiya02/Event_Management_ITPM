@@ -67,11 +67,7 @@ const ApprovedEvents = () => {
                 </div>
             ) : (
                 <div className="events-grid">
-<<<<<<< HEAD
-                    {events.map(ev => {
-=======
                     {filteredEvents.map(ev => {
->>>>>>> kumuthu01
                         const dateObj = new Date(ev.date);
                         const month = dateObj.toLocaleString('default', { month: 'short' });
                         const day = dateObj.getDate();
@@ -86,13 +82,8 @@ const ApprovedEvents = () => {
                                             <span>{ev.name.charAt(0)}</span>
                                         </div>
                                     )}
-<<<<<<< HEAD
                                     <span className={`reg-badge open`} style={{ background: 'var(--accent-teal)' }}>
                                         ✓ Approved
-=======
-                                    <span className={`reg-badge ${ev.isOpenRegistration ? 'required' : 'open'}`}>
-                                        {ev.isOpenRegistration ? 'Register Required' : 'Register Not Required'}
->>>>>>> kumuthu01
                                     </span>
                                 </div>
                                 
@@ -100,43 +91,26 @@ const ApprovedEvents = () => {
                                     <h3>{ev.name}</h3>
                                     <div className="org-name">
                                         <span>👤 {ev.organizer?.name || 'Local Organizer'}</span>
-<<<<<<< HEAD
-=======
                                         {ev.artistName && <span style={{ marginLeft: '1rem' }}>🎤 {ev.artistName}</span>}
->>>>>>> kumuthu01
                                     </div>
                                     
                                     <div className="card-details">
                                         <div className="detail-item">
-<<<<<<< HEAD
-                                            <span>📅</span> {month} {day}, {ev.time}
-                                        </div>
-                                        <div className="detail-item">
-                                            <span>📍</span> {ev.location}
-=======
                                             <span>📅</span> {month} {day}, {ev.time || 'TBA'}
                                         </div>
                                         <div className="detail-item">
                                             <span>📍</span> {ev.location || 'TBA'}
->>>>>>> kumuthu01
                                         </div>
                                         <div className="detail-item">
                                             <span>🎟️</span> {ev.isPaid ? `Rs ${ev.price}` : 'Free'}
                                         </div>
                                     </div>
 
-<<<<<<< HEAD
                                     <div className="card-actions" style={{ justifyContent: 'center' }}>
                                         <span style={{ color: 'var(--accent-teal)', fontWeight: 'bold', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                                             Live on Platform
                                         </span>
-=======
-                                    <div className="card-actions">
-                                        <div className="btn-view-event" style={{background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)', pointerEvents: 'none'}}>
-                                            ✓ Fully Approved
-                                        </div>
->>>>>>> kumuthu01
                                     </div>
                                 </div>
                             </div>

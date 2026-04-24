@@ -91,17 +91,16 @@ const AdminSidebar = () => {
     };
 
     return (
-        <aside className="sidebar glass-panel">
-<<<<<<< HEAD
-
-=======
-            <div className="sidebar-header">
-                <div className="logo-icon"></div>
+        <aside className="sidebar">
+            <div className="sidebar-brand">
+                <div className="brand-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                </div>
                 <div>
+                    <div className="brand-name">Eventio</div>
                     <span className="admin-role-badge">Admin Panel</span>
                 </div>
             </div>
->>>>>>> kumuthu01
             <nav className="sidebar-nav">
                 <ul>
                     {/* Standalone Dashboard Link */}

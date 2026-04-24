@@ -288,7 +288,6 @@ const FoodDashboard = () => {
 
     if (result.isConfirmed) {
       try {
-<<<<<<< HEAD
         const res = await axios.delete(
           `${apiUrl}/api/events/${event._id}/stall-booking/${booking._id}`,
           { headers: { Authorization: `Bearer ${getToken()}` } }
@@ -299,7 +298,7 @@ const FoodDashboard = () => {
             if (e._id === event._id) {
                 return {
                     ...e,
-                    bookedStalls: e.bookedStalls.filter(s => s._id !== booking._id)
+                    bookedStalls: (e.bookedStalls || []).filter(s => s._id !== booking._id)
                 };
             }
             return e;
@@ -308,28 +307,6 @@ const FoodDashboard = () => {
         Swal.fire('Deleted!', 'Your application has been removed.', 'success');
       } catch (error) {
         Swal.fire('Error', error.response?.data?.message || 'Failed to delete.', 'error');
-=======
-        const userObj = JSON.parse(localStorage.getItem('user'));
-        const token = userObj?.token;
-        await axios.delete(`${apiUrl}/api/events/${event._id}/stall-booking/${booking._id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
-        Swal.fire('Deleted!', 'Your application has been deleted.', 'success');
-        
-        // Update local state
-        setEvents(prev => prev.map(ev => {
-          if (ev._id === event._id) {
-            return {
-              ...ev,
-              bookedStalls: (ev.bookedStalls || []).filter(s => s._id !== booking._id)
-            };
-          }
-          return ev;
-        }));
-      } catch (error) {
-        Swal.fire('Error', 'Failed to delete application.', 'error');
->>>>>>> kumuthu01
       }
     }
   };
@@ -534,8 +511,6 @@ const FoodDashboard = () => {
               </section>
             )}
 
-<<<<<<< HEAD
-
               {allMyBookings.length > 0 && (
                 <section className="glass-panel food-my-applications">
                   <h2>My Applications</h2>
@@ -549,29 +524,6 @@ const FoodDashboard = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                           {formatStatus(booking.status) === 'Pending' && (
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
-                              {/* Edit button is disabled as per user request */}
-                              {/* <button 
-                              onClick={() => handleEditClick(booking)}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1470F9', display: 'flex' }}
-                              title="Edit Application"
-                            >
-                              <Icon icon="mdi:pencil" width="20" height="20" />
-                            </button> */}
-=======
-            {allMyBookings.length > 0 && (
-              <section className="glass-panel food-my-applications">
-                <h2>My Applications</h2>
-                <div className="food-application-list">
-                  {allMyBookings.slice(0, 5).map((booking) => (
-                    <div key={booking._id} className="food-application-item">
-                      <div>
-                        <h4>{booking.stallName}</h4>
-                        <p>{booking.eventName} - {new Date(booking.eventDate).toLocaleDateString()}</p>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        {formatStatus(booking.status) === 'Pending' && (
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
->>>>>>> kumuthu01
                             <button 
                               onClick={() => handleDeleteClick(booking)}
                               style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', display: 'flex' }}
@@ -581,12 +533,9 @@ const FoodDashboard = () => {
                             </button>
                           </div>
                         )}
-<<<<<<< HEAD
                         <span className={`food-status-pill food-status-${formatStatus(booking.status).toLowerCase()}`}>
                           {formatStatus(booking.status)}
                         </span>
-=======
->>>>>>> kumuthu01
                       </div>
                     </div>
                   ))}

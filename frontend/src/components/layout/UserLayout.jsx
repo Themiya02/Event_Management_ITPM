@@ -1,10 +1,6 @@
 import React from 'react';
 import UserSidebar from './UserSidebar';
-<<<<<<< HEAD
 import './OrganizerLayout.css';
-=======
-import './OrganizerLayout.css'; 
->>>>>>> kumuthu01
 
 const UserLayout = ({ children }) => {
     return (

@@ -65,8 +65,6 @@ const AppContent = () => {
           <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
           <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
 
-<<<<<<< HEAD
-
           <Route
             path="/dashboard"
             element={
@@ -77,18 +75,6 @@ const AppContent = () => {
               </PrivateRoute>
             }
           />
-=======
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <UserLayout>
-                    <UserDashboard />
-                  </UserLayout>
-                </PrivateRoute>
-              }
-            />
->>>>>>> kumuthu01
 
           <Route
             path="/dashboard/event/:id"
@@ -425,134 +411,27 @@ const AppContent = () => {
             }
           />
 
-<<<<<<< HEAD
-          <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
-=======
-            <Route
-              path="/admin/artists"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <AddArtists />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/admin/events-handling"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminEventsHandling />
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/admin/events-handling"
-              element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <AdminEventsHandling />
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/admin/messages"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminLayout>
+                  <Messages />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/admin/artists/view"
-              element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <Artists />
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/messages"
-              element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <AdminLayout>
-                    <Messages />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/artists/analyze"
-              element={
-                <PrivateRoute allowedRoles={['admin', 'organizer']}>
-                  {user?.role === 'admin' ? (
-                    <AdminLayout>
-                      <RatingAnalyze />
-                    </AdminLayout>
-                  ) : (
-                    <OrganizerLayout>
-                      <RatingAnalyze />
-                    </OrganizerLayout>
-                  )}
-                </PrivateRoute>
-              }
-            />
-
-            {/* Public Domains */}
-            <Route path="/artists" element={<Artists />} />
-            <Route
-              path="/user/artists"
-              element={
-                <PrivateRoute>
-                  <Artists />
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/user/rating"
-              element={
-                <PrivateRoute>
-                  <UserRating />
-                </PrivateRoute>
-              }
-            />
-
-            {/* New Domains */}
-            <Route
-              path="/sponsor/dashboard"
-              element={
-                <RoleRoute allowedRole="sponsor">
-                  <SponsorDashboard />
-                </RoleRoute>
-              }
-            />
-
-            <Route
-              path="/sponsor/packages"
-              element={
-                <RoleRoute allowedRole="sponsor">
-                  <SponsorshipPackages />
-                </RoleRoute>
-              }
-            />
-
-            <Route
-              path="/sponsor/apply"
-              element={
-                <RoleRoute allowedRole="sponsor">
-                  <SponsorshipApply />
-                </RoleRoute>
-              }
-            />
-
-            <Route
-              path="/sponsor/verify-otp"
-              element={
-                <RoleRoute allowedRole="sponsor">
-                  <OTPVerification />
-                </RoleRoute>
-              }
-            />
-
-            <Route
-              path="/food/dashboard"
-              element={
-                <PrivateRoute>
-                    <FoodDashboard />
-                </PrivateRoute>
-              }
-            />
-
-            <Route path="/" element={user ? <Home /> : <LandingPage />} />
->>>>>>> kumuthu01
+          <Route path="/" element={user ? <Home /> : <LandingPage />} />
         </Routes>
       </main>
       {showNavAndFooter && <GlobalFooter />}

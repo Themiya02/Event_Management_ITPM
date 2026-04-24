@@ -105,75 +105,41 @@ const AdminEventReview = () => {
                     ) : (
                         <div className="hero-placeholder">{event.name.charAt(0)}</div>
                     )}
-<<<<<<< HEAD
+                </div>
+
+                <div>
+                    <h1 className="page-main-title" style={{fontSize: '2.4rem', marginBottom: '1.5rem'}}>{event.name}</h1>
                     
-                    <div>
-                        <h1 className="page-main-title" style={{fontSize: '2.4rem', marginBottom: '1.5rem'}}>{event.name}</h1>
-                        
-                        {/* Unified Organized Event Details Grid */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.2rem', marginBottom: '3rem' }}>
-                            <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Committee / Organizer</span>
-                                <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>👤 {event.organizer?.name || 'Local Organizer'}</span>
-                            </div>
-                            
-                            <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Date & Time</span>
-                                <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>📅 {new Date(event.date).toLocaleDateString()} at {event.time}</span>
-                            </div>
-                            
-                            <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Location Venue</span>
-                                <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>📍 {event.location}</span>
-                            </div>
-
-                            <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Event Access</span>
-                                <span className={`ticket-badge ${event.isOpenRegistration ? 'required' : 'open'}`} style={{ alignSelf: 'flex-start', margin: 0 }}>
-                                    {event.isOpenRegistration ? '📝 Registration Required' : '🚪 Open Walk-in (Free)'}
-                                </span>
-                            </div>
-
-                            <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Ticket Pricing</span>
-                                <span className={`ticket-badge ${event.isPaid ? 'paid' : 'free'}`} style={{ alignSelf: 'flex-start', margin: 0 }}>
-                                    {event.isPaid ? `💳 Paid: Rs ${event.price}` : '🎟️ Free Auto-Entry'}
-                                </span>
-                            </div>
+                    {/* Unified Organized Event Details Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.2rem', marginBottom: '3rem' }}>
+                        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Committee / Organizer</span>
+                            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>👤 {event.organizer?.name || 'Local Organizer'}</span>
                         </div>
-=======
-                </div>
+                        
+                        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Date & Time</span>
+                            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>📅 {new Date(event.date).toLocaleDateString()} at {event.time || 'TBA'}</span>
+                        </div>
+                        
+                        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Location Venue</span>
+                            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>📍 {event.location || 'TBA'}</span>
+                        </div>
 
-                <h1 className="review-title">{event.name}</h1>
->>>>>>> kumuthu01
+                        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Event Access</span>
+                            <span className={`ticket-badge ${event.isOpenRegistration ? 'required' : 'open'}`} style={{ alignSelf: 'flex-start', margin: 0 }}>
+                                {event.isOpenRegistration ? '📝 Registration Required' : '🚪 Open Walk-in (Free)'}
+                            </span>
+                        </div>
 
-                <div className="event-meta-grid">
-                    <div className="meta-item">
-                        <span className="meta-label">Organizer / Committee</span>
-                        <span className="meta-value">👤 {event.organizer?.name || 'Local Organizer'}</span>
-                    </div>
-                    <div className="meta-item">
-                        <span className="meta-label">Date & Time</span>
-                        <span className="meta-value">📅 {new Date(event.date).toLocaleDateString()} at {event.time || 'TBA'}</span>
-                    </div>
-                    <div className="meta-item">
-                        <span className="meta-label">Location</span>
-                        <span className="meta-value">📍 {event.location || 'TBA'}</span>
-                    </div>
-                </div>
-
-                <div className="status-grid">
-                    <div className="status-block">
-                        <span className="status-block-title">Event Access</span>
-                        <span className={`ticket-badge ${event.isOpenRegistration ? 'required' : 'open'}`} style={{ fontSize: '1.1rem', width: 'fit-content', padding: '0.5rem 1rem', borderRadius: '8px' }}>
-                            {event.isOpenRegistration ? '📝 Registration Required' : '🚪 Open Walk-in (Unlimited)'}
-                        </span>
-                    </div>
-                    <div className="status-block">
-                        <span className="status-block-title">Ticket Pricing</span>
-                        <span className={`ticket-badge ${event.isPaid ? 'paid' : 'free'}`} style={{ fontSize: '1.1rem', width: 'fit-content', padding: '0.5rem 1rem', borderRadius: '8px' }}>
-                            {event.isPaid ? `💳 Paid: Rs ${event.price}` : '🎟️ Free Auto-Entry'}
-                        </span>
+                        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Ticket Pricing</span>
+                            <span className={`ticket-badge ${event.isPaid ? 'paid' : 'free'}`} style={{ alignSelf: 'flex-start', margin: 0 }}>
+                                {event.isPaid ? `💳 Paid: Rs ${event.price}` : '🎟️ Free Auto-Entry'}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
