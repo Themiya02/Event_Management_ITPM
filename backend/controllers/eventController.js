@@ -489,7 +489,8 @@ exports.deleteBankDetails = async (req, res) => {
 // Food Stall: Book a stall on the map
 exports.bookFoodStall = async (req, res) => {
   try {
-    const { stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y } = req.body;
+    const { stallName, description, foodType, needsElectricity, needsWater, paymentReceipt, x, y, stallLocation } = req.body;
+    const normalizedStallLocation = String(stallLocation || '').trim();
     
     if (!normalizedStallLocation || !stallName || !paymentReceipt) {
       return res.status(400).json({ message: 'Stall location, stall name, and payment receipt are required.' });
@@ -563,7 +564,7 @@ exports.updateStallBookingStatus = async (req, res) => {
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
 
-    booking.status = normalizedStatus;
+    booking.status = status;
     await event.save();
     res.json(event);
   } catch (error) {

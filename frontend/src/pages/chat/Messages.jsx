@@ -12,7 +12,7 @@ const Messages = () => {
     const [loading, setLoading] = useState(true);
     const chatContainerRef = useRef(null);
 
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
     const headers = { Authorization: `Bearer ${user?.token}` };
 
     useEffect(() => {

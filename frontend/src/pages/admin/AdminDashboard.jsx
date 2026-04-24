@@ -16,7 +16,7 @@ const AdminDashboard = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 const headers = { Authorization: `Bearer ${token}` };
 
                 const [pendingRes, approvedRes, allRes] = await Promise.all([
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 await axios.patch(`${apiUrl}/api/events/admin/${eventId}/stall-map`, {
                     stallMapUrl: reader.result
                 }, {

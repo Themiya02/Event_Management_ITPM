@@ -35,13 +35,10 @@ const eventSchema = new mongoose.Schema({
   },
   registrationsCount: { type: Number, default: 0 },
   stallMapUrl: { type: String, default: '' },
-<<<<<<< HEAD
   stallPricing: [{
     stall: { type: String, trim: true, required: true },
     price: { type: Number, required: true, min: 0 }
   }],
-=======
->>>>>>> kumuthu01
   bankDetails: {
     accountName: { type: String, default: '' },
     bankName: { type: String, default: '' },

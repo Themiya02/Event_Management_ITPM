@@ -13,7 +13,7 @@ const RegisteredUsers = () => {
     useEffect(() => {
         const fetchRegistrations = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/events/organizer/registrations', {
+                const response = await axios.get('http://localhost:5002/api/events/organizer/registrations', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -33,7 +33,7 @@ const RegisteredUsers = () => {
 
     const handleStatusChange = async (id, status) => {
         try {
-            await axios.patch(`http://localhost:5000/api/events/registrations/${id}/status`, { status }, {
+            await axios.patch(`http://localhost:5002/api/events/registrations/${id}/status`, { status }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

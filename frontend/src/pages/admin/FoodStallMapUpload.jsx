@@ -14,7 +14,7 @@ const FoodStallMapUpload = () => {
 
     const getAuth = () => {
         const user = JSON.parse(localStorage.getItem('user'));
-        return { token: user?.token, apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000' };
+        return { token: user?.token, apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5002' };
     };
 
     const fetchEvents = async () => {

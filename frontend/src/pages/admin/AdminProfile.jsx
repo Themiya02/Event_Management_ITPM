@@ -22,7 +22,7 @@ const AdminProfile = () => {
         try {
             const localUser = JSON.parse(localStorage.getItem('user'));
             const header = { headers: { Authorization: `Bearer ${localUser?.token}` } };
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
             // Fetch generic profile info
             const profileRes = await axios.get(`${apiUrl}/api/auth/profile`, header);
@@ -68,7 +68,7 @@ const AdminProfile = () => {
         try {
             const localUser = JSON.parse(localStorage.getItem('user'));
             const header = { headers: { Authorization: `Bearer ${localUser?.token}` } };
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
             const payload = { name: editForm.name, phone: editForm.phone, avatar: editForm.avatar };
             if (editForm.password) payload.password = editForm.password;

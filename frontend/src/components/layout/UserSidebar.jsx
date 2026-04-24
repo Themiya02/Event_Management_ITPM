@@ -35,16 +35,12 @@ const UserSidebar = () => {
 
     return (
         <aside className="sidebar glass-panel">
-<<<<<<< HEAD
-
-=======
             <div className="sidebar-header">
                 <div className="logo-icon"></div>
                 <div>
                     <span className="admin-role-badge" style={{ background: 'var(--accent-teal)' }}>Student Portal</span>
                 </div>
             </div>
->>>>>>> kumuthu01
             <nav className="sidebar-nav">
                 <ul>
                     {navItems.map((item) => {

@@ -71,7 +71,7 @@ const AdminSidebar = () => {
         if (!user) return;
         const fetchUnread = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/messages/unread-count', {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/messages/unread-count`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 if (res.ok) {
@@ -94,16 +94,12 @@ const AdminSidebar = () => {
 
     return (
         <aside className="sidebar glass-panel">
-<<<<<<< HEAD
-
-=======
             <div className="sidebar-header">
                 <div className="logo-icon"></div>
                 <div>
                     <span className="admin-role-badge">Admin Panel</span>
                 </div>
             </div>
->>>>>>> kumuthu01
             <nav className="sidebar-nav">
                 <ul>
                     {/* Standalone Dashboard Link */}
