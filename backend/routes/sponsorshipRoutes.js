@@ -9,7 +9,12 @@ const {
   verifyOTP,
   resendOTP,
   getAllSponsorships,
+<<<<<<< HEAD
   updateStatus
+=======
+  updateStatus,
+  deleteSponsorship
+>>>>>>> hasini_dev
 } = require('../controllers/sponsorshipController');
 const { protect } = require('../middleware/auth');
 
@@ -57,5 +62,9 @@ router.post('/resend-otp', resendOTP);
 // Admin routes (protected)
 router.get('/all', protect, getAllSponsorships);
 router.patch('/:id/status', protect, updateStatus);
+<<<<<<< HEAD
+=======
+router.delete('/:id', protect, deleteSponsorship);
+>>>>>>> hasini_dev
 
 module.exports = router;

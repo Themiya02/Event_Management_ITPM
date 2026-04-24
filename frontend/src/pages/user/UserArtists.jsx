@@ -3,18 +3,24 @@ import axios from 'axios';
 import { Link, useSearchParams } from 'react-router-dom';
 import '../artists/Artists.css';
 import './UserView.css';
+<<<<<<< HEAD
 import { useAuth } from '../../context/AuthContext';
+=======
+>>>>>>> hasini_dev
 
 const UserArtists = () => {
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
+<<<<<<< HEAD
   const { user } = useAuth();
   
   const [aiLoading, setAiLoading] = useState(false);
   const [aiArtist, setAiArtist] = useState(null);
   const [aiError, setAiError] = useState('');
+=======
+>>>>>>> hasini_dev
 
   useEffect(() => {
     const fetchArtists = async () => {
@@ -40,6 +46,7 @@ const UserArtists = () => {
     });
   }, [artists, searchQuery]);
 
+<<<<<<< HEAD
   const handleAiSearch = async () => {
     if (!searchQuery) return;
     setAiLoading(true);
@@ -63,6 +70,8 @@ const UserArtists = () => {
     }
   };
 
+=======
+>>>>>>> hasini_dev
   if (loading) return <div className="loading-spinner" style={{ textAlign: 'center', marginTop: '50px' }}>Loading Artists...</div>;
 
   return (
@@ -113,6 +122,7 @@ const UserArtists = () => {
           ))
         )}
       </div>
+<<<<<<< HEAD
 
       {searchQuery && filteredArtists.length === 0 && user?.role === 'organizer' && (
         <div className="ai-search-section" style={{ textAlign: 'center', marginTop: '40px', padding: '20px' }}>
@@ -160,6 +170,8 @@ const UserArtists = () => {
           </div>
         </div>
       )}
+=======
+>>>>>>> hasini_dev
     </div>
   );
 };

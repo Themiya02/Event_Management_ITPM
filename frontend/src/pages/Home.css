@@ -6,6 +6,7 @@
 }
 
 /* Compact top bar: title + one search (replaces old hero + Quick Search panel) */
+<<<<<<< HEAD
 /* New Hero Banner Styles */
 .home-hero-banner {
   background: linear-gradient(135deg, #2563eb, #1e40af);
@@ -108,6 +109,105 @@
 }
 
 
+=======
+.home-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--glass-shadow);
+}
+
+@media (min-width: 768px) {
+  .home-toolbar {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+}
+
+.home-toolbar-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-heading {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 800;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.home-lead {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 42ch;
+}
+
+.home-search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+@media (min-width: 768px) {
+  .home-search-field {
+    flex-shrink: 0;
+  }
+}
+
+.home-search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.home-search-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.home-search-clear {
+  flex-shrink: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.home-search-clear:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+>>>>>>> hasini_dev
 .events-content {
   display: flex;
   flex-direction: column;

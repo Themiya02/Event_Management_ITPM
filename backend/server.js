@@ -7,6 +7,11 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+console.log('-------------------------------------------');
+console.log('📧 SYSTEM STARTUP - Checking Email Setup...');
+console.log(`👤 Configured Sender: [${process.env.EMAIL_USER}]`);
+console.log('-------------------------------------------');
+
 const app = express();
 
 // Middleware

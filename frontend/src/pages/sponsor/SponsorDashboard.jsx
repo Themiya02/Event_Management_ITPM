@@ -16,7 +16,7 @@ const SponsorDashboard = () => {
       icon: '🗓️',
       title: 'My Events',
       desc: 'View and manage all your created events',
-      action: () => {},
+      action: () => navigate('/home'),
       label: 'View Events',
       color: '#6366f1'
     },
@@ -41,7 +41,7 @@ const SponsorDashboard = () => {
       icon: '🔍',
       title: 'Browse Events',
       desc: 'Discover and join upcoming events',
-      action: () => {},
+      action: () => navigate('/home'),
       label: 'Browse',
       color: '#60a5fa'
     }

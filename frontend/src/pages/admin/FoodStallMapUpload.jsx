@@ -8,8 +8,6 @@ import '../user/UserDashboard.css';
 
 const FoodStallMapUpload = () => {
     const [allEvents, setAllEvents] = useState([]);
-    const [bankForms, setBankForms] = useState({});
-    const [editingEvents, setEditingEvents] = useState({});
     const [loading, setLoading] = useState(true);
     const [mapModal, setMapModal] = useState(null);
     const [mapModalSaving, setMapModalSaving] = useState(false);
@@ -27,19 +25,7 @@ const FoodStallMapUpload = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // Show approved and pending events
-            const filtered = res.data.filter(e => e.status === 'Approved' || e.status === 'Pending');
-            setAllEvents(filtered);
-            const initialForms = {};
-            filtered.forEach((event) => {
-                initialForms[event._id] = {
-                    accountName: event.bankDetails?.accountName || '',
-                    bankName: event.bankDetails?.bankName || '',
-                    accountNumber: event.bankDetails?.accountNumber || '',
-                    branch: event.bankDetails?.branch || '',
-                    instructions: event.bankDetails?.instructions || ''
-                };
-            });
-            setBankForms(initialForms);
+            setAllEvents(res.data.filter(e => e.status === 'Approved' || e.status === 'Pending'));
         } catch (err) {
             console.error('Error fetching events:', err);
         } finally {
