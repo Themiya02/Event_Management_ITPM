@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import AdminLayout from '../../components/layout/AdminLayout';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -85,11 +86,8 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="admin-dashboard animation-fade-in">
-            <div className="page-header-block">
-                <h1 className="page-main-title">Admin Dashboard</h1>
-                <p className="page-main-subtitle">Manage campus nodes via isolated structural domains.</p>
-            </div>
+        <AdminLayout>
+            <div className="admin-dashboard animation-fade-in" style={{ paddingLeft: '0', paddingRight: '1.5rem' }}>
 
             {/* DOMAIN MACRO TOGGLES */}
             <div className="domain-toggles glass-panel">
@@ -114,7 +112,7 @@ const AdminDashboard = () => {
                     {activeDomain === 'events' && (
                         <div className="animation-fade-in" style={{ paddingBottom: '4rem' }}>
                             {/* Blue Hero Banner */}
-                            <div className="search-hero-section" style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', borderRadius: '20px', padding: '4rem 2rem 4rem 2rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                            <div className="search-hero-section" style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', borderRadius: '20px', padding: '3.5rem 1.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 2px, transparent 2px)', backgroundSize: '30px 30px', opacity: 0.3 }} />
                                 
                                 <h1 style={{ color: 'white', fontSize: '3rem', fontWeight: 800, marginBottom: '0.5rem', position: 'relative', zIndex: 1 }}>
@@ -246,48 +244,94 @@ const AdminDashboard = () => {
 
                     {/* DOMAIN: FOOD STALL HANDLING */}
                     {activeDomain === 'food' && (
-                        <div className="animation-fade-in glass-panel admin-recent-card">
-                            <div className="card-row-header">
-                                <h2 className="section-title">🍔 Food Stall Handling (Upcoming Events)</h2>
-                            </div>
-                            {allEvents.filter(e => e.status === 'Approved' || e.status === 'Pending').length === 0 ? (
-                                <p className="empty-note">No approved or upcoming events available. 🎉</p>
-                            ) : (
-                                <div className="recent-list">
-                                    {allEvents.filter(e => e.status === 'Approved' || e.status === 'Pending').map(ev => (
-                                        <div key={ev._id} className="recent-row" style={{ alignItems: 'center' }}>
-                                            <div>
-                                                <p className="recent-name">{ev.name} <span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>({ev.status})</span></p>
-                                                <p className="recent-meta">By {ev.organizer?.name || 'Unknown'} · {new Date(ev.date).toLocaleDateString()}</p>
-                                                {ev.stallMapUrl && <span style={{ color: 'var(--success-color)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem' }}>✓ Map Available</span>}
-                                            </div>
-                                            <div>
-                                                <label className="btn-sm-primary" style={{ cursor: 'pointer', margin: 0 }}>
-                                                    {ev.stallMapUrl ? 'Update Map' : 'Upload Map'}
-                                                    <input 
-                                                        type="file" 
-                                                        accept="image/*" 
-                                                        style={{ display: 'none' }} 
-                                                        onChange={(e) => {
-                                                            // We call handleUploadMap as before
-                                                            handleUploadMap(ev._id, e);
-                                                            // Additionally locally update approvedEventsList just to reflect UI instantly
-                                                            const file = e.target.files[0];
-                                                            if (file) {
-                                                                const r = new FileReader();
-                                                                r.onloadend = () => {
-                                                                    setAllEvents(prev => prev.map(a => a._id === ev._id ? { ...a, stallMapUrl: r.result } : a));
-                                                                }
-                                                                r.readAsDataURL(file);
-                                                            }
-                                                        }} 
-                                                    />
-                                                </label>
-                                            </div>
-                                        </div>
-                                    ))}
+                        <div className="admin-food-domain animation-fade-in">
+                            <header className="admin-food-hero">
+                                <span className="admin-food-kicker">Food operations</span>
+                                <h2 className="admin-food-title">Food stall handling</h2>
+                                <p className="admin-food-desc">
+                                    Manage blueprint maps, stall pricing, vendor bank details, and booking approvals in one place.
+                                </p>
+                                <div className="admin-food-quick-links">
+                                    <Link to="/admin/food/upload-map" className="admin-food-btn admin-food-btn-primary">
+                                        Map &amp; stall pricing
+                                    </Link>
+                                    <Link to="/admin/food/bookings" className="admin-food-btn admin-food-btn-secondary">
+                                        Stall bookings
+                                    </Link>
                                 </div>
-                            )}
+                            </header>
+
+                            <section className="admin-food-section" aria-labelledby="admin-food-events-heading">
+                                <div className="admin-food-section-head">
+                                    <h3 id="admin-food-events-heading" className="admin-food-section-title">
+                                        Upcoming &amp; approved events
+                                    </h3>
+                                    <p className="admin-food-section-sub">
+                                        Configure each event on the map screen — add stalls, prices, and layout images.
+                                    </p>
+                                </div>
+                                {allEvents.filter((e) => e.status === 'Approved' || e.status === 'Pending').length === 0 ? (
+                                    <div className="admin-food-empty">
+                                        <span className="admin-food-empty-icon" aria-hidden>🍔</span>
+                                        <p className="admin-food-empty-title">No events to configure</p>
+                                        <p className="admin-food-empty-text">
+                                            When events are pending or approved, they will appear here for food stall setup.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="admin-food-grid">
+                                        {allEvents
+                                            .filter((e) => e.status === 'Approved' || e.status === 'Pending')
+                                            .map((ev) => {
+                                                const stallCount = (ev.stallPricing || []).length;
+                                                const hasMap = Boolean(ev.stallMapUrl);
+                                                return (
+                                                    <article key={ev._id} className="admin-food-card">
+                                                        <div className="admin-food-card-top">
+                                                            <h4 className="admin-food-card-title">{ev.name}</h4>
+                                                            <span
+                                                                className={`admin-food-pill admin-food-pill--${ev.status === 'Approved' ? 'approved' : 'pending'}`}
+                                                            >
+                                                                {ev.status}
+                                                            </span>
+                                                        </div>
+                                                        <p className="admin-food-card-meta">
+                                                            <span>{ev.organizer?.name || 'Unknown organizer'}</span>
+                                                            <span className="admin-food-card-dot" aria-hidden>
+                                                                ·
+                                                            </span>
+                                                            <span>{new Date(ev.date).toLocaleDateString()}</span>
+                                                        </p>
+                                                        <div className="admin-food-card-tags">
+                                                            <span
+                                                                className={
+                                                                    hasMap
+                                                                        ? 'admin-food-tag admin-food-tag--ok'
+                                                                        : 'admin-food-tag admin-food-tag--warn'
+                                                                }
+                                                            >
+                                                                {hasMap ? 'Map uploaded' : 'Map needed'}
+                                                            </span>
+                                                            <span className="admin-food-tag admin-food-tag--neutral">
+                                                                {stallCount > 0
+                                                                    ? `${stallCount} stall${stallCount === 1 ? '' : 's'} priced`
+                                                                    : 'No stall prices'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="admin-food-card-actions">
+                                                            <Link
+                                                                to="/admin/food/upload-map"
+                                                                className="admin-food-card-cta"
+                                                            >
+                                                                Configure
+                                                            </Link>
+                                                        </div>
+                                                    </article>
+                                                );
+                                            })}
+                                    </div>
+                                )}
+                            </section>
                         </div>
                     )}
 
@@ -339,6 +383,7 @@ const AdminDashboard = () => {
                 </div>
             )}
         </div>
+    </AdminLayout>
     );
 };
 

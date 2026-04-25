@@ -54,6 +54,8 @@ const GlobalNavbar = () => {
   const isDashboardLayout = location.pathname.startsWith('/admin') ||
                             location.pathname.startsWith('/organizer') ||
                             location.pathname.startsWith('/user') ||
+                            location.pathname.startsWith('/food') ||
+                            location.pathname.startsWith('/sponsor') ||
                             location.pathname.startsWith('/dashboard');
 
   const navbarStyle = {
@@ -66,8 +68,8 @@ const GlobalNavbar = () => {
     position: 'sticky', 
     top: 0, 
     zIndex: 50,
-    marginLeft: isDashboardLayout ? 'calc(var(--sidebar-width) + 2rem)' : '0',
-    width: isDashboardLayout ? 'calc(100% - var(--sidebar-width) - 2rem)' : '100%'
+    marginLeft: isDashboardLayout ? 'var(--sidebar-width)' : '0',
+    width: isDashboardLayout ? 'calc(100% - var(--sidebar-width))' : '100%'
   };
 
   const isLandingPage = location.pathname === '/' || location.pathname === '/landing';

@@ -9,6 +9,8 @@ import PrivateRoute from './components/PrivateRoute';
 import UserLayout from './components/layout/UserLayout';
 import OrganizerLayout from './components/layout/OrganizerLayout';
 import AdminLayout from './components/layout/AdminLayout';
+import SponsorLayout from './components/layout/SponsorLayout';
+import FoodStallLayout from './components/layout/FoodStallLayout';
 import DashboardHome from './pages/organizer/DashboardHome';
 import CreateEvent from './pages/organizer/CreateEvent';
 import EditEvent from './pages/organizer/EditEvent';
@@ -17,6 +19,8 @@ import EventsList from './pages/organizer/EventsList';
 import Settings from './pages/organizer/Settings';
 import OrganizerArtists from './pages/organizer/OrganizerArtists';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import RegisteredUsers from './pages/organizer/RegisteredUsers';
+import Messages from './pages/chat/Messages';
 import UpcomingEvents from './pages/admin/UpcomingEvents';
 import ApprovedEvents from './pages/admin/ApprovedEvents';
 import RejectedEvents from './pages/admin/RejectedEvents';
@@ -26,6 +30,7 @@ import AdminEventsHandling from './pages/admin/AdminEventsHandling';
 import SponsorDashboard from './pages/sponsor/SponsorDashboard';
 import SponsorProfile from './pages/sponsor/SponsorProfile';
 import FoodDashboard from './pages/food/FoodDashboard';
+import FoodProfile from './pages/food/FoodProfile';
 import FoodStallMapUpload from './pages/admin/FoodStallMapUpload';
 import FoodStallBookings from './pages/admin/FoodStallBookings';
 import AddArtists from './pages/artists/AddArtists';
@@ -44,7 +49,6 @@ import RoleRoute from './components/RoleRoute';
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import Home from './pages/Home';
 import LandingPage from './pages/LandingPage';
-import Messages from './pages/chat/Messages';
 import GlobalNavbar from './components/layout/GlobalNavbar';
 import GlobalFooter from './components/layout/GlobalFooter';
 import './App.css';
@@ -203,6 +207,36 @@ const AppContent = () => {
           />
 
           <Route
+            path="/organizer/registrations"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <RegisteredUsers />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/organizer/registered-users"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <RegisteredUsers />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/organizer/messages"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <Messages />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/organizer/settings"
             element={
               <PrivateRoute>
@@ -229,7 +263,7 @@ const AppContent = () => {
           <Route
             path="/admin/dashboard"
             element={
-              <PrivateRoute>
+              <PrivateRoute allowedRoles={['admin']}>
                 <AdminLayout>
                   <AdminDashboard />
                 </AdminLayout>
@@ -251,7 +285,7 @@ const AppContent = () => {
           <Route
             path="/admin/events/review/:id"
             element={
-              <PrivateRoute>
+              <PrivateRoute allowedRoles={['admin']}>
                 <AdminLayout>
                   <AdminEventReview />
                 </AdminLayout>
@@ -393,7 +427,9 @@ const AppContent = () => {
             path="/sponsor/dashboard"
             element={
               <RoleRoute allowedRole="sponsor">
-                <SponsorDashboard />
+                <SponsorLayout>
+                  <SponsorDashboard />
+                </SponsorLayout>
               </RoleRoute>
             }
           />
@@ -402,7 +438,9 @@ const AppContent = () => {
             path="/sponsor/profile"
             element={
               <RoleRoute allowedRole="sponsor">
-                <SponsorProfile />
+                <SponsorLayout>
+                  <SponsorProfile />
+                </SponsorLayout>
               </RoleRoute>
             }
           />
@@ -411,7 +449,9 @@ const AppContent = () => {
             path="/sponsor/packages"
             element={
               <RoleRoute allowedRole="sponsor">
-                <SponsorshipPackages />
+                <SponsorLayout>
+                  <SponsorshipPackages />
+                </SponsorLayout>
               </RoleRoute>
             }
           />
@@ -420,7 +460,9 @@ const AppContent = () => {
             path="/sponsor/apply"
             element={
               <RoleRoute allowedRole="sponsor">
-                <SponsorshipApply />
+                <SponsorLayout>
+                  <SponsorshipApply />
+                </SponsorLayout>
               </RoleRoute>
             }
           />
@@ -437,8 +479,21 @@ const AppContent = () => {
           <Route
             path="/food/dashboard"
             element={
-              <PrivateRoute>
-                <FoodDashboard />
+              <PrivateRoute allowedRoles={['food_stall']}>
+                <FoodStallLayout>
+                  <FoodDashboard />
+                </FoodStallLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/food/profile"
+            element={
+              <PrivateRoute allowedRoles={['food_stall']}>
+                <FoodStallLayout>
+                  <FoodProfile />
+                </FoodStallLayout>
               </PrivateRoute>
             }
           />
@@ -447,7 +502,9 @@ const AppContent = () => {
             path="/admin/events-handling"
             element={
               <PrivateRoute allowedRoles={['admin']}>
-                <AdminEventsHandling />
+                <AdminLayout>
+                  <AdminEventsHandling />
+                </AdminLayout>
               </PrivateRoute>
             }
           />
@@ -468,7 +525,7 @@ const AppContent = () => {
           <Route path="/landing" element={<LandingPage />} />
         </Routes>
       </main>
-      {showNavAndFooter && <GlobalFooter />}
+      {showNavAndFooter && !isDashboardPage && <GlobalFooter />}
     </div>
   );
 };

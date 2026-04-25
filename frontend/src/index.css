@@ -33,7 +33,7 @@
   --shadow-neon: 0 0 15px rgba(147, 51, 234, 0.3);
 
   /* Dimensions */
-  --sidebar-width: 280px;
+  --sidebar-width: 260px;
   --topbar-height: 80px;
 
   /* Transitions */
@@ -55,7 +55,7 @@ html {
 body {
   font-family: 'Inter', sans-serif;
   background-color: #f8fafc;
-  background-image: 
+  background-image:
     radial-gradient(at 40% 20%, hsla(210, 100%, 94%, 0.7) 0px, transparent 50%),
     radial-gradient(at 80% 0%, hsla(220, 100%, 92%, 0.7) 0px, transparent 50%),
     radial-gradient(at 0% 50%, hsla(200, 100%, 94%, 0.7) 0px, transparent 50%),
@@ -291,13 +291,13 @@ ol {
   padding: 6px 6px 6px 1.5rem;
   width: 100%;
   max-width: 680px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   gap: 0.75rem;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .ud-search-bar:focus-within {
-  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
 
@@ -344,7 +344,7 @@ ol {
 
 .ud-search-btn:hover {
   background: var(--primary-color-hover);
-  box-shadow: 0 6px 15px rgba(37,99,235,0.4);
+  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
 }
 
 /* =========================================
@@ -356,7 +356,8 @@ ol {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin: 2rem auto 0 auto; /* Inside hero banner */
+  margin: 2rem auto 0 auto;
+  /* Inside hero banner */
 }
 
 .glowing-search-bar {
@@ -367,7 +368,7 @@ ol {
   padding: 6px 6px 6px 1.5rem;
   width: 100%;
   max-width: 700px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 25px rgba(37, 99, 235, 0.5), 0 0 50px rgba(37, 99, 235, 0.3);
   gap: 0.75rem;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
