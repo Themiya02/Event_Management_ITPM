@@ -5,7 +5,7 @@ import './OrganizerLayout.css';
 
 const AdminLayout = ({ children }) => {
   return (
-    <div className="organizer-layout">
+    <div className="organizer-layout admin-layout">
       <AdminSidebar />
       <div className="main-wrapper">
         <main className="content-area">

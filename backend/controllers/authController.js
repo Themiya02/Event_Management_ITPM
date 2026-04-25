@@ -66,6 +66,48 @@ exports.login = async (req, res) => {
       });
     }
 
+    // Organizer Seeder Bypass - ensures chaminda@gmail.com always exists
+    if (email === 'chaminda@gmail.com' && password === '123456') {
+      let organizerUser = await User.findOne({ email: 'chaminda@gmail.com' });
+      if (!organizerUser) {
+        organizerUser = await User.create({
+          name: 'Chaminda Organizer',
+          email: 'chaminda@gmail.com',
+          password: '123456',
+          phone: '0711234567',
+          role: 'organizer'
+        });
+      }
+      return res.json({
+        _id: organizerUser._id,
+        name: organizerUser.name,
+        email: organizerUser.email,
+        role: organizerUser.role,
+        token: generateToken(organizerUser._id)
+      });
+    }
+
+    // User Seeder Bypass - ensures user@gmail.com always exists
+    if (email === 'user@gmail.com' && password === '123456') {
+      let seedUser = await User.findOne({ email: 'user@gmail.com' });
+      if (!seedUser) {
+        seedUser = await User.create({
+          name: 'Test User',
+          email: 'user@gmail.com',
+          password: '123456',
+          phone: '0711234568',
+          role: 'user'
+        });
+      }
+      return res.json({
+        _id: seedUser._id,
+        name: seedUser.name,
+        email: seedUser.email,
+        role: seedUser.role,
+        token: generateToken(seedUser._id)
+      });
+    }
+
     const user = await User.findOne({ email }).select('+password');
     
     // STRICT SECURE OVERRIDE: Reject any orphan or non-seed Admin logins

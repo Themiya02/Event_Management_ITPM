@@ -1,7 +1,32 @@
 .event-view-container {
-  padding: 1rem;
-  max-width: 900px;
-  margin: 0 auto;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    position: relative;
+}
+
+.back-button-floating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.back-button-floating:hover {
+    transform: translateX(-5px);
+    background: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-md);
 }
 
 .event-banner {

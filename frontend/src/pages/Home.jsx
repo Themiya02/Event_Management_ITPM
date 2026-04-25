@@ -74,7 +74,13 @@ const Home = () => {
     <div className="event-card glass-panel">
       <div className="event-image-wrap">
         {event.imageUrl ? (
-          <img src={event.imageUrl} alt={event.name} className="event-image" />
+          <img 
+            src={event.imageUrl.startsWith('http') || event.imageUrl.startsWith('data:') || event.imageUrl.startsWith('/')
+              ? (event.imageUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL}${event.imageUrl}` : event.imageUrl)
+              : `${import.meta.env.VITE_API_URL}/${event.imageUrl}`} 
+            alt={event.name} 
+            className="event-image" 
+          />
         ) : (
           <div className="event-image-placeholder">No Image</div>
         )}

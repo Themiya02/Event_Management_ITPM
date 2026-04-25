@@ -1,19 +1,20 @@
 .sidebar {
     width: var(--sidebar-width);
-    height: calc(100vh - 2rem);
+    height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    margin: 1rem;
+    margin: 0;
     display: flex;
     flex-direction: column;
-    z-index: 10;
+    z-index: 1000;
     flex-shrink: 0;
-    background: #1e3a8a; /* Base Royal Blue */
+    background: #1e3a8a;
+    /* Base Royal Blue */
     background: linear-gradient(180deg, #1e40af 0%, #172554 100%);
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(30, 58, 138, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+    box-shadow: 4px 0 15px rgba(30, 58, 138, 0.15);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
     color: #ffffff;
 }
 
@@ -33,7 +34,7 @@
     align-items: center;
     justify-content: center;
     color: #1e40af;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .brand-icon svg {
@@ -150,4 +151,169 @@
 .logout-btn:hover {
     color: #ffffff;
     background: rgba(239, 68, 68, 0.8);
+}
+
+/* Accordion Specific Styles - Shared across sidebars */
+.role-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #93c5fd;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 4px;
+}
+
+.nav-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 1rem 0;
+}
+
+.nav-accordion-group {
+    margin-bottom: 0.2rem;
+    list-style: none;
+}
+
+.nav-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    background: none;
+    border: none;
+    text-decoration: none;
+}
+
+.nav-accordion-header:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.nav-accordion-header.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.accordion-title-flex {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex: 1;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-email {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chevron {
+    transition: transform 0.3s ease;
+}
+
+.chevron.rotated {
+    transform: rotate(180deg);
+}
+
+.nav-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out, opacity 0.3s;
+    opacity: 0;
+}
+
+.nav-accordion-content.expanded {
+    max-height: 400px;
+    opacity: 1;
+    margin-top: 0.2rem;
+}
+
+.sub-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    padding-left: 0.5rem;
+}
+
+.sub-nav-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.sub-nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sub-nav-link.active {
+    color: #ffffff;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.empty-domain-notice {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.5rem 1rem 0.5rem 2rem;
+    font-weight: 600;
 }

@@ -34,9 +34,9 @@ const DashboardHome = () => {
     const pendingEvents = events.filter(e => e.status === 'Pending').length;
 
     const stats = [
-        { label: 'Total Events', value: totalEvents.toString(), trend: '+0%', isPositive: true },
-        { label: 'Active Attendees', value: activeAttendees.toString(), trend: '+0%', isPositive: true },
-        { label: 'Pending Events', value: pendingEvents.toString(), trend: '+0%', isPositive: true },
+        { label: 'Total Events', value: totalEvents.toString(), trend: '+0%', isPositive: true, icon: '📅', color: '#3b82f6' },
+        { label: 'Active Attendees', value: activeAttendees.toString(), trend: '+0%', isPositive: true, icon: '👥', color: '#10b981' },
+        { label: 'Pending Events', value: pendingEvents.toString(), trend: '+0%', isPositive: true, icon: '🕒', color: '#f59e0b' },
     ];
 
     const recentEvents = events.slice(0, 4).map(ev => ({
@@ -63,9 +63,14 @@ const DashboardHome = () => {
             <div className="stats-grid">
                 {stats.map((stat, idx) => (
                     <div key={idx} className="stat-card glass-panel">
-                        <h3 className="stat-label">{stat.label}</h3>
+                        <div className="stat-header">
+                            <span className="stat-icon-wrap" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>{stat.icon}</span>
+                            <h3 className="stat-label">{stat.label}</h3>
+                        </div>
                         <div className="stat-value-row">
-                            <span className="stat-value">{loading ? '...' : stat.value}</span>
+                            <span className="stat-value">
+                                {loading ? '...' : stat.value}
+                            </span>
                             <span className={`stat-trend ${stat.isPositive ? 'positive' : 'negative'}`}>
                                 {stat.trend}
                             </span>
@@ -86,14 +91,20 @@ const DashboardHome = () => {
                         </select>
                     </div>
                     <div className="chart-placeholder">
-                        {/* Simple CSS-based mock chart bars */}
-                        <div className="bar-group"><div className="bar" style={{ height: '40%' }}></div></div>
-                        <div className="bar-group"><div className="bar" style={{ height: '70%' }}></div></div>
-                        <div className="bar-group"><div className="bar" style={{ height: '50%' }}></div></div>
-                        <div className="bar-group"><div className="bar" style={{ height: '90%' }}></div></div>
-                        <div className="bar-group"><div className="bar" style={{ height: '65%' }}></div></div>
-                        <div className="bar-group"><div className="bar" style={{ height: '80%' }}></div></div>
-                        <div className="bar-group"><div className="bar" style={{ height: '100%' }}></div></div>
+                        {[
+                            { day: 'Sun', height: '40%' },
+                            { day: 'Mon', height: '70%' },
+                            { day: 'Tue', height: '50%' },
+                            { day: 'Wed', height: '90%' },
+                            { day: 'Thu', height: '65%' },
+                            { day: 'Fri', height: '80%' },
+                            { day: 'Sat', height: '100%' }
+                        ].map((data, idx) => (
+                            <div key={idx} className="bar-group">
+                                <div className="bar" style={{ height: data.height }}></div>
+                                <span className="bar-label">{data.day}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
