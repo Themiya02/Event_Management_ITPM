@@ -11,7 +11,6 @@ import './FoodDashboard.css';
 
 const ELECTRICITY_PRICE = 3000;
 const WATER_PRICE = 2000;
-//fix
 const FoodDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -397,64 +396,50 @@ const FoodDashboard = () => {
             {!!successMessage && <div className="food-alert food-alert-success">{successMessage}</div>}
 
             {activeTab === 'payments' ? (
-          <section className="food-payment-cards">
-            <div className="food-section-intro glass-panel">
-              <h2>Payment Details by Event</h2>
-              <p>These bank details are entered by admins. Use them to complete your transfer before submitting applications.</p>
-            </div>
-            <button onClick={logout} className="food-btn-outline">Logout</button>
-          </header>
-
-          {!!errorMessage && <div className="food-alert food-alert-error">{errorMessage}</div>}
-          {!!successMessage && <div className="food-alert food-alert-success">{successMessage}</div>}
-
-          {activeTab === 'payments' ? (
-            <section className="food-payment-cards">
-              <div className="food-section-intro glass-panel">
-                <h2>Payment Details by Event</h2>
-                <p>These bank details are entered by admins. Use them to complete your transfer before submitting applications.</p>
-              </div>
-            ) : (
-              <div className="food-payment-grid">
-                {eventsWithBankDetails.map((event) => (
-                  <article key={event._id} className="glass-panel food-payment-card">
-                    <div className="card-img-wrapper food-payment-card-img" style={{ height: '160px' }}>
-                      {event.imageUrl ? (
-                        <img src={event.imageUrl} alt={event.name} />
-                      ) : (
-                        <div className="placeholder-img">
-                          <span>{event.name.charAt(0)}</span>
+              <section className="food-payment-cards">
+                <div className="food-section-intro glass-panel">
+                  <h2>Payment Details by Event</h2>
+                  <p>These bank details are entered by admins. Use them to complete your transfer before submitting applications.</p>
+                </div>
+                <div className="food-payment-grid">
+                  {eventsWithBankDetails.map((event) => (
+                    <article key={event._id} className="glass-panel food-payment-card">
+                      <div className="card-img-wrapper food-payment-card-img" style={{ height: '160px' }}>
+                        {event.imageUrl ? (
+                          <img src={event.imageUrl} alt={event.name} />
+                        ) : (
+                          <div className="placeholder-img">
+                            <span>{event.name.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="food-payment-card-body">
+                        <div className="food-payment-card-head">
+                          <h3>{event.name}</h3>
+                          <button type="button" className="food-link-btn" onClick={() => openEvent(event)}>
+                            Open Event
+                          </button>
                         </div>
-                      )}
-                    </div>
-                    <div className="food-payment-card-body">
-                      <div className="food-payment-card-head">
-                        <h3>{event.name}</h3>
-                        <button type="button" className="food-link-btn" onClick={() => openEvent(event)}>
-                          Open Event
-                        </button>
-                      </div>
-                      <p className="food-payment-meta">
-                        {new Date(event.date).toLocaleDateString()} at {event.time}
-                      </p>
-                      <div className="food-payment-details">
-                        <p><span>Account Name</span><strong>{event.bankDetails?.accountName || '-'}</strong></p>
-                        <p><span>Bank Name</span><strong>{event.bankDetails?.bankName || '-'}</strong></p>
-                        <p><span>Account Number</span><strong>{event.bankDetails?.accountNumber || '-'}</strong></p>
-                        <p><span>Branch</span><strong>{event.bankDetails?.branch || '-'}</strong></p>
-                      </div>
-                      {event.bankDetails?.instructions && (
-                        <p className="food-payment-instructions">
-                          <span>Instructions:</span> {event.bankDetails.instructions}
+                        <p className="food-payment-meta">
+                          {new Date(event.date).toLocaleDateString()} at {event.time}
                         </p>
-                      )}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
-        ) : !selectedEvent ? (
+                        <div className="food-payment-details">
+                          <p><span>Account Name</span><strong>{event.bankDetails?.accountName || '-'}</strong></p>
+                          <p><span>Bank Name</span><strong>{event.bankDetails?.bankName || '-'}</strong></p>
+                          <p><span>Account Number</span><strong>{event.bankDetails?.accountNumber || '-'}</strong></p>
+                          <p><span>Branch</span><strong>{event.bankDetails?.branch || '-'}</strong></p>
+                        </div>
+                        {event.bankDetails?.instructions && (
+                          <p className="food-payment-instructions">
+                            <span>Instructions:</span> {event.bankDetails.instructions}
+                          </p>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : !selectedEvent ? (
           <>
             <section className="food-stats-grid">
               <article className="glass-panel food-stat-card">
@@ -525,24 +510,6 @@ const FoodDashboard = () => {
               </section>
             )}
 
-            {allMyBookings.length > 0 && (
-              <section className="glass-panel food-my-applications">
-                <h2>MY APPLICATIONS</h2>
-                <div className="food-application-list">
-                  {allMyBookings.slice(0, 5).map((booking) => (
-                    <div key={booking._id} className="food-application-item">
-                      <div>
-                        <h4>{booking.stallName}</h4>
-                        <p>{booking.eventName} - {new Date(booking.eventDate).toLocaleDateString()}</p>
-                      </div>
-                      <div className="food-event-footer">
-                        <small>{event.bookedStalls?.length || 0} stalls already booked</small>
-                        <strong>Open Booking</strong>
-                      </div>
-                    </article>
-                  ))}
-                </section>
-              )}
 
               {allMyBookings.length > 0 && (
                 <section className="glass-panel food-my-applications">
@@ -653,6 +620,7 @@ const FoodDashboard = () => {
                   )}
                 </div>
               </div>
+            </div>
 
               <div className="glass-panel food-form-panel">
                 <h3>Submit Stall Application</h3>

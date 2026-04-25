@@ -194,3 +194,44 @@ exports.aiSearchArtist = async (req, res) => {
     });
   }
 };
+
+exports.getArtistAnalytics = async (req, res) => {
+  try {
+    const artists = await Artist.find({}).lean();
+
+    const analyticsData = artists.map(artist => {
+      const ratings = artist.ratings || [];
+      const totalVotes = ratings.length;
+      const ratingBreakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      ratings.forEach(r => {
+        const val = Math.round(r.val);
+        if (val >= 1 && val <= 5) ratingBreakdown[val]++;
+      });
+      const avg = totalVotes > 0
+        ? ratings.reduce((sum, r) => sum + r.val, 0) / totalVotes
+        : 0;
+
+      return {
+        _id: artist._id,
+        name: artist.name,
+        image: artist.image,
+        averageRating: parseFloat(avg.toFixed(2)),
+        totalVotes,
+        ratingBreakdown
+      };
+    });
+
+    const totalArtists = analyticsData.length;
+    const totalRatings = analyticsData.reduce((sum, a) => sum + a.totalVotes, 0);
+    const topArtist = analyticsData.reduce((best, a) =>
+      a.averageRating > (best?.averageRating || 0) ? a : best, null
+    );
+
+    res.json({
+      summary: { totalArtists, totalRatings, topArtist },
+      artists: analyticsData.sort((a, b) => b.averageRating - a.averageRating)
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

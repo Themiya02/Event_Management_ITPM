@@ -34,6 +34,7 @@ import RatingAnalyze from './pages/artists/RatingAnalyze';
 import UserArtists from './pages/user/UserArtists';
 import UserRating from './pages/user/UserRating';
 import AdminArtistsView from './pages/admin/AdminArtistsView';
+import ArtistAnalyticalReport from './pages/artists/ArtistAnalyticalReport';
 import SponsorshipPackages from './pages/Sponsorship/SponsorshipPackages';
 import SponsorshipApply from './pages/Sponsorship/SponsorshipApply';
 import OTPVerification from './pages/Sponsorship/OTPVerification';
@@ -327,6 +328,17 @@ const AppContent = () => {
                       <RatingAnalyze />
                     </OrganizerLayout>
                   )}
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/admin/artists/analytics"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <ArtistAnalyticalReport />
+                  </AdminLayout>
                 </PrivateRoute>
               }
             />

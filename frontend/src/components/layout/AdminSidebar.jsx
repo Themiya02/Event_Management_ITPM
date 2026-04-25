@@ -12,6 +12,7 @@ const AdminSidebar = () => {
     // Default expand the domain the user is currently inside
     const [expandedAccordion, setExpandedAccordion] = useState(() => {
         if (currentPath.includes('/admin/events/')) return 'events';
+        if (currentPath.includes('/admin/artists') || currentPath.includes('/artists/analyze')) return 'artists';
         return null;
     });
 
@@ -57,7 +58,8 @@ const AdminSidebar = () => {
             icon: 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3',
             links: [
                 { label: 'Add/Manage Artists', path: '/admin/artists' },
-                { label: 'Ratings Analyze', path: '/artists/analyze' }
+                { label: 'Ratings Analyze', path: '/artists/analyze' },
+                { label: 'Analytical Report', path: '/admin/artists/analytics' }
             ]
         }
     ];
