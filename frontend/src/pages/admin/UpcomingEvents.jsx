@@ -12,13 +12,13 @@ const UpcomingEvents = () => {
 
     const getAuth = () => {
         const user = JSON.parse(localStorage.getItem('user'));
-        return { token: user?.token, apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5002' };
+        return { token: user?.token, apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000' };
     };
 
     const fetchEvents = async () => {
         try {
             const { token, apiUrl } = getAuth();
-            const res = await axios.get(`${apiUrl}/api/events/admin/pending`, {
+            const res = await axios.get(`${apiUrl}/api/events/admin/pending?summary=true`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setEvents(res.data);

@@ -32,7 +32,7 @@ const AdminEventReview = () => {
 
     const getAuth = () => {
         const user = JSON.parse(localStorage.getItem('user'));
-        return { token: user?.token, apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5002' };
+        return { token: user?.token, apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000' };
     };
 
     const handleCheckboxChange = async (field, currentValue) => {

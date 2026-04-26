@@ -56,6 +56,8 @@ router.put('/:id', protect, updateEvent);
 router.delete('/:id', protect, deleteEvent);
 
 router.post('/:id/book-stall', protect, bookFoodStall);
+router.patch('/:id/stall-booking/:bookingId', protect, updateStallBooking);
+router.delete('/:id/stall-booking/:bookingId', protect, deleteStallBooking);
 
 
 module.exports = router;

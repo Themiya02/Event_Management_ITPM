@@ -92,7 +92,7 @@ exports.getApprovedEvents = async (req, res) => {
     if (summary === 'true') {
       query = query.select('-imageUrl -bookedStalls -paymentReceipt -stallMapUrl');
     }
-    const events = await query.sort('-createdAt');
+    const events = await query.sort('-createdAt').lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -112,7 +112,7 @@ exports.getOrganizerEvents = async (req, res) => {
       query = query.select('-bookedStalls -description -imageUrl -paymentReceipt -stallMapUrl');
     }
     
-    const events = await query.sort('-createdAt');
+    const events = await query.sort('-createdAt').lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -175,7 +175,7 @@ exports.registerForEvent = async (req, res) => {
 
 exports.getMyRegistrations = async (req, res) => {
   try {
-    const registrations = await Registration.find({ user: req.user._id }).populate('event');
+    const registrations = await Registration.find({ user: req.user._id }).populate('event').lean();
     res.json(registrations);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -184,13 +184,14 @@ exports.getMyRegistrations = async (req, res) => {
 
 exports.getOrganizerRegistrations = async (req, res) => {
   try {
-    const events = await Event.find({ organizer: req.user._id }).select('_id');
+    const events = await Event.find({ organizer: req.user._id }).select('_id').lean();
     const eventIds = events.map(e => e._id);
     
     const registrations = await Registration.find({ event: { $in: eventIds } })
       .populate('event', 'name isPaid price')
       .populate('user', 'name email')
-      .sort('-registeredAt');
+      .sort('-registeredAt')
+      .lean();
       
     res.json(registrations);
   } catch (error) {
@@ -315,7 +316,8 @@ exports.getAdminPendingEvents = async (req, res) => {
     }
     const events = await query
       .populate('organizer', 'name email')
-      .sort('-createdAt');
+      .sort('-createdAt')
+      .lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -332,7 +334,8 @@ exports.getAdminRejectedEvents = async (req, res) => {
     }
     const events = await query
       .populate('organizer', 'name email')
-      .sort('-createdAt');
+      .sort('-createdAt')
+      .lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -347,12 +350,13 @@ exports.getAdminAllEvents = async (req, res) => {
     
     // If summary is requested, exclude heavy fields
     if (summary === 'true') {
-      query = query.select('-imageUrl -description -bookedStalls -paymentReceipt');
+      query = query.select('-imageUrl -description -bookedStalls -paymentReceipt -stallMapUrl');
     }
 
     const events = await query
       .populate('organizer', 'name email')
-      .sort('-createdAt');
+      .sort('-createdAt')
+      .lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -685,6 +689,36 @@ exports.updateStallBooking = async (req, res) => {
 
 
     await event.save();
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Food Stall: Delete own booking (only if Pending)
+exports.deleteStallBooking = async (req, res) => {
+  try {
+    const { id, bookingId } = req.params;
+    const event = await Event.findById(id);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const booking = event.bookedStalls.id(bookingId);
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
+    // Ownership Check
+    if (String(booking.vendorId) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Not authorized to delete this application' });
+    }
+
+    // Status Check - usually only allow deleting if still pending
+    if (booking.status !== 'Pending') {
+      return res.status(400).json({ message: 'Cannot delete application after it has been reviewed.' });
+    }
+
+    // Use pull to remove from sub-document array
+    event.bookedStalls.pull(bookingId);
+    await event.save();
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });

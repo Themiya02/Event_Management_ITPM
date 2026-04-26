@@ -68,4 +68,8 @@ const eventSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Optimization: Add indexes for frequently queried fields
+eventSchema.index({ organizer: 1 });
+eventSchema.index({ status: 1 });
+
 module.exports = mongoose.model('Event', eventSchema);

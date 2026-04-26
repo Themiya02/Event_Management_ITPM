@@ -17,7 +17,7 @@ const AdminRegister = () => {
         setLoading(true);
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
             const res = await axios.post(`${apiUrl}/api/auth/admin/register`, { name, email, password });
             
             // Save to localStorage

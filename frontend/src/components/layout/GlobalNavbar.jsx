@@ -56,7 +56,8 @@ const GlobalNavbar = () => {
                             location.pathname.startsWith('/user') ||
                             location.pathname.startsWith('/food') ||
                             location.pathname.startsWith('/sponsor') ||
-                            location.pathname.startsWith('/dashboard');
+                            location.pathname.startsWith('/dashboard') ||
+                            location.pathname.startsWith('/artists/analyze');
 
   const navbarStyle = {
     display: 'flex', 

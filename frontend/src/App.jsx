@@ -60,11 +60,12 @@ const AppContent = () => {
 
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-  // Identify dashboard-style pages that already have their own sidebars/topbars
   const isDashboardPage = location.pathname.startsWith('/dashboard') ||
     location.pathname.startsWith('/organizer') ||
     location.pathname.startsWith('/admin') ||
-    location.pathname.startsWith('/food');
+    location.pathname.startsWith('/food') ||
+    location.pathname.startsWith('/sponsor') ||
+    location.pathname.startsWith('/artists/analyze');
 
   // Show global navbar everywhere as requested, but keep footer logic for dashboards
   const showNavAndFooter = true;

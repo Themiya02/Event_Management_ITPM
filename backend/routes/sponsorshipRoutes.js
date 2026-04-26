@@ -8,6 +8,7 @@ const {
   applySponsorship,
   verifyOTP,
   resendOTP,
+  getMySponsorships,
   getAllSponsorships,
   updateStatus,
   deleteSponsorship
@@ -54,6 +55,9 @@ router.get('/packages', getPackages);
 router.post('/apply', upload.single('paymentSlip'), applySponsorship);
 router.post('/verify-otp', verifyOTP);
 router.post('/resend-otp', resendOTP);
+
+// Sponsor routes
+router.get('/my', protect, getMySponsorships);
 
 // Admin routes (protected)
 router.get('/all', protect, getAllSponsorships);

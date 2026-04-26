@@ -22,7 +22,7 @@ const AdminProfile = () => {
         try {
             const localUser = JSON.parse(localStorage.getItem('user'));
             const header = { headers: { Authorization: `Bearer ${localUser?.token}` } };
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
             // Fetch generic profile info
             const profileRes = await axios.get(`${apiUrl}/api/auth/profile`, header);
@@ -30,7 +30,7 @@ const AdminProfile = () => {
             setEditForm({ name: profileRes.data.name, phone: profileRes.data.phone || '', password: '', avatar: profileRes.data.avatar || '' });
 
             // Fetch events to calculate stats
-            const eventsRes = await axios.get(`${apiUrl}/api/events/admin/all`, header);
+            const eventsRes = await axios.get(`${apiUrl}/api/events/admin/all?summary=true`, header);
             const events = eventsRes.data;
             setStats({
                 totalEvents: events.length,
@@ -68,7 +68,7 @@ const AdminProfile = () => {
         try {
             const localUser = JSON.parse(localStorage.getItem('user'));
             const header = { headers: { Authorization: `Bearer ${localUser?.token}` } };
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
             const payload = { name: editForm.name, phone: editForm.phone, avatar: editForm.avatar };
             if (editForm.password) payload.password = editForm.password;

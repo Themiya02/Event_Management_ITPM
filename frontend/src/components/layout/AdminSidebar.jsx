@@ -32,7 +32,7 @@ const AdminSidebar = () => {
         if (!user) return;
         const fetchUnread = async () => {
             try {
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                 const res = await fetch(`${apiUrl}/api/messages/unread-count`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });

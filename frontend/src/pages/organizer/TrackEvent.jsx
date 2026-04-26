@@ -4,7 +4,7 @@ import axios from 'axios';
 import './TrackEvent.css';
 
 const TrackEvent = () => {
-    const { eventId } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
 
     const [events, setEvents] = useState([]);
@@ -14,7 +14,7 @@ const TrackEvent = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                 const response = await axios.get(`${apiUrl}/api/events/organizer?tracking=true`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -40,7 +40,7 @@ const TrackEvent = () => {
         return () => clearInterval(intervalId);
     }, []);
 
-    const [selectedEventId, setSelectedEventId] = useState(eventId || '');
+    const [selectedEventId, setSelectedEventId] = useState(id || '');
     const [eventData, setEventData] = useState(null);
 
     useEffect(() => {
