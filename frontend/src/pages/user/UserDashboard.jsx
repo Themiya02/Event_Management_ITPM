@@ -20,7 +20,7 @@ const UserDashboard = () => {
                 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
                 const [eventsRes, ticketsRes] = await Promise.all([
-                    axios.get(`${apiUrl}/api/events/approved`, { headers: { Authorization: `Bearer ${localUser?.token}` } }),
+                    axios.get(`${apiUrl}/api/events/approved?summary=true`, { headers: { Authorization: `Bearer ${localUser?.token}` } }),
                     axios.get(`${apiUrl}/api/events/my-registrations`, { headers: { Authorization: `Bearer ${localUser?.token}` } })
                 ]);
 

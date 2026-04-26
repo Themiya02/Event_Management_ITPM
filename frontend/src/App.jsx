@@ -66,10 +66,9 @@ const AppContent = () => {
     location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/food');
 
-  // Only show global navbar on public-style pages (Home, Artists, etc.) 
-  // and NOT on dashboard pages to avoid double headers.
-  // Show navbar on all pages as requested by the user
+  // Show global navbar everywhere as requested, but keep footer logic for dashboards
   const showNavAndFooter = true;
+  const showFooter = !isDashboardPage;
 
   return (
     <div className="app">
@@ -494,9 +493,7 @@ const AppContent = () => {
             path="/food/dashboard"
             element={
               <PrivateRoute allowedRoles={['food_stall']}>
-                <FoodStallLayout>
                   <FoodDashboard />
-                </FoodStallLayout>
               </PrivateRoute>
             }
           />
@@ -505,9 +502,7 @@ const AppContent = () => {
             path="/food/profile"
             element={
               <PrivateRoute allowedRoles={['food_stall']}>
-                <FoodStallLayout>
                   <FoodProfile />
-                </FoodStallLayout>
               </PrivateRoute>
             }
           />
@@ -539,7 +534,7 @@ const AppContent = () => {
           <Route path="/landing" element={<LandingPage />} />
         </Routes>
       </main>
-      {showNavAndFooter && !isDashboardPage && <GlobalFooter />}
+      {showNavAndFooter && showFooter && <GlobalFooter />}
     </div>
   );
 };
