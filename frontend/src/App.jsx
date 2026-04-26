@@ -40,6 +40,7 @@ import RatingAnalyze from './pages/artists/RatingAnalyze';
 import UserArtists from './pages/user/UserArtists';
 import UserRating from './pages/user/UserRating';
 import AdminArtistsView from './pages/admin/AdminArtistsView';
+import ArtistAnalyticalReport from './pages/artists/ArtistAnalyticalReport';
 import AdminSponsorships from './pages/admin/AdminSponsorships';
 import SponsorshipPackages from './pages/Sponsorship/SponsorshipPackages';
 import SponsorshipApply from './pages/Sponsorship/SponsorshipApply';
@@ -389,22 +390,53 @@ const AppContent = () => {
                   <AdminLayout>
                     <RatingAnalyze />
                   </AdminLayout>
-                ) : (
-                  <OrganizerLayout>
-                    <RatingAnalyze />
-                  </OrganizerLayout>
-                )}
-              </PrivateRoute>
-            }
-          />
+                </PrivateRoute>
+              }
+            />
 
-          {/* Public Domains */}
-          <Route path="/artists" element={<Artists />} />
-          <Route
-            path="/user/artists"
-            element={
-              <PrivateRoute>
-                <UserLayout>
+            <Route
+              path="/admin/artists/view"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <Artists />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/artists/analyze"
+              element={
+                <PrivateRoute allowedRoles={['admin', 'organizer']}>
+                  {user?.role === 'admin' ? (
+                    <AdminLayout>
+                      <RatingAnalyze />
+                    </AdminLayout>
+                  ) : (
+                    <OrganizerLayout>
+                      <RatingAnalyze />
+                    </OrganizerLayout>
+                  )}
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/admin/artists/analytics"
+              element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <ArtistAnalyticalReport />
+                  </AdminLayout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Public Domains */}
+            <Route path="/artists" element={<Artists />} />
+            <Route
+              path="/user/artists"
+              element={
+                <PrivateRoute>
                   <Artists />
                 </UserLayout>
               </PrivateRoute>

@@ -11,12 +11,12 @@ const AdminSidebar = () => {
     const { user, logout } = useAuth();
     const [expandedAccordion, setExpandedAccordion] = useState(null);
 
-    useEffect(() => {
-        if (currentPath.includes('/admin/events')) setExpandedAccordion('events');
-        else if (currentPath.includes('/admin/sponsorships')) setExpandedAccordion('sponsors');
-        else if (currentPath.includes('/admin/food')) setExpandedAccordion('food');
-        else if (currentPath.includes('/admin/artists')) setExpandedAccordion('artists');
-    }, [currentPath]);
+    // Default expand the domain the user is currently inside
+    const [expandedAccordion, setExpandedAccordion] = useState(() => {
+        if (currentPath.includes('/admin/events/')) return 'events';
+        if (currentPath.includes('/admin/artists') || currentPath.includes('/artists/analyze')) return 'artists';
+        return null;
+    });
 
     const toggleAccordion = (id) => {
         setExpandedAccordion(prev => (prev === id ? null : id));
@@ -102,8 +102,9 @@ const AdminSidebar = () => {
             icon: 'solar:music-library-bold-duotone',
             type: 'accordion',
             links: [
-                { label: 'Manage Artists', path: '/admin/artists' },
-                { label: 'Ratings Analyze', path: '/artists/analyze' }
+                { label: 'Add/Manage Artists', path: '/admin/artists' },
+                { label: 'Ratings Analyze', path: '/artists/analyze' },
+                { label: 'Analytical Report', path: '/admin/artists/analytics' }
             ]
         },
         {
