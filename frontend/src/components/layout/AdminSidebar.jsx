@@ -9,7 +9,6 @@ const AdminSidebar = () => {
     const currentPath = location.pathname;
     const navigate = useNavigate();
     const { user, logout } = useAuth();
-    const [expandedAccordion, setExpandedAccordion] = useState(null);
 
     // Default expand the domain the user is currently inside
     const [expandedAccordion, setExpandedAccordion] = useState(() => {

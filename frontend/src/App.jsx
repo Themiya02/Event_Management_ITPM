@@ -382,26 +382,7 @@ const AppContent = () => {
             }
           />
 
-          <Route
-            path="/artists/analyze"
-            element={
-              <PrivateRoute allowedRoles={['admin', 'organizer']}>
-                {user?.role === 'admin' ? (
-                  <AdminLayout>
-                    <RatingAnalyze />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
 
-            <Route
-              path="/admin/artists/view"
-              element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <Artists />
-                </PrivateRoute>
-              }
-            />
 
             <Route
               path="/artists/analyze"
@@ -437,11 +418,12 @@ const AppContent = () => {
               path="/user/artists"
               element={
                 <PrivateRoute>
-                  <Artists />
-                </UserLayout>
-              </PrivateRoute>
-            }
-          />
+                  <UserLayout>
+                    <Artists />
+                  </UserLayout>
+                </PrivateRoute>
+              }
+            />
 
           <Route
             path="/user/rating"
