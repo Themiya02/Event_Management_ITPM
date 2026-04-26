@@ -310,10 +310,33 @@ exports.getAdminRejectedEvents = async (req, res) => {
 // Admin: Get all events
 exports.getAdminAllEvents = async (req, res) => {
   try {
-    const events = await Event.find({})
+    const { summary } = req.query;
+    let query = Event.find({});
+    
+    // If summary is requested, exclude heavy fields like bookedStalls
+    if (summary === 'true') {
+      query = query.select('name date time location status imageUrl organizer createdAt stallMapUrl stallPricing bankDetails registrationsCount');
+    }
+
+    const events = await query
       .populate('organizer', 'name email')
       .sort('-createdAt');
     res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin: Get event statistics
+exports.getAdminStats = async (req, res) => {
+  try {
+    const [total, pending, approved, rejected] = await Promise.all([
+      Event.countDocuments({}),
+      Event.countDocuments({ status: { $regex: /^pending$/i } }),
+      Event.countDocuments({ status: { $regex: /^approved$/i } }),
+      Event.countDocuments({ status: { $regex: /^rejected$/i } })
+    ]);
+    res.json({ total, pending, approved, rejected });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

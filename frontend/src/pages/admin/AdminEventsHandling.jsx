@@ -15,26 +15,22 @@ const AdminEventsHandling = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                 const headers = { Authorization: `Bearer ${token}` };
 
-                const [pendingRes, approvedRes, allRes] = await Promise.all([
-                    axios.get(`${apiUrl}/api/events/admin/pending`, { headers }),
-                    axios.get(`${apiUrl}/api/events/approved`, { headers }),
-                    axios.get(`${apiUrl}/api/events/admin/all`, { headers }).catch(() => ({ data: [] })),
+                // Fetch stats and all events (summary mode) in parallel
+                const [statsRes, allRes] = await Promise.all([
+                    axios.get(`${apiUrl}/api/events/admin/stats`, { headers }),
+                    axios.get(`${apiUrl}/api/events/admin/all?summary=true`, { headers }),
                 ]);
 
-                const rejected = allRes.data.filter(e => e.status === 'Rejected');
+                const allData = allRes.data || [];
+                setStats(statsRes.data);
+                setAllEvents(allData);
 
-                setStats({
-                    pending: pendingRes.data.length,
-                    approved: approvedRes.data.length,
-                    rejected: rejected.length,
-                    total: allRes.data.length
-                });
-                setRecentEvents(pendingRes.data.slice(0, 4));
-                setAllEvents(allRes.data);
-                setApprovedEventsList(approvedRes.data);
+                // Derive other lists locally to avoid extra network requests
+                setRecentEvents(allData.filter(e => e.status.toLowerCase() === 'pending').slice(0, 4));
+                setApprovedEventsList(allData.filter(e => e.status.toLowerCase() === 'approved'));
             } catch (err) {
                 console.error('Failed to fetch event data', err);
             } finally {

@@ -407,7 +407,7 @@
     50% { box-shadow: 0 20px 42px rgba(15, 23, 42, 0.32); }
 }
 
-/* Stall map + pricing modal ΓÇö light white + blue (portaled to body) */
+/* Stall map + pricing modal — light white + blue (portaled to body) */
 .stall-map-modal-overlay {
     position: fixed;
     inset: 0;
@@ -672,7 +672,7 @@
 }
 
 .stall-map-modal-file-label::before {
-    content: 'Γåæ';
+    content: '↑';
     font-size: 0.95rem;
     opacity: 0.95;
 }
@@ -760,7 +760,7 @@
     box-shadow: 0 10px 26px rgba(37, 99, 235, 0.42);
 }
 
-/* ΓÇöΓÇö Food stall admin pages: white + blue (Map Upload + Bookings Tracker) ΓÇöΓÇö */
+/* —— Food stall admin pages: white + blue (Map Upload + Bookings Tracker) —— */
 .food-stall-map-page .food-stall-map-page-title,
 .food-stall-bookings-page .food-stall-bookings-page-title {
     color: #2563eb;
@@ -835,7 +835,7 @@
     color: #ea4335;
 }
 
-/* Food Stall Map Upload ΓÇö loading skeletons */
+/* Food Stall Map Upload — loading skeletons */
 @keyframes food-stall-skeleton-shimmer {
     0% {
         background-position: 200% 0;
@@ -1133,7 +1133,7 @@
     border-color: #cbd5e1;
 }
 
-/* ΓÇöΓÇö Food Stall Bookings Tracker: detail view + vendor list ΓÇöΓÇö */
+/* —— Food Stall Bookings Tracker: detail view + vendor list —— */
 .food-stall-bookings-detail {
     animation: stallMapShellIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1489,7 +1489,7 @@
     display: block;
 }
 
-/* Receipt lightbox ΓÇö keep dark backdrop for contrast; high z-index */
+/* Receipt lightbox — keep dark backdrop for contrast; high z-index */
 .food-stall-bookings-receipt-overlay {
     position: fixed;
     inset: 0;

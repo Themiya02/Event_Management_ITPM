@@ -15,6 +15,7 @@ const {
   getAdminPendingEvents,
   getAdminRejectedEvents,
   getAdminAllEvents,
+  getAdminStats,
   updateApprovalCheckbox,
   adminDecideEvent,
   uploadStallMap,
@@ -44,6 +45,7 @@ const { admin } = require('../middleware/auth');
 router.get('/admin/pending', protect, admin, getAdminPendingEvents);
 router.get('/admin/rejected', protect, admin, getAdminRejectedEvents);
 router.get('/admin/all', protect, admin, getAdminAllEvents);
+router.get('/admin/stats', protect, admin, getAdminStats);
 router.patch('/admin/:id/approval', protect, admin, updateApprovalCheckbox);
 router.patch('/admin/:id/decide', protect, admin, adminDecideEvent);
 router.patch('/admin/:id/stall-map', protect, admin, uploadStallMap);

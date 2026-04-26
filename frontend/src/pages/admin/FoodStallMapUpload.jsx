@@ -24,7 +24,7 @@ const FoodStallMapUpload = () => {
         try {
             const { token, apiUrl } = getAuth();
             // Fetch all events, including pending (upcoming) ones
-            const res = await axios.get(`${apiUrl}/api/events/admin/all`, {
+            const res = await axios.get(`${apiUrl}/api/events/admin/all?summary=true`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // Show approved and pending events
@@ -333,7 +333,7 @@ const FoodStallMapUpload = () => {
                       </div>
                   ) : allEvents.length === 0 ? (
                       <div className="glass-panel empty-state">
-                          <div className="empty-big-icon">≡ƒÄë</div>
+                          <div className="empty-big-icon">🎟️</div>
                           <h3>No Active Events</h3>
                           <p>There are currently no upcoming approved or pending events to upload maps for.</p>
                       </div>
@@ -364,7 +364,7 @@ const FoodStallMapUpload = () => {
                                           
                                           <div className="card-details">
                                               <div className="detail-item">
-                                                  <span>≡ƒôà</span> {month} {day}, {ev.time}
+                                                  <span>📅</span> {month} {day}, {ev.time}
                                               </div>
                                               <div className="detail-item" style={{ marginBottom: '1rem' }}>
                                                   <span className="food-stall-loc-pin-wrap" aria-hidden>
@@ -379,7 +379,7 @@ const FoodStallMapUpload = () => {
                                               </div>
                                               {ev.stallMapUrl ? (
                                                   <div className="food-stall-map-map-status food-stall-map-map-status--ok">
-                                                      Γ£ô Map uploaded
+                                                      ✓ Map uploaded
                                                   </div>
                                               ) : (
                                                   <div className="food-stall-map-map-status food-stall-map-map-status--missing">
@@ -522,7 +522,7 @@ const FoodStallMapUpload = () => {
                                           onClick={closeStallMapModal}
                                           disabled={mapModalSaving}
                                       >
-                                          <span aria-hidden>├ù</span>
+                                          <span aria-hidden>×</span>
                                       </button>
                                   </header>
   
@@ -581,7 +581,7 @@ const FoodStallMapUpload = () => {
                                               <span className="stall-map-modal-file-name">New file: {mapModal.pendingFileName}</span>
                                           )}
                                           {!mapModal.pendingFileName && mapModal.existingMapUrl && (
-                                              <span className="stall-map-modal-file-name">Using saved map ΓÇö choose a file to replace</span>
+                                              <span className="stall-map-modal-file-name">Using saved map — choose a file to replace</span>
                                           )}
                                       </div>
                                       {(mapModal.pendingMapUrl || mapModal.existingMapUrl) && (
@@ -609,7 +609,7 @@ const FoodStallMapUpload = () => {
                                           onClick={handleSaveStallMapModal}
                                           disabled={mapModalSaving}
                                       >
-                                          {mapModalSaving ? 'SavingΓÇª' : 'Save changes'}
+                                          {mapModalSaving ? 'Saving...' : 'Save changes'}
                                       </button>
                                   </footer>
                               </div>
