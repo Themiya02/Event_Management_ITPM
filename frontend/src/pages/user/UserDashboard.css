@@ -70,19 +70,19 @@
   letter-spacing: 0.5px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .reg-badge.open {
   background: rgba(167, 139, 250, 0.8);
   color: white;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .reg-badge.required {
   background: rgba(244, 63, 94, 0.8);
   color: white;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .card-content {
@@ -147,39 +147,142 @@
 
 /* DUAL TOGGLE UI */
 .feed-toggle-container {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    padding: 0.8rem;
-    border-radius: 99px;
-    margin-bottom: 2rem;
-    background: rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.8rem;
+  border-radius: 99px;
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .toggle-btn {
-    flex: 1;
-    max-width: 300px;
-    padding: 1rem 2rem;
-    border-radius: 99px;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  flex: 1;
+  max-width: 300px;
+  padding: 1rem 2rem;
+  border-radius: 99px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .toggle-btn:hover {
-    color: var(--primary-color);
-    background: rgba(255, 255, 255, 0.4);
+  color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .toggle-btn.active {
-    background: var(--primary-gradient);
-    color: white;
-    box-shadow: 0 8px 20px rgba(167, 139, 250, 0.4);
-    transform: scale(1.05);
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: 0 8px 20px rgba(167, 139, 250, 0.4);
+  transform: scale(1.05);
+}
+
+/* Search Hero Section */
+.search-hero-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding: 3.5rem 1.5rem;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+  text-align: center;
+}
+
+.hero-welcome-title {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hero-welcome-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 2rem 0;
+  font-size: 1.1rem;
+}
+
+/* Search Wrapper Styles */
+.dashboard-search-wrapper {
+  background: white;
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  border-radius: 50px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+}
+
+.dashboard-search-wrapper:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.search-label {
+  padding: 0 1.2rem;
+  color: #1e40af;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.search-input-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+.search-input-group input {
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 10px 0;
+  font-size: 1rem;
+  color: #1f2937;
+  background: transparent;
+}
+
+.search-input-group input::placeholder {
+  color: #9ca3af;
+}
+
+.search-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-left: 8px;
+}
+
+.search-btn:hover {
+  background: #1d4ed8;
+}
+
+.search-btn svg {
+  width: 20px;
+  height: 20px;
 }

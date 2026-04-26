@@ -16,7 +16,7 @@ const SponsorDashboard = () => {
       icon: '🗓️',
       title: 'My Events',
       desc: 'View and manage all your created events',
-      action: () => {},
+      action: () => navigate('/home'),
       label: 'View Events',
       color: '#6366f1'
     },
@@ -41,34 +41,14 @@ const SponsorDashboard = () => {
       icon: '🔍',
       title: 'Browse Events',
       desc: 'Discover and join upcoming events',
-      action: () => {},
+      action: () => navigate('/home'),
       label: 'Browse',
       color: '#60a5fa'
     }
   ];
 
   return (
-    <div className="dash-page">
-      <div className="dash-bg">
-        <div className="dash-orb dash-orb-1"></div>
-        <div className="dash-orb dash-orb-2"></div>
-        <div className="dash-orb dash-orb-3"></div>
-      </div>
-
-      <nav className="dash-nav">
-        <div className="dash-nav-brand">
-          <span className="dash-brand-icon">✦</span>
-          <span className="dash-brand-name">EventHub</span>
-        </div>
-        <div className="dash-nav-right">
-          <div className="dash-user-pill">
-            <div className="dash-avatar">{user?.name?.[0]?.toUpperCase()}</div>
-            <span className="dash-user-name">{user?.name}</span>
-          </div>
-          <button className="dash-logout-btn" onClick={handleLogout}>Logout</button>
-        </div>
-      </nav>
-
+    <SponsorLayout>
       <div className="dash-container">
         <div className="dash-welcome">
           <div className="dash-welcome-text">
@@ -132,7 +112,7 @@ const SponsorDashboard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </SponsorLayout>
   );
 };
 

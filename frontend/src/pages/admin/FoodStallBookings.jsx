@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Icon } from '@iconify/react';
 import { createPortal } from 'react-dom';
@@ -108,7 +108,7 @@ const FoodStallBookings = () => {
                 <>
                     {events.length === 0 ? (
                         <div className="glass-panel empty-state">
-                            <div className="empty-big-icon">🍔</div>
+                            <div className="empty-big-icon">≡ƒìö</div>
                             <h3>No mapped events</h3>
                             <p>You haven&apos;t uploaded a stall map to any upcoming events yet.</p>
                         </div>
@@ -149,7 +149,7 @@ const FoodStallBookings = () => {
 
                                             <div className="card-details">
                                                 <div className="detail-item">
-                                                    <span>📅</span> {month} {day}, {ev.time}
+                                                    <span>≡ƒôà</span> {month} {day}, {ev.time}
                                                 </div>
                                                 <div className="detail-item">
                                                     <span className="food-stall-loc-pin-wrap" aria-hidden>
@@ -167,7 +167,7 @@ const FoodStallBookings = () => {
                                                         {ev.bookedStalls?.length || 0} booked stalls
                                                     </span>
                                                     <span className="food-stall-bookings-view-details-btn">
-                                                        View details →
+                                                        View details ΓåÆ
                                                     </span>
                                                 </div>
                                             </div>
@@ -185,11 +185,11 @@ const FoodStallBookings = () => {
                         className="food-stall-bookings-back-btn"
                         onClick={() => setSelectedEvent(null)}
                     >
-                        ← Back to event list
+                        ΓåÉ Back to event list
                     </button>
 
                     <div className="glass-panel food-stall-bookings-panel">
-                        <h2 className="food-stall-bookings-map-heading">{selectedEvent.name} — stall placements</h2>
+                        <h2 className="food-stall-bookings-map-heading">{selectedEvent.name} ΓÇö stall placements</h2>
                         <p className="food-stall-bookings-map-lead">
                             Visual overview of all locked-in container coordinates for this blueprint.
                         </p>
@@ -242,9 +242,9 @@ const FoodStallBookings = () => {
                                                 <br />
                                                 <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
                                                     Utilities:{' '}
-                                                    {stall.needsElectricity ? '🔌 Electricity' : ''}{' '}
+                                                    {stall.needsElectricity ? '≡ƒöî Electricity' : ''}{' '}
                                                     {stall.needsElectricity && stall.needsWater ? '|' : ''}{' '}
-                                                    {stall.needsWater ? '💧 Water' : ''}
+                                                    {stall.needsWater ? '≡ƒÆº Water' : ''}
                                                     {!stall.needsElectricity && !stall.needsWater && 'None'}
                                                 </span>
                                                 {stall.paymentReceipt && (
@@ -263,7 +263,7 @@ const FoodStallBookings = () => {
                                         </div>
                                         <div className="food-stall-bookings-vendor-side">
                                             <p className="food-stall-bookings-price">
-                                                Rs {stall.totalPrice?.toLocaleString() ?? '—'}
+                                                Rs {stall.totalPrice?.toLocaleString() ?? 'ΓÇö'}
                                             </p>
                                             <p className="food-stall-bookings-coords">
                                                 {stall.x != null && stall.y != null
@@ -329,7 +329,7 @@ const FoodStallBookings = () => {
                                 onClick={() => setViewingImage(null)}
                                 aria-label="Close"
                             >
-                                ×
+                                ├ù
                             </button>
                             <img
                                 className="food-stall-bookings-receipt-img"
@@ -344,5 +344,5 @@ const FoodStallBookings = () => {
         </div>
     );
 };
-
+//fix
 export default FoodStallBookings;

@@ -6,13 +6,14 @@ import './EventsList.css';
 const EventsList = () => {
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to permanently delete this event?")) {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 await axios.delete(`${apiUrl}/api/events/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -29,7 +30,7 @@ const EventsList = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
                 const response = await axios.get(`${apiUrl}/api/events/organizer`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -50,6 +51,10 @@ const EventsList = () => {
         fetchEvents();
     }, []);
 
+    const filteredEvents = events.filter(e => 
+        e.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="events-list-page animation-fade-in">
             <div className="events-header">
@@ -57,10 +62,31 @@ const EventsList = () => {
                     <h1 className="page-title">Your Events</h1>
                     <p className="page-subtitle">Manage all your previously created events here.</p>
                 </div>
-                <button className="btn btn-primary create-btn" onClick={() => navigate('/organizer/create-event')}>
-                    <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                    New Event
-                </button>
+
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ position: 'relative' }}>
+                        <input 
+                            type="text" 
+                            placeholder="Search by event name..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{
+                                padding: '0.6rem 1rem 0.6rem 2.5rem',
+                                borderRadius: '50px',
+                                border: '1px solid var(--border-color)',
+                                background: 'rgba(255,255,255,0.05)',
+                                color: 'var(--text-color)',
+                                width: '250px'
+                            }}
+                        />
+                        <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+                    </div>
+
+                    <button className="btn btn-primary create-btn" onClick={() => navigate('/organizer/create-event')}>
+                        <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                        New Event
+                    </button>
+                </div>
             </div>
 
             <div className="glass-panel table-container">
@@ -75,7 +101,7 @@ const EventsList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {events.length > 0 ? events.map(event => (
+                        {filteredEvents.length > 0 ? filteredEvents.map(event => (
                             <tr key={event.id}>
                                 <td className="font-semibold event-name-col">{event.name}</td>
                                 <td className="text-muted">{event.date}</td>
@@ -102,7 +128,7 @@ const EventsList = () => {
                             </tr>
                         )) : (
                             <tr>
-                                <td colSpan="6" className="empty-state">No events found. Click + New Event to start!</td>
+                                <td colSpan="6" className="empty-state">{searchTerm ? 'No matching events found.' : 'No events found. Click + New Event to start!'}</td>
                             </tr>
                         )}
                     </tbody>
