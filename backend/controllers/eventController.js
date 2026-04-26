@@ -431,11 +431,13 @@ exports.deleteEvent = async (req, res) => {
 // Admin: Upload stall map for an event
 exports.uploadStallMap = async (req, res) => {
   try {
-    const { stallMapUrl } = req.body;
+    const { stallMapUrl, stallPricing } = req.body;
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
     
-    event.stallMapUrl = stallMapUrl;
+    if (stallMapUrl) event.stallMapUrl = stallMapUrl;
+    if (stallPricing) event.stallPricing = stallPricing;
+    
     await event.save();
     res.json(event);
   } catch (error) {
@@ -495,8 +497,8 @@ exports.bookFoodStall = async (req, res) => {
     if (!normalizedStallLocation || !stallName || !paymentReceipt) {
       return res.status(400).json({ message: 'Stall location, stall name, and payment receipt are required.' });
     }
-    if (!/^[a-zA-Z]$/.test(normalizedStallLocation)) {
-      return res.status(400).json({ message: 'Stall location must be exactly one single letter (e.g., A, B, C).' });
+    if (!/^[a-zA-Z0-9]+$/.test(normalizedStallLocation)) {
+      return res.status(400).json({ message: 'Stall location must be alphanumeric (e.g., A1, B2).' });
     }
     if (stallName.trim().length < 5) {
       return res.status(400).json({ message: 'Stall name must have at least 5 letters.' });
@@ -594,8 +596,8 @@ exports.updateStallBooking = async (req, res) => {
 
     // Validation (reuse same rules as create)
     const normalizedStallLocation = String(stallLocation || '').trim();
-    if (normalizedStallLocation && !/^[a-zA-Z]$/.test(normalizedStallLocation)) {
-      return res.status(400).json({ message: 'Stall location must be exactly one single letter (e.g., A, B, C).' });
+    if (normalizedStallLocation && !/^[a-zA-Z0-9]+$/.test(normalizedStallLocation)) {
+      return res.status(400).json({ message: 'Stall location must be alphanumeric (e.g., A1, B2).' });
     }
     if (stallName && stallName.trim().length < 5) {
       return res.status(400).json({ message: 'Stall name must have at least 5 letters.' });
