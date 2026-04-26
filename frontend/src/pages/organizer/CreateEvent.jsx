@@ -96,7 +96,7 @@ const CreateEvent = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
                 const payload = {
                     name: formData.eventTitle,
@@ -196,6 +196,11 @@ const CreateEvent = () => {
                                 <label>Event Title</label>
                                 <input type="text" name="eventTitle" value={formData.eventTitle} onChange={handleChange} placeholder="Give it a catchy name!" className={errors.eventTitle ? 'input-error' : ''} />
                                 {errors.eventTitle && <span className="error-text">{errors.eventTitle}</span>}
+                            </div>
+                            <div className="form-group">
+                                <label>Main Artist / Performer Name</label>
+                                <input type="text" name="artistName" value={formData.artistName} onChange={handleChange} placeholder="e.g. DJ Snake / Local Band" className={errors.artistName ? 'input-error' : ''} />
+                                {errors.artistName && <span className="error-text">{errors.artistName}</span>}
                             </div>
                             <div className="form-group">
                                 <label>Event Description</label>

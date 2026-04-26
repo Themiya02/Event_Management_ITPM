@@ -11,18 +11,19 @@ const UserDashboard = () => {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('register'); // 'register' or 'open'
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
                 const localUser = JSON.parse(localStorage.getItem('user'));
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+
                 const [eventsRes, ticketsRes] = await Promise.all([
                     axios.get(`${apiUrl}/api/events/approved`, { headers: { Authorization: `Bearer ${localUser?.token}` } }),
                     axios.get(`${apiUrl}/api/events/my-registrations`, { headers: { Authorization: `Bearer ${localUser?.token}` } })
                 ]);
-                
+
                 setEvents(eventsRes.data);
                 setTickets(ticketsRes.data);
             } catch (error) {
@@ -37,23 +38,48 @@ const UserDashboard = () => {
 
     if (loading) return <div className="loading-state">Loading Global Event Feed...</div>;
 
+    const filteredEvents = events.filter(e => {
+        const matchesSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesTab = activeTab === 'register' ? e.isOpenRegistration : !e.isOpenRegistration;
+        return matchesSearch && matchesTab;
+    });
+
     const totalEvents = events.length;
-    const openEvents = events.filter(e => !e.isOpenRegistration).length;
+    const openEventsCount = events.filter(e => !e.isOpenRegistration).length;
     const mySeats = tickets.length;
 
     const stats = [
         { label: 'Active Campus Events', value: totalEvents, trend: 'Live', isPositive: true },
         { label: 'My Registered Events', value: mySeats, trend: mySeats > 0 ? 'Confirmed' : 'None yet', isPositive: mySeats > 0 },
-        { label: 'Open Entry Events', value: openEvents, trend: 'Free walk-ins', isPositive: true },
+        { label: 'Open Entry Events', value: openEventsCount, trend: 'Free walk-ins', isPositive: true },
     ];
 
     return (
         <div className="user-dashboard animation-fade-in">
-            <div className="header-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <div>
-                    <h1 className="page-title" style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>Welcome back, {user?.name?.split(' ')[0] || 'Student'}! 👋</h1>
-                    <p className="page-subtitle" style={{ color: 'var(--text-muted)' }}>Discover exactly what's happening around campus today.</p>
+            <div className="search-hero-section">
+                <h1 className="hero-welcome-title">Welcome back, {user?.name?.split(' ')[0] || 'Student'}! 👋</h1>
+                <p className="hero-welcome-subtitle">Discover exactly what's happening around campus today.</p>
+
+                <div className="dashboard-search-wrapper">
+                    <div className="search-label">Events</div>
+                    <div className="search-input-group">
+                        <input
+                            type="text"
+                            placeholder="I'm looking for events, artists, or locations..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <button className="search-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
                 </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
                 <button className="btn-sm-primary" onClick={() => navigate('/user/tickets')} style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', fontSize: '1rem', fontWeight: 600, background: 'var(--primary-gradient)', border: 'none', color: '#fff', cursor: 'pointer', boxShadow: '0 4px 15px rgba(167, 139, 250, 0.4)' }}>
                     🎟️ My Registered Events
                 </button>
@@ -79,13 +105,13 @@ const UserDashboard = () => {
 
             {/* DUAL TOGGLE FEED CHANGER */}
             <div className="feed-toggle-container glass-panel">
-                <button 
+                <button
                     className={`toggle-btn ${activeTab === 'register' ? 'active' : ''}`}
                     onClick={() => setActiveTab('register')}
                 >
                     🎫 Registration Events
                 </button>
-                <button 
+                <button
                     className={`toggle-btn ${activeTab === 'open' ? 'active' : ''}`}
                     onClick={() => setActiveTab('open')}
                 >
@@ -93,20 +119,20 @@ const UserDashboard = () => {
                 </button>
             </div>
 
-            <div className="feed-header" style={{ marginBottom: '1.5rem', paddingBottom: '1rem' }}>
+            <div className="feed-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
                 <h2 style={{ fontSize: '1.5rem', margin: 0 }}>
                     {activeTab === 'register' ? 'Upcoming Registration Events' : 'Upcoming Open Events'}
                 </h2>
             </div>
 
-            {events.filter(ev => activeTab === 'register' ? ev.isOpenRegistration : !ev.isOpenRegistration).length === 0 ? (
+            {filteredEvents.length === 0 ? (
                 <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem' }}>
-                    <h2>No events found in this category! 🎉</h2>
-                    <p>Check back later when organizers publish new events here.</p>
+                    <h2>No events found! 🔍</h2>
+                    <p>Try searching for a different event name or check back later.</p>
                 </div>
             ) : (
                 <div className="events-grid">
-                    {events.filter(ev => activeTab === 'register' ? ev.isOpenRegistration : !ev.isOpenRegistration).map(ev => {
+                    {filteredEvents.map(ev => {
                         const dateObj = new Date(ev.date);
                         const month = dateObj.toLocaleString('default', { month: 'short' });
                         const day = dateObj.getDate();
@@ -125,13 +151,14 @@ const UserDashboard = () => {
                                         {ev.isOpenRegistration ? 'Register Required' : 'Register Not Required'}
                                     </span>
                                 </div>
-                                
+
                                 <div className="card-content">
                                     <h3>{ev.name}</h3>
                                     <div className="org-name">
                                         <span>👤 {ev.organizer?.name || 'Local Organizer'}</span>
+                                        {ev.artistName && <span style={{ marginLeft: '1rem' }}>🎤 {ev.artistName}</span>}
                                     </div>
-                                    
+
                                     <div className="card-details">
                                         <div className="detail-item">
                                             <span>📅</span> {month} {day}, {ev.time}
@@ -145,7 +172,7 @@ const UserDashboard = () => {
                                     </div>
 
                                     <div className="card-actions">
-                                        <button 
+                                        <button
                                             className="btn-view-event"
                                             onClick={() => navigate(`/dashboard/event/${ev._id}`)}
                                         >

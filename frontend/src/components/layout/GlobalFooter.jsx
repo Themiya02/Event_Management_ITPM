@@ -1,7 +1,15 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import './GlobalFooter.css';
 
 const GlobalFooter = () => {
+  const location = useLocation();
+  
+  // Explicitly hide footer on My Tickets page as requested
+  if (location.pathname === '/user/tickets' || location.pathname.startsWith('/user/tickets/')) {
+    return null;
+  }
+
   return (
     <footer className="global-footer glass-panel">
       <div className="footer-content">
@@ -10,7 +18,6 @@ const GlobalFooter = () => {
           <p className="footer-tagline">Making your campus events unforgettable.</p>
           
           <div className="social-links">
-            {/* Using simple SVG or Emoji as placeholders for icons to avoid dependencies */}
             <a href="#" className="social-icon" aria-label="Facebook">📘</a>
             <a href="#" className="social-icon" aria-label="Twitter">🐦</a>
             <a href="#" className="social-icon" aria-label="Instagram">📸</a>

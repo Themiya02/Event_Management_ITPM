@@ -9,22 +9,28 @@ import PrivateRoute from './components/PrivateRoute';
 import UserLayout from './components/layout/UserLayout';
 import OrganizerLayout from './components/layout/OrganizerLayout';
 import AdminLayout from './components/layout/AdminLayout';
+import SponsorLayout from './components/layout/SponsorLayout';
+import FoodStallLayout from './components/layout/FoodStallLayout';
 import DashboardHome from './pages/organizer/DashboardHome';
 import CreateEvent from './pages/organizer/CreateEvent';
 import EditEvent from './pages/organizer/EditEvent';
 import TrackEvent from './pages/organizer/TrackEvent';
 import EventsList from './pages/organizer/EventsList';
 import Settings from './pages/organizer/Settings';
-import RegisteredUsers from './pages/organizer/RegisteredUsers';
 import OrganizerArtists from './pages/organizer/OrganizerArtists';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import RegisteredUsers from './pages/organizer/RegisteredUsers';
+import Messages from './pages/chat/Messages';
 import UpcomingEvents from './pages/admin/UpcomingEvents';
 import ApprovedEvents from './pages/admin/ApprovedEvents';
 import RejectedEvents from './pages/admin/RejectedEvents';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminEventReview from './pages/admin/AdminEventReview';
+import AdminEventsHandling from './pages/admin/AdminEventsHandling';
 import SponsorDashboard from './pages/sponsor/SponsorDashboard';
+import SponsorProfile from './pages/sponsor/SponsorProfile';
 import FoodDashboard from './pages/food/FoodDashboard';
+import FoodProfile from './pages/food/FoodProfile';
 import FoodStallMapUpload from './pages/admin/FoodStallMapUpload';
 import FoodStallBookings from './pages/admin/FoodStallBookings';
 import AddArtists from './pages/artists/AddArtists';
@@ -35,6 +41,7 @@ import UserArtists from './pages/user/UserArtists';
 import UserRating from './pages/user/UserRating';
 import AdminArtistsView from './pages/admin/AdminArtistsView';
 import ArtistAnalyticalReport from './pages/artists/ArtistAnalyticalReport';
+import AdminSponsorships from './pages/admin/AdminSponsorships';
 import SponsorshipPackages from './pages/Sponsorship/SponsorshipPackages';
 import SponsorshipApply from './pages/Sponsorship/SponsorshipApply';
 import OTPVerification from './pages/Sponsorship/OTPVerification';
@@ -42,6 +49,7 @@ import RoleRoute from './components/RoleRoute';
 
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import Home from './pages/Home';
+import LandingPage from './pages/LandingPage';
 import GlobalNavbar from './components/layout/GlobalNavbar';
 import GlobalFooter from './components/layout/GlobalFooter';
 import './App.css';
@@ -49,258 +57,338 @@ import './App.css';
 const AppContent = () => {
   const location = useLocation();
   const { user } = useAuth();
-  
+
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-  // Nav/footer only after login (no guest navbar / guest home flow).
-  const showNavAndFooter = !isAuthPage && user;
+
+  // Identify dashboard-style pages that already have their own sidebars/topbars
+  const isDashboardPage = location.pathname.startsWith('/dashboard') ||
+    location.pathname.startsWith('/organizer') ||
+    location.pathname.startsWith('/admin') ||
+    location.pathname.startsWith('/food');
+
+  // Only show global navbar on public-style pages (Home, Artists, etc.) 
+  // and NOT on dashboard pages to avoid double headers.
+  // Show navbar on all pages as requested by the user
+  const showNavAndFooter = true;
 
   return (
     <div className="app">
       {showNavAndFooter && <GlobalNavbar />}
       <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
         <Routes>
-          <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-          <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
+          <Route path="/login" element={
+            user ? (
+              user.role === 'admin' ? <Navigate to="/admin/dashboard" replace /> :
+              user.role === 'organizer' ? <Navigate to="/organizer/dashboard" replace /> :
+              user.role === 'sponsor' ? <Navigate to="/sponsor/dashboard" replace /> :
+              user.role === 'food_stall' ? <Navigate to="/food/dashboard" replace /> :
+              <Navigate to="/home" replace />
+            ) : <Login />
+          } />
+          <Route path="/register" element={
+            user ? (
+              user.role === 'admin' ? <Navigate to="/admin/dashboard" replace /> :
+              user.role === 'organizer' ? <Navigate to="/organizer/dashboard" replace /> :
+              user.role === 'sponsor' ? <Navigate to="/sponsor/dashboard" replace /> :
+              user.role === 'food_stall' ? <Navigate to="/food/dashboard" replace /> :
+              <Navigate to="/home" replace />
+            ) : <Register />
+          } />
 
 
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <UserLayout>
-                    <UserDashboard />
-                  </UserLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <UserLayout>
+                  <UserDashboard />
+                </UserLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/dashboard/event/:id"
-              element={
-                <PrivateRoute>
-                  <UserLayout>
-                    <EventView />
-                  </UserLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/dashboard/event/:id"
+            element={
+              <PrivateRoute>
+                <UserLayout>
+                  <EventView />
+                </UserLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/user/tickets"
-              element={
-                <PrivateRoute>
-                  <UserLayout>
-                    <MyTickets />
-                  </UserLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/user/tickets"
+            element={
+              <PrivateRoute>
+                <UserLayout>
+                  <MyTickets />
+                </UserLayout>
+              </PrivateRoute>
+            }
+          />
 
-            {/* New Organizer Routes */}
-            <Route
-              path="/organizer/dashboard"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <DashboardHome />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
+          {/* New Organizer Routes */}
+          <Route
+            path="/organizer/dashboard"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <DashboardHome />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/organizer/profile"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <OrganizerProfile />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/organizer/profile"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <OrganizerProfile />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/organizer/create-event"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <CreateEvent />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/organizer/create-event"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <CreateEvent />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/organizer/edit-event/:eventId"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <EditEvent />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/organizer/edit-event/:eventId"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <EditEvent />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/organizer/track"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <TrackEvent />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/organizer/track"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <TrackEvent />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/organizer/track/:eventId"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <TrackEvent />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/organizer/track/:eventId"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <TrackEvent />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/organizer/registered-users"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <RegisteredUsers />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/organizer/events"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <EventsList />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/organizer/events"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <EventsList />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/organizer/registrations"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <RegisteredUsers />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/organizer/registered-users"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <RegisteredUsers />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/organizer/messages"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <Messages />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/organizer/settings"
+            element={
+              <PrivateRoute>
+                <OrganizerLayout>
+                  <Settings />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/organizer/settings"
-              element={
-                <PrivateRoute>
-                  <OrganizerLayout>
-                    <Settings />
-                  </OrganizerLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/organizer/artists"
-              element={
-                <PrivateRoute allowedRoles={['organizer']}>
+          <Route
+            path="/organizer/artists"
+            element={
+              <PrivateRoute allowedRoles={['organizer']}>
+                <OrganizerLayout>
                   <Artists />
-                </PrivateRoute>
-              }
-            />
+                </OrganizerLayout>
+              </PrivateRoute>
+            }
+          />
 
 
-            {/* Admin Routes */}
-            <Route
-              path="/admin/dashboard"
-              element={
-                <PrivateRoute>
+          {/* Admin Routes */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminLayout>
+                  <AdminDashboard />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/events/upcoming"
+            element={
+              <PrivateRoute>
+                <AdminLayout>
+                  <UpcomingEvents />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/events/review/:id"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminLayout>
+                  <AdminEventReview />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/events/approved"
+            element={
+              <PrivateRoute>
+                <AdminLayout>
+                  <ApprovedEvents />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/events/rejected"
+            element={
+              <PrivateRoute>
+                <AdminLayout>
+                  <RejectedEvents />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/profile"
+            element={
+              <PrivateRoute>
+                <AdminLayout>
+                  <AdminProfile />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/food/upload-map"
+            element={
+              <PrivateRoute>
+                <AdminLayout>
+                  <FoodStallMapUpload />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/sponsorships"
+            element={
+              <PrivateRoute>
+                <AdminLayout>
+                  <AdminSponsorships />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/food/bookings"
+            element={
+              <PrivateRoute>
+                <AdminLayout>
+                  <FoodStallBookings />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/artists"
+            element={
+              <PrivateRoute>
+                <AdminLayout>
+                  <AddArtists />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/artists/view"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminLayout>
+                  <Artists />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/artists/analyze"
+            element={
+              <PrivateRoute allowedRoles={['admin', 'organizer']}>
+                {user?.role === 'admin' ? (
                   <AdminLayout>
-                    <AdminDashboard />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/events/upcoming"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <UpcomingEvents />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/events/review/:id"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <AdminEventReview />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/events/approved"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <ApprovedEvents />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/events/rejected"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <RejectedEvents />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/profile"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <AdminProfile />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/food/upload-map"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <FoodStallMapUpload />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/food/bookings"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <FoodStallBookings />
-                  </AdminLayout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/admin/artists"
-              element={
-                <PrivateRoute>
-                  <AdminLayout>
-                    <AddArtists />
+                    <RatingAnalyze />
                   </AdminLayout>
                 </PrivateRoute>
               }
@@ -350,69 +438,126 @@ const AppContent = () => {
               element={
                 <PrivateRoute>
                   <Artists />
-                </PrivateRoute>
-              }
-            />
+                </UserLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route
-              path="/user/rating"
-              element={
-                <PrivateRoute>
+          <Route
+            path="/user/rating"
+            element={
+              <PrivateRoute>
+                <UserLayout>
                   <UserRating />
-                </PrivateRoute>
-              }
-            />
+                </UserLayout>
+              </PrivateRoute>
+            }
+          />
 
-            {/* New Domains */}
-            <Route
-              path="/sponsor/dashboard"
-              element={
-                <RoleRoute allowedRole="sponsor">
+          {/* New Domains */}
+          <Route
+            path="/sponsor/dashboard"
+            element={
+              <RoleRoute allowedRole="sponsor">
+                <SponsorLayout>
                   <SponsorDashboard />
-                </RoleRoute>
-              }
-            />
+                </SponsorLayout>
+              </RoleRoute>
+            }
+          />
 
-            <Route
-              path="/sponsor/packages"
-              element={
-                <RoleRoute allowedRole="sponsor">
+          <Route
+            path="/sponsor/profile"
+            element={
+              <RoleRoute allowedRole="sponsor">
+                <SponsorLayout>
+                  <SponsorProfile />
+                </SponsorLayout>
+              </RoleRoute>
+            }
+          />
+
+          <Route
+            path="/sponsor/packages"
+            element={
+              <RoleRoute allowedRole="sponsor">
+                <SponsorLayout>
                   <SponsorshipPackages />
-                </RoleRoute>
-              }
-            />
+                </SponsorLayout>
+              </RoleRoute>
+            }
+          />
 
-            <Route
-              path="/sponsor/apply"
-              element={
-                <RoleRoute allowedRole="sponsor">
+          <Route
+            path="/sponsor/apply"
+            element={
+              <RoleRoute allowedRole="sponsor">
+                <SponsorLayout>
                   <SponsorshipApply />
-                </RoleRoute>
-              }
-            />
+                </SponsorLayout>
+              </RoleRoute>
+            }
+          />
 
-            <Route
-              path="/sponsor/verify-otp"
-              element={
-                <RoleRoute allowedRole="sponsor">
-                  <OTPVerification />
-                </RoleRoute>
-              }
-            />
+          <Route
+            path="/sponsor/verify-otp"
+            element={
+              <RoleRoute allowedRole="sponsor">
+                <OTPVerification />
+              </RoleRoute>
+            }
+          />
 
-            <Route
-              path="/food/dashboard"
-              element={
-                <PrivateRoute>
-                    <FoodDashboard />
-                </PrivateRoute>
-              }
-            />
+          <Route
+            path="/food/dashboard"
+            element={
+              <PrivateRoute allowedRoles={['food_stall']}>
+                <FoodStallLayout>
+                  <FoodDashboard />
+                </FoodStallLayout>
+              </PrivateRoute>
+            }
+          />
 
-            <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
+          <Route
+            path="/food/profile"
+            element={
+              <PrivateRoute allowedRoles={['food_stall']}>
+                <FoodStallLayout>
+                  <FoodProfile />
+                </FoodStallLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/events-handling"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminLayout>
+                  <AdminEventsHandling />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/messages"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminLayout>
+                  <Messages />
+                </AdminLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route path="/" element={user ? <Home /> : <LandingPage />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/landing" element={<LandingPage />} />
         </Routes>
       </main>
-      {showNavAndFooter && <GlobalFooter />}
+      {showNavAndFooter && !isDashboardPage && <GlobalFooter />}
     </div>
   );
 };

@@ -74,7 +74,13 @@ const Home = () => {
     <div className="event-card glass-panel">
       <div className="event-image-wrap">
         {event.imageUrl ? (
-          <img src={event.imageUrl} alt={event.name} className="event-image" />
+          <img 
+            src={event.imageUrl.startsWith('http') || event.imageUrl.startsWith('data:') || event.imageUrl.startsWith('/')
+              ? (event.imageUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL}${event.imageUrl}` : event.imageUrl)
+              : `${import.meta.env.VITE_API_URL}/${event.imageUrl}`} 
+            alt={event.name} 
+            className="event-image" 
+          />
         ) : (
           <div className="event-image-placeholder">No Image</div>
         )}
@@ -120,25 +126,31 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <div className="home-toolbar glass-panel">
-        <div className="home-toolbar-text">
-          <h1 className="home-heading text-gradient">Events</h1>
-          <p className="home-lead">Browse upcoming and past approved events. Use search to filter the list.</p>
-        </div>
-        <div className="home-search-field">
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search events by name, place, or keyword…"
-            className="home-search-input"
-            aria-label="Search events"
-          />
-          {search ? (
-            <button type="button" className="home-search-clear" onClick={() => setSearch('')}>
-              Clear
+      <div className="home-hero-banner">
+        <div className="hero-content">
+          <h1>Explore Events</h1>
+          <p>Find the best upcoming and past events happening around you.</p>
+          
+          <div className="search-wrapper">
+            <div className="search-label">
+              Events
+            </div>
+            <div className="search-input-group">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="I'm looking for..."
+                aria-label="Search events"
+              />
+            </div>
+            <button className="search-btn" aria-label="Search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
             </button>
-          ) : null}
+          </div>
         </div>
       </div>
 

@@ -1,7 +1,32 @@
 .event-view-container {
-  padding: 1rem;
-  max-width: 900px;
-  margin: 0 auto;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    position: relative;
+}
+
+.back-button-floating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.back-button-floating:hover {
+    transform: translateX(-5px);
+    background: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-md);
 }
 
 .event-banner {
@@ -138,3 +163,115 @@
   margin-bottom: 0.5rem;
   font-size: 1.4rem;
 }
+.invite-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeInModal 0.3s ease;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.invite-modal-card {
+  background: white;
+  width: 95%;
+  max-width: 680px;
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: zoomInModal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes zoomInModal {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.invite-modal-content {
+  padding: 2.5rem;
+  overflow-y: auto;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.invite-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.invite-modal-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.btn-close-invite {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.click-me-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 1.2rem 2.5rem;
+  border-radius: 50px;
+  font-weight: 900;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: pulseButton 2s infinite;
+  border: 3px solid #fff;
+  margin-top: 1rem;
+}
+
+.click-me-btn:hover {
+  transform: scale(1.1) rotate(-2deg);
+  background: #1d4ed8;
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.6);
+}
+
+.hand-icon {
+  font-size: 1.8rem;
+  animation: tapFinger 0.8s infinite alternate;
+}
+
+@keyframes pulseButton {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); box-shadow: 0 0 0 20px rgba(37, 99, 235, 0); }
+}
+
+
+@keyframes tapFinger {
+  from { transform: translateX(0) scale(1); }
+  to { transform: translateX(5px) scale(1.1); }
+}
+
