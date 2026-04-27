@@ -189,11 +189,21 @@ const Artists = () => {
       {/* Internal AI Search Results */}
       {searchQuery && filteredArtists.length === 0 && user?.role === 'organizer' && (
         <div className="ai-search-view" style={{ textAlign: 'center', marginTop: '60px', padding: '0 20px 40px' }}>
-          <div className="glass-panel" style={{ display: 'inline-block', padding: '40px', maxWidth: '800px', width: '100%', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
-            <div style={{ fontSize: '3.5rem', marginBottom: '25px' }}>🤖</div>
-            <h3 style={{ color: 'var(--accent-color)', marginBottom: '15px', fontSize: '2rem' }}>Artist Not Found Locally</h3>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '35px', fontSize: '1.1rem' }}>
-               As an organizer, you can use our <b>AI Assistant</b> to retrieve details for "{searchQuery}" automatically.
+          <div className="ai-search-panel" style={{ 
+            display: 'inline-block', 
+            padding: '40px', 
+            maxWidth: '800px', 
+            width: '100%', 
+            background: 'linear-gradient(145deg, #1e1e2f 0%, #2a2a40 100%)', 
+            borderRadius: '24px',
+            border: '1px solid rgba(99, 102, 241, 0.5)',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+            color: '#ffffff'
+          }}>
+            <div style={{ fontSize: '4rem', marginBottom: '20px', textShadow: '0 0 20px rgba(99, 102, 241, 0.5)' }}>🤖</div>
+            <h3 style={{ color: '#a855f7', marginBottom: '15px', fontSize: '2.2rem', fontWeight: '800' }}>Artist Not Found Locally</h3>
+            <p style={{ color: '#cbd5e1', marginBottom: '35px', fontSize: '1.15rem', lineHeight: '1.6' }}>
+               As an organizer, you can use our <b style={{color: '#fff'}}>AI Assistant</b> to retrieve details for "{searchQuery}" automatically.
             </p>
             
             <button 
@@ -202,45 +212,47 @@ const Artists = () => {
               className="view-btn"
               style={{ 
                 background: 'linear-gradient(135deg, #6366f1, #a855f7)', 
+                color: '#fff',
                 border: 'none', 
                 cursor: 'pointer',
-                padding: '14px 40px',
-                fontSize: '1.1rem',
+                padding: '16px 45px',
+                fontSize: '1.15rem',
                 fontWeight: 'bold',
                 borderRadius: '50px',
                 boxShadow: '0 10px 25px rgba(99, 102, 241, 0.4)',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                letterSpacing: '0.5px'
               }}
             >
-              {aiLoading ? 'AI is searching...' : '✨ Find with AI Assistant'}
+              {aiLoading ? '✨ AI is searching...' : '✨ Find with AI Assistant'}
             </button>
 
             {aiError && (
-              <div style={{ marginTop: '25px', padding: '15px', background: 'rgba(255, 77, 77, 0.1)', borderRadius: '12px', border: '1px solid rgba(255, 77, 77, 0.2)' }}>
-                <p style={{ color: '#ff4d4d', margin: 0 }}>{aiError}</p>
-                <p style={{ color: '#ff4d4d', fontSize: '0.85rem', marginTop: '5px' }}>Please ensure the API key is valid and backend is running.</p>
+              <div style={{ marginTop: '30px', padding: '15px', background: 'rgba(239, 68, 68, 0.15)', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                <p style={{ color: '#fca5a5', margin: 0, fontWeight: 'bold' }}>{aiError}</p>
+                <p style={{ color: '#f87171', fontSize: '0.9rem', marginTop: '5px' }}>Please ensure the API key is valid and backend is running.</p>
               </div>
             )}
 
             {aiArtist && (
-              <div className="ai-detail-section" style={{ marginTop: '50px', textAlign: 'left', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                   <h2 style={{ color: '#fff', fontSize: '2.5rem', margin: 0 }}>{aiArtist.name}</h2>
-                   <div style={{ background: 'var(--primary-gradient)', padding: '5px 15px', borderRadius: '30px', fontSize: '0.85rem', fontWeight: 'bold' }}>AI VERIFIED</div>
+              <div className="ai-detail-section" style={{ marginTop: '40px', textAlign: 'left', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '40px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
+                   <h2 style={{ color: '#ffffff', fontSize: '2.5rem', margin: 0, fontWeight: '800', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>{aiArtist.name}</h2>
+                   <div style={{ background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', padding: '8px 20px', borderRadius: '30px', fontSize: '0.9rem', fontWeight: 'bold', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)' }}>✓ AI VERIFIED</div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
-                  <div className="detail-box" style={{ background: 'rgba(255,255,255,0.05)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <h4 style={{ color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem', marginBottom: '15px' }}>📞 Contact Details</h4>
-                    <p style={{ color: '#fff', fontSize: '1.3rem', fontWeight: '600', margin: 0 }}>{aiArtist.contactNumber}</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
+                  <div className="detail-box" style={{ background: 'rgba(255,255,255,0.08)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                    <h4 style={{ color: '#a855f7', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.9rem', marginBottom: '15px', fontWeight: 'bold' }}>📞 Contact Details</h4>
+                    <p style={{ color: '#ffffff', fontSize: '1.4rem', fontWeight: '700', margin: 0, letterSpacing: '1px' }}>{aiArtist.contactNumber}</p>
                   </div>
 
-                  <div className="detail-box" style={{ background: 'rgba(255,255,255,0.05)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <h4 style={{ color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem', marginBottom: '15px' }}>🎵 Top Tracks</h4>
+                  <div className="detail-box" style={{ background: 'rgba(255,255,255,0.08)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                    <h4 style={{ color: '#a855f7', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.9rem', marginBottom: '15px', fontWeight: 'bold' }}>🎵 Top Tracks</h4>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                       {aiArtist.songs?.map((song, idx) => (
-                        <li key={idx} style={{ color: '#ccc', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                           <span style={{ color: 'var(--accent-color)' }}>▶</span> {song}
+                        <li key={idx} style={{ color: '#e2e8f0', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.05rem' }}>
+                           <span style={{ color: '#6366f1', fontSize: '0.8rem' }}>▶</span> {song}
                         </li>
                       ))}
                     </ul>
@@ -248,9 +260,9 @@ const Artists = () => {
                 </div>
 
                 {aiArtist.description && (
-                   <div style={{ marginTop: '30px', padding: '25px', background: 'rgba(99, 102, 241, 0.05)', borderRadius: '20px', border: '1px dashed rgba(99, 102, 241, 0.3)' }}>
-                      <p style={{ color: '#aaa', lineHeight: '1.7', margin: 0, fontStyle: 'italic' }}>
-                        {aiArtist.description}
+                   <div style={{ marginTop: '25px', padding: '25px', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '20px', border: '1px dashed rgba(99, 102, 241, 0.4)' }}>
+                      <p style={{ color: '#cbd5e1', lineHeight: '1.8', margin: 0, fontStyle: 'italic', fontSize: '1.05rem' }}>
+                        "{aiArtist.description}"
                       </p>
                    </div>
                 )}
