@@ -17,13 +17,13 @@ const AdminDashboard = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                 const headers = { Authorization: `Bearer ${token}` };
 
                 const [pendingRes, approvedRes, allRes] = await Promise.all([
-                    axios.get(`${apiUrl}/api/events/admin/pending`, { headers }),
-                    axios.get(`${apiUrl}/api/events/approved`, { headers }),
-                    axios.get(`${apiUrl}/api/events/admin/all`, { headers }).catch(() => ({ data: [] })),
+                    axios.get(`${apiUrl}/api/events/admin/pending?summary=true`, { headers }),
+                    axios.get(`${apiUrl}/api/events/approved?summary=true`, { headers }),
+                    axios.get(`${apiUrl}/api/events/admin/all?summary=true`, { headers }).catch(() => ({ data: [] }))
                 ]);
 
                 const rejected = allRes.data.filter(e => e.status === 'Rejected');
@@ -55,7 +55,7 @@ const AdminDashboard = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                 await axios.patch(`${apiUrl}/api/events/admin/${eventId}/stall-map`, {
                     stallMapUrl: reader.result
                 }, {

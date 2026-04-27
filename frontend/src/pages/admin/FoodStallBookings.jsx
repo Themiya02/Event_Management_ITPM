@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Icon } from '@iconify/react';
 import { createPortal } from 'react-dom';
@@ -18,7 +18,7 @@ const FoodStallBookings = () => {
             const token = user?.token;
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-            const res = await axios.get(`${apiUrl}/api/events/admin/all`, {
+            const res = await axios.get(`${apiUrl}/api/events/admin/all?summary=true`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -28,6 +28,23 @@ const FoodStallBookings = () => {
             console.error('Error fetching events:', err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSelectEvent = async (ev) => {
+        try {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const token = user?.token;
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+            // Fetch the full event details including bookedStalls
+            const res = await axios.get(`${apiUrl}/api/events/${ev._id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSelectedEvent(res.data);
+        } catch (err) {
+            console.error('Error fetching event details:', err);
+            alert('Could not load full event details.');
         }
     };
 
@@ -108,7 +125,7 @@ const FoodStallBookings = () => {
                 <>
                     {events.length === 0 ? (
                         <div className="glass-panel empty-state">
-                            <div className="empty-big-icon">≡ƒìö</div>
+                            <div className="empty-big-icon">🍔</div>
                             <h3>No mapped events</h3>
                             <p>You haven&apos;t uploaded a stall map to any upcoming events yet.</p>
                         </div>
@@ -126,11 +143,11 @@ const FoodStallBookings = () => {
                                         tabIndex={0}
                                         className="event-card glass-panel food-stall-map-event-card animation-fade-in"
                                         style={{ cursor: 'pointer' }}
-                                        onClick={() => setSelectedEvent(ev)}
+                                        onClick={() => handleSelectEvent(ev)}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' || e.key === ' ') {
                                                 e.preventDefault();
-                                                setSelectedEvent(ev);
+                                                handleSelectEvent(ev);
                                             }
                                         }}
                                     >
@@ -149,7 +166,7 @@ const FoodStallBookings = () => {
 
                                             <div className="card-details">
                                                 <div className="detail-item">
-                                                    <span>≡ƒôà</span> {month} {day}, {ev.time}
+                                                    <span>📅</span> {month} {day}, {ev.time}
                                                 </div>
                                                 <div className="detail-item">
                                                     <span className="food-stall-loc-pin-wrap" aria-hidden>
@@ -167,7 +184,7 @@ const FoodStallBookings = () => {
                                                         {ev.bookedStalls?.length || 0} booked stalls
                                                     </span>
                                                     <span className="food-stall-bookings-view-details-btn">
-                                                        View details ΓåÆ
+                                                        View details →
                                                     </span>
                                                 </div>
                                             </div>
@@ -185,11 +202,11 @@ const FoodStallBookings = () => {
                         className="food-stall-bookings-back-btn"
                         onClick={() => setSelectedEvent(null)}
                     >
-                        ΓåÉ Back to event list
+                        ← Back to event list
                     </button>
 
                     <div className="glass-panel food-stall-bookings-panel">
-                        <h2 className="food-stall-bookings-map-heading">{selectedEvent.name} ΓÇö stall placements</h2>
+                        <h2 className="food-stall-bookings-map-heading">{selectedEvent.name} — stall placements</h2>
                         <p className="food-stall-bookings-map-lead">
                             Visual overview of all locked-in container coordinates for this blueprint.
                         </p>
@@ -242,9 +259,9 @@ const FoodStallBookings = () => {
                                                 <br />
                                                 <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
                                                     Utilities:{' '}
-                                                    {stall.needsElectricity ? '≡ƒöî Electricity' : ''}{' '}
+                                                    {stall.needsElectricity ? '⚡ Electricity' : ''}{' '}
                                                     {stall.needsElectricity && stall.needsWater ? '|' : ''}{' '}
-                                                    {stall.needsWater ? '≡ƒÆº Water' : ''}
+                                                    {stall.needsWater ? '💧 Water' : ''}
                                                     {!stall.needsElectricity && !stall.needsWater && 'None'}
                                                 </span>
                                                 {stall.paymentReceipt && (
@@ -263,7 +280,7 @@ const FoodStallBookings = () => {
                                         </div>
                                         <div className="food-stall-bookings-vendor-side">
                                             <p className="food-stall-bookings-price">
-                                                Rs {stall.totalPrice?.toLocaleString() ?? 'ΓÇö'}
+                                                Rs {stall.totalPrice?.toLocaleString() ?? '—'}
                                             </p>
                                             <p className="food-stall-bookings-coords">
                                                 {stall.x != null && stall.y != null
@@ -329,7 +346,7 @@ const FoodStallBookings = () => {
                                 onClick={() => setViewingImage(null)}
                                 aria-label="Close"
                             >
-                                ├ù
+                                ×
                             </button>
                             <img
                                 className="food-stall-bookings-receipt-img"

@@ -11,4 +11,8 @@ const registrationSchema = new mongoose.Schema({
   registeredAt: { type: Date, default: Date.now }
 });
 
+// Optimization: Add indexes
+registrationSchema.index({ user: 1 });
+registrationSchema.index({ event: 1 });
+
 module.exports = mongoose.model('Registration', registrationSchema);

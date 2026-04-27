@@ -60,16 +60,16 @@ const AppContent = () => {
 
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-  // Identify dashboard-style pages that already have their own sidebars/topbars
   const isDashboardPage = location.pathname.startsWith('/dashboard') ||
     location.pathname.startsWith('/organizer') ||
     location.pathname.startsWith('/admin') ||
-    location.pathname.startsWith('/food');
+    location.pathname.startsWith('/food') ||
+    location.pathname.startsWith('/sponsor') ||
+    location.pathname.startsWith('/artists/analyze');
 
-  // Only show global navbar on public-style pages (Home, Artists, etc.) 
-  // and NOT on dashboard pages to avoid double headers.
-  // Show navbar on all pages as requested by the user
+  // Show global navbar everywhere as requested, but keep footer logic for dashboards
   const showNavAndFooter = true;
+  const showFooter = !isDashboardPage;
 
   return (
     <div className="app">
@@ -494,9 +494,7 @@ const AppContent = () => {
             path="/food/dashboard"
             element={
               <PrivateRoute allowedRoles={['food_stall']}>
-                <FoodStallLayout>
                   <FoodDashboard />
-                </FoodStallLayout>
               </PrivateRoute>
             }
           />
@@ -505,9 +503,7 @@ const AppContent = () => {
             path="/food/profile"
             element={
               <PrivateRoute allowedRoles={['food_stall']}>
-                <FoodStallLayout>
                   <FoodProfile />
-                </FoodStallLayout>
               </PrivateRoute>
             }
           />
@@ -539,7 +535,7 @@ const AppContent = () => {
           <Route path="/landing" element={<LandingPage />} />
         </Routes>
       </main>
-      {showNavAndFooter && !isDashboardPage && <GlobalFooter />}
+      {showNavAndFooter && showFooter && <GlobalFooter />}
     </div>
   );
 };

@@ -19,7 +19,7 @@ const MyTickets = () => {
         const fetchTickets = async () => {
             try {
                 const localUser = JSON.parse(localStorage.getItem('user'));
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
                 const res = await axios.get(`${apiUrl}/api/events/my-registrations`, {
                     headers: { Authorization: `Bearer ${localUser?.token}` }

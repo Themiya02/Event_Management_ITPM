@@ -69,7 +69,24 @@ exports.createArtist = async (req, res) => {
 
 exports.getAllArtists = async (req, res) => {
   try {
-    const artists = await Artist.find({}).lean().sort('-createdAt');
+    const { summary } = req.query;
+    let query = Artist.find({});
+    
+    if (summary === 'true') {
+      // Exclude ratings array but include its count using a virtual or projection
+      // In this case, we'll manually map it or use a projection if possible.
+      // Since it's an array, we can't easily get the length in select() without aggregation.
+      // So we'll fetch it but map it to keep the response small.
+      const artists = await Artist.find({}).select('-ratings').lean().sort('-createdAt');
+      
+      // If we want the count, we need to handle it. 
+      // For now, let's just use lean() and select() to minimize data.
+      // Most pages only use averageRating anyway.
+      res.json(artists);
+      return;
+    }
+
+    const artists = await query.lean().sort('-createdAt');
     res.json(artists);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -197,39 +214,50 @@ exports.aiSearchArtist = async (req, res) => {
 
 exports.getArtistAnalytics = async (req, res) => {
   try {
-    const artists = await Artist.find({}).lean();
+    // Use MongoDB aggregation for heavy analytical processing
+    const artistsAnalytics = await Artist.aggregate([
+      {
+        $project: {
+          name: 1,
+          image: 1,
+          averageRating: 1,
+          totalVotes: { $size: "$ratings" },
+          ratingBreakdown: {
+            $arrayToObject: {
+              $map: {
+                input: [1, 2, 3, 4, 5],
+                as: "star",
+                in: {
+                  k: { $toString: "$$star" },
+                  v: {
+                    $size: {
+                      $filter: {
+                        input: "$ratings",
+                        as: "r",
+                        cond: { $eq: ["$$r.val", "$$star"] }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      { $sort: { averageRating: -1 } }
+    ]);
 
-    const analyticsData = artists.map(artist => {
-      const ratings = artist.ratings || [];
-      const totalVotes = ratings.length;
-      const ratingBreakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-      ratings.forEach(r => {
-        const val = Math.round(r.val);
-        if (val >= 1 && val <= 5) ratingBreakdown[val]++;
-      });
-      const avg = totalVotes > 0
-        ? ratings.reduce((sum, r) => sum + r.val, 0) / totalVotes
-        : 0;
-
-      return {
-        _id: artist._id,
-        name: artist.name,
-        image: artist.image,
-        averageRating: parseFloat(avg.toFixed(2)),
-        totalVotes,
-        ratingBreakdown
-      };
-    });
-
-    const totalArtists = analyticsData.length;
-    const totalRatings = analyticsData.reduce((sum, a) => sum + a.totalVotes, 0);
-    const topArtist = analyticsData.reduce((best, a) =>
-      a.averageRating > (best?.averageRating || 0) ? a : best, null
-    );
+    const totalArtists = artistsAnalytics.length;
+    const totalRatings = artistsAnalytics.reduce((sum, a) => sum + a.totalVotes, 0);
+    const topArtist = artistsAnalytics.length > 0 ? artistsAnalytics[0] : null;
 
     res.json({
-      summary: { totalArtists, totalRatings, topArtist },
-      artists: analyticsData.sort((a, b) => b.averageRating - a.averageRating)
+      summary: { 
+        totalArtists, 
+        totalRatings, 
+        topArtist: topArtist ? { name: topArtist.name, averageRating: topArtist.averageRating } : null 
+      },
+      artists: artistsAnalytics
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

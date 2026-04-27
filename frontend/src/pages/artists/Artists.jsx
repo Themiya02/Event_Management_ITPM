@@ -16,7 +16,8 @@ const Artists = () => {
   useEffect(() => {
     const fetchArtists = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/artists`);
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const { data } = await axios.get(`${apiUrl}/api/artists`);
         setArtists(data);
       } catch (error) {
         console.error('Failed to fetch artists:', error);
@@ -38,9 +39,10 @@ const Artists = () => {
         return;
     }
     try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const token = JSON.parse(localStorage.getItem('user'))?.token || user?.token;
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/artists/${artistId}/rate`, { rating: ratingValue }, config);
+      await axios.post(`${apiUrl}/api/artists/${artistId}/rate`, { rating: ratingValue }, config);
       
       // Update local state for better UX
       setArtists(prev => prev.map(a => {
@@ -71,9 +73,10 @@ const Artists = () => {
     setAiError('');
     setAiArtist(null);
     try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const token = JSON.parse(localStorage.getItem('user'))?.token || user?.token;
       const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/artists/ai-search?name=${searchQuery}`,
+        `${apiUrl}/api/artists/ai-search?name=${searchQuery}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

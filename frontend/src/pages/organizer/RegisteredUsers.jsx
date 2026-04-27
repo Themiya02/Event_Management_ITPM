@@ -13,7 +13,7 @@ const RegisteredUsers = () => {
     useEffect(() => {
         const fetchRegistrations = async () => {
             try {
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                 const response = await axios.get(`${apiUrl}/api/events/organizer/registrations`, {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -34,7 +34,7 @@ const RegisteredUsers = () => {
 
     const handleStatusChange = async (id, status) => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
             await axios.patch(`${apiUrl}/api/events/registrations/${id}/status`, { status }, {
                 headers: {
                     Authorization: `Bearer ${token}`

@@ -4,7 +4,12 @@ const Notification = require('../models/Notification');
 
 exports.getEventsWithMaps = async (req, res) => {
   try {
-    const events = await Event.find({ stallMapUrl: { $exists: true, $ne: null, $ne: '' } }).sort('-createdAt');
+    const { summary } = req.query;
+    let query = Event.find({ stallMapUrl: { $exists: true, $ne: null, $ne: '' } });
+    if (summary === 'true') {
+      query = query.select('name date time location status imageUrl organizer createdAt stallMapUrl stallPricing bankDetails registrationsCount');
+    }
+    const events = await query.sort('-createdAt');
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -82,7 +87,12 @@ exports.createEvent = async (req, res) => {
 
 exports.getApprovedEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: 'Approved' }).sort('-createdAt');
+    const { summary } = req.query;
+    let query = Event.find({ status: 'Approved' });
+    if (summary === 'true') {
+      query = query.select('-imageUrl -bookedStalls -paymentReceipt -stallMapUrl');
+    }
+    const events = await query.sort('-createdAt').lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -91,7 +101,18 @@ exports.getApprovedEvents = async (req, res) => {
 
 exports.getOrganizerEvents = async (req, res) => {
   try {
-    const events = await Event.find({}).sort('-createdAt');
+    const { summary, tracking } = req.query;
+    let query = Event.find({ organizer: req.user._id }); // Filter for organizer's own events
+    
+    if (tracking === 'true') {
+      // Extremely lightweight query for the tracking page
+      query = query.select('name trackingStep status rejectedAt rejectionReason approvals');
+    } else if (summary === 'true') {
+      // Exclude heavy fields like bookedStalls and large descriptions/images
+      query = query.select('-bookedStalls -description -imageUrl -paymentReceipt -stallMapUrl');
+    }
+    
+    const events = await query.sort('-createdAt').lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -154,7 +175,7 @@ exports.registerForEvent = async (req, res) => {
 
 exports.getMyRegistrations = async (req, res) => {
   try {
-    const registrations = await Registration.find({ user: req.user._id }).populate('event');
+    const registrations = await Registration.find({ user: req.user._id }).populate('event').lean();
     res.json(registrations);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -163,13 +184,14 @@ exports.getMyRegistrations = async (req, res) => {
 
 exports.getOrganizerRegistrations = async (req, res) => {
   try {
-    const events = await Event.find({ organizer: req.user._id }).select('_id');
+    const events = await Event.find({ organizer: req.user._id }).select('_id').lean();
     const eventIds = events.map(e => e._id);
     
     const registrations = await Registration.find({ event: { $in: eventIds } })
       .populate('event', 'name isPaid price')
       .populate('user', 'name email')
-      .sort('-registeredAt');
+      .sort('-registeredAt')
+      .lean();
       
     res.json(registrations);
   } catch (error) {
@@ -286,9 +308,16 @@ exports.updateEvent = async (req, res) => {
 // Admin: Get all pending events (for admin dashboard)
 exports.getAdminPendingEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: { $regex: /^pending$/i } })
+    const { summary } = req.query;
+    let query = Event.find({ status: { $regex: /^pending$/i } });
+    if (summary === 'true') {
+      // Exclude massive fields to ensure lightning fast loads
+      query = query.select('-imageUrl -description -bookedStalls -paymentReceipt -stallMapUrl');
+    }
+    const events = await query
       .populate('organizer', 'name email')
-      .sort('-createdAt');
+      .sort('-createdAt')
+      .lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -298,9 +327,15 @@ exports.getAdminPendingEvents = async (req, res) => {
 // Admin: Get rejected events
 exports.getAdminRejectedEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: { $regex: /^rejected$/i } })
+    const { summary } = req.query;
+    let query = Event.find({ status: { $regex: /^rejected$/i } });
+    if (summary === 'true') {
+      query = query.select('-imageUrl -description -bookedStalls -paymentReceipt -stallMapUrl');
+    }
+    const events = await query
       .populate('organizer', 'name email')
-      .sort('-createdAt');
+      .sort('-createdAt')
+      .lean();
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -310,10 +345,34 @@ exports.getAdminRejectedEvents = async (req, res) => {
 // Admin: Get all events
 exports.getAdminAllEvents = async (req, res) => {
   try {
-    const events = await Event.find({})
+    const { summary } = req.query;
+    let query = Event.find({});
+    
+    // If summary is requested, exclude heavy fields
+    if (summary === 'true') {
+      query = query.select('-imageUrl -description -bookedStalls -paymentReceipt -stallMapUrl');
+    }
+
+    const events = await query
       .populate('organizer', 'name email')
-      .sort('-createdAt');
+      .sort('-createdAt')
+      .lean();
     res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin: Get event statistics
+exports.getAdminStats = async (req, res) => {
+  try {
+    const [total, pending, approved, rejected] = await Promise.all([
+      Event.countDocuments({}),
+      Event.countDocuments({ status: { $regex: /^pending$/i } }),
+      Event.countDocuments({ status: { $regex: /^approved$/i } }),
+      Event.countDocuments({ status: { $regex: /^rejected$/i } })
+    ]);
+    res.json({ total, pending, approved, rejected });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -630,6 +689,36 @@ exports.updateStallBooking = async (req, res) => {
 
 
     await event.save();
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Food Stall: Delete own booking (only if Pending)
+exports.deleteStallBooking = async (req, res) => {
+  try {
+    const { id, bookingId } = req.params;
+    const event = await Event.findById(id);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const booking = event.bookedStalls.id(bookingId);
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
+    // Ownership Check
+    if (String(booking.vendorId) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Not authorized to delete this application' });
+    }
+
+    // Status Check - usually only allow deleting if still pending
+    if (booking.status !== 'Pending') {
+      return res.status(400).json({ message: 'Cannot delete application after it has been reviewed.' });
+    }
+
+    // Use pull to remove from sub-document array
+    event.bookedStalls.pull(bookingId);
+    await event.save();
+
     res.json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });

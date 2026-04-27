@@ -404,11 +404,22 @@ exports.resendOTP = async (req, res) => {
   }
 };
 
+// @desc  Get my sponsorships (sponsor)
+// @route GET /api/sponsorship/my
+exports.getMySponsorships = async (req, res) => {
+  try {
+    const sponsorships = await Sponsorship.find({ sponsorEmail: req.user.email }).sort({ createdAt: -1 }).lean();
+    res.json({ success: true, sponsorships });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 // @desc  Get all sponsorships (admin)
 // @route GET /api/sponsorship/all
 exports.getAllSponsorships = async (req, res) => {
   try {
-    const sponsorships = await Sponsorship.find().sort({ createdAt: -1 });
+    const sponsorships = await Sponsorship.find().sort({ createdAt: -1 }).lean();
     res.json({ success: true, sponsorships });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });

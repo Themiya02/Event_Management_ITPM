@@ -9,7 +9,7 @@ const AdminSponsorships = () => {
     const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
     const [selectedSlip, setSelectedSlip] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     useEffect(() => {
         fetchSponsorships();

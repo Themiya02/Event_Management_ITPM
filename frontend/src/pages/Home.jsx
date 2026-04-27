@@ -16,8 +16,8 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const [eventsRes, artistsRes] = await Promise.all([
-          axios.get(`${import.meta.env.VITE_API_URL}/api/events/public/approved`),
-          axios.get(`${import.meta.env.VITE_API_URL}/api/artists`)
+          axios.get(`${import.meta.env.VITE_API_URL}/api/events/public/approved?summary=true`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/artists?summary=true`)
         ]);
 
         const allEvents = eventsRes.data;

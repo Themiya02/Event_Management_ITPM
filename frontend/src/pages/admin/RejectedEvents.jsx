@@ -13,8 +13,8 @@ const RejectedEvents = () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 const token = user?.token;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
-                const res = await axios.get(`${apiUrl}/api/events/admin/rejected`, {
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const res = await axios.get(`${apiUrl}/api/events/admin/rejected?summary=true`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setEvents(res.data);
